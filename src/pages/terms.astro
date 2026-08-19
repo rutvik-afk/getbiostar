@@ -1,0 +1,39 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+---
+<Prose title="Terms of Use" description={`The terms that apply to using ${SITE.name}.`}>
+  <h2>Acceptance</h2>
+  <p>By using this site you accept these terms. If you do not, please stop using the site.</p>
+
+  <h2>Use of content</h2>
+  <p>
+    Original text on this site is © {new Date().getFullYear()} {SITE.name}. You may quote short
+    extracts with a link back. Wholesale copying, scraping or republication of profiles is not
+    permitted.
+  </p>
+  <p>
+    Underlying factual data is drawn from Wikidata, available under
+    <a href="https://creativecommons.org/publicdomain/zero/1.0/" rel="nofollow noopener" target="_blank">CC0</a>.
+    Portrait images remain under their own licences, credited beneath each image, and are governed by
+    those licences rather than by these terms.
+  </p>
+
+  <h2>Accuracy</h2>
+  <p>
+    We work from sourced records and correct errors quickly, but we cannot warrant that every fact is
+    current or complete. Nothing here is legal, financial or medical advice.
+  </p>
+
+  <h2>External links</h2>
+  <p>We link to third-party sites for verification. We are not responsible for their content.</p>
+
+  <h2>Liability</h2>
+  <p>
+    The site is provided “as is”. To the extent permitted by law, we are not liable for any loss
+    arising from use of it.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>These terms are governed by the laws of India, without regard to conflict-of-law rules.</p>
+</Prose>

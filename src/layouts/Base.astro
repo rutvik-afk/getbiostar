@@ -1,0 +1,132 @@
+---
+import { SITE, NAV } from '../../site.config.mjs';
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+
+const {
+  title, description, canonical, image = null, type = 'website',
+  noindex = false, jsonld = [], breadcrumbs = [], published = null, modified = null,
+  preloadImage = null,
+} = Astro.props;
+
+const url = canonical || new URL(Astro.url.pathname, SITE.domain).href;
+const ogImage = image || `${SITE.domain}/brand/og-default.png`;
+const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
+
+const graph = [
+  {
+    '@type': 'WebSite', '@id': `${SITE.domain}/#website`,
+    url: SITE.domain + '/', name: SITE.name, description: SITE.description,
+    inLanguage: SITE.lang,
+    publisher: { '@id': `${SITE.domain}/#org` },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: `${SITE.domain}/search/?q={search_term_string}` },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+  {
+    '@type': 'Organization', '@id': `${SITE.domain}/#org`,
+    name: SITE.name, url: SITE.domain + '/',
+    logo: { '@type': 'ImageObject', url: SITE.domain + SITE.publisherLogo, width: 512, height: 512 },
+  },
+  ...(breadcrumbs.length ? [{
+    '@type': 'BreadcrumbList', '@id': `${url}#breadcrumb`,
+    itemListElement: breadcrumbs.map((b, i) => ({
+      '@type': 'ListItem', position: i + 1, name: b.name,
+      ...(b.href ? { item: new URL(b.href, SITE.domain).href } : {}),
+    })),
+  }] : []),
+  ...jsonld,
+];
+---
+<!doctype html>
+<html lang={SITE.lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={url} />
+  {noindex
+    ? <meta name="robots" content="noindex, follow" />
+    : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
+
+  <meta property="og:type" content={type} />
+  <meta property="og:site_name" content={SITE.name} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={url} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content={SITE.locale} />
+  {published && <meta property="article:published_time" content={published} />}
+  {modified && <meta property="article:modified_time" content={modified} />}
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  {SITE.twitter && <meta name="twitter:site" content={SITE.twitter} />}
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+  <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — latest profiles`} href="/rss.xml" />
+  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+  <meta name="theme-color" content="#ffffff" />
+  {SITE.gscVerification && <meta name="google-site-verification" content={SITE.gscVerification} />}
+  {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+
+  <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />
+
+  {SITE.gaMeasurementId && (
+    <>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaMeasurementId}`}></script>
+      <script is:inline define:vars={{ id: SITE.gaMeasurementId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date()); gtag('config', id);
+      </script>
+    </>
+  )}
+  {SITE.adsenseClient && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClient}`} crossorigin="anonymous"></script>}
+</head>
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="site-header">
+    <div class="hdr">
+      <details class="menu">
+        <summary aria-label="Open menu"><span class="bars" aria-hidden="true"></span></summary>
+        <nav class="menu-panel" aria-label="Main">
+          <ul>
+            {NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            <li><a href="/about/">About</a></li>
+            <li><a href="/contact/">Contact</a></li>
+          </ul>
+        </nav>
+      </details>
+
+      <a href="/" class="brand" aria-label={`${SITE.name} home`}>
+        <span class="brand-mark" aria-hidden="true">★</span>
+        <span class="brand-name">{SITE.name}</span>
+      </a>
+
+      <details class="hsearch">
+        <summary aria-label="Open search"><span class="mag" aria-hidden="true"></span></summary>
+        <form class="hsearch-panel" action="/search/" method="get" role="search">
+          <input type="search" name="q" placeholder="Search a celebrity…" aria-label="Search celebrities" />
+          <button type="submit">Search</button>
+        </form>
+      </details>
+    </div>
+    <nav class="subnav" aria-label="Sections">
+      <div class="wrap">
+        <ul>{NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main"><slot /></main>
+
+  <Footer />
+</body>
+</html>

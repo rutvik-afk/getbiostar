@@ -1,0 +1,22 @@
+---
+import { CATEGORIES, } from '../lib/content.mjs';
+import { MONTHS } from '../lib/bio.mjs';
+
+const { post } = Astro.props;
+const cat = CATEGORIES[post.category] || CATEGORIES.notable;
+const excerpt = post.metaDescription || post.lead?.[0] || '';
+const role = post.role ? post.role.toUpperCase() : 'PROFILE';
+const d = post.publishedAt ? new Date(post.publishedAt + 'T00:00:00Z') : null;
+const dateLabel = d ? `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}` : '';
+---
+<article class="pcard">
+  <a class="pcard-cat" href={`/category/${post.category}/`}>{cat.label}</a>
+  <h2 class="pcard-title"><a href={`/${post.slug}/`}>{post.title}</a></h2>
+  <a class="pcard-img" href={`/${post.slug}/`} tabindex="-1" aria-hidden="true">
+    {post.image?.url
+      ? <img src={post.image.url} alt="" loading="lazy" decoding="async" width="600" height="450" />
+      : <span>{post.name[0]}</span>}
+  </a>
+  <p class="pcard-ex">{excerpt}</p>
+  <p class="pcard-meta"><span>{role}</span><i>/</i><time datetime={post.publishedAt}>{dateLabel}</time></p>
+</article>

@@ -1,0 +1,63 @@
+---
+import { allPosts, postsByCategory, CATEGORIES } from '../lib/content.mjs';
+import { MONTHS } from '../lib/bio.mjs';
+
+const { exclude = null } = Astro.props;
+const posts = allPosts();
+const byCat = postsByCategory();
+const recent = posts.filter((p) => p.slug !== exclude).slice(0, 6);
+const popular = [...posts].filter((p) => p.slug !== exclude)
+  .sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 5);
+const cats = Object.entries(CATEGORIES).filter(([k]) => byCat[k]?.length)
+  .sort((a, b) => byCat[b[0]].length - byCat[a[0]].length);
+
+const fmt = (s) => {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00Z');
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+};
+---
+<aside class="sidebar">
+  <section class="widget">
+    <h2 class="w-title">Live Search</h2>
+    <form class="w-search" action="/search/" method="get" role="search">
+      <input type="search" name="q" placeholder="Search" aria-label="Search celebrity profiles" />
+      <button type="submit" aria-label="Search"><span class="mag-dark" aria-hidden="true"></span></button>
+    </form>
+  </section>
+
+  <section class="widget">
+    <h2 class="w-title">Posts</h2>
+    <ul class="w-posts">
+      {recent.map((p) => (
+        <li>
+          <a class="wp-img" href={`/${p.slug}/`} tabindex="-1" aria-hidden="true">
+            {p.image?.url
+              ? <img src={p.image.url} alt="" loading="lazy" width="78" height="78" />
+              : <span>{p.name[0]}</span>}
+          </a>
+          <div>
+            <a class="wp-title" href={`/${p.slug}/`}>{p.title}</a>
+            <time datetime={p.publishedAt}>{fmt(p.publishedAt)}</time>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="widget">
+    <h2 class="w-title">Categories</h2>
+    <ul class="w-cats">
+      {cats.map(([key, c]) => (
+        <li><a href={`/category/${key}/`}>{c.label}<span>{byCat[key].length}</span></a></li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="widget">
+    <h2 class="w-title">Most Searched</h2>
+    <ol class="w-rank">
+      {popular.map((p) => <li><a href={`/${p.slug}/`}>{p.name}</a></li>)}
+    </ol>
+  </section>
+</aside>

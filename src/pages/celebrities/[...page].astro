@@ -1,0 +1,58 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import Pager from '../../components/Pager.astro';
+import { SITE } from '../../../site.config.mjs';
+import { allPosts, paginate } from '../../lib/content.mjs';
+
+export function getStaticPaths() {
+  const posts = [...allPosts()].sort((a, b) => a.name.localeCompare(b.name));
+  const pages = paginate(posts, 20);
+  return pages.map((items, i) => ({
+    params: { page: i === 0 ? undefined : String(i + 1) },
+    props: { items, current: i + 1, total: pages.length, all: posts.length },
+  }));
+}
+
+const { items, current, total, all } = Astro.props;
+const base = '/celebrities/';
+const canonical = current === 1 ? `${SITE.domain}${base}` : `${SITE.domain}${base}${current}/`;
+const title = current === 1 ? `All Celebrity Profiles A–Z (${all} biographies)` : `All Celebrity Profiles — Page ${current} of ${total}`;
+
+const jsonld = [{
+  '@type': 'CollectionPage', url: canonical, name: title,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: items.length,
+    itemListElement: items.map((p, i) => ({
+      '@type': 'ListItem', position: (current - 1) * 20 + i + 1,
+      url: `${SITE.domain}/${p.slug}/`, name: p.name,
+    })),
+  },
+}];
+---
+<Base
+  title={title}
+  description={current === 1
+    ? `Complete A–Z index of ${all} fact-checked celebrity biographies on ${SITE.name}: ages, heights, family details, careers and awards.`
+    : `Page ${current} of ${total} — celebrity biographies ${items[0]?.name ?? ""} to ${items[items.length - 1]?.name ?? ""} on ${SITE.name}, with ages, heights and career facts.`}
+  canonical={canonical}
+  jsonld={jsonld}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'All Profiles' }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">All Profiles</li></ol>
+  </nav>
+  {/* Kept for search engines and screen readers; not shown on the page. */}
+  <h1 class="sr-title">{title}</h1>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <div class="cards-grid">{items.map((p) => <PostCard post={p} />)}</div>
+        <Pager current={current} total={total} base={base} />
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>

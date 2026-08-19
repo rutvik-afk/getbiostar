@@ -1,0 +1,21 @@
+Resolving 6500 names to Wikidata entities…
+  direct hits: 3758 / 6500; searching 2742 fallbacks…
+  …200/2742  …400/2742  …600/2742  …800/2742  …1000/2742  …1200/2742  …1400/2742  …1600/2742  …1800/2742  …2000/2742  …2200/2742  …2400/2742  …2600/2742
+  resolved: 6097/6500
+Fetching Wikidata entities…
+  entities parsed: 6097, referenced QIDs: 13206
+Resolving referenced entity labels…
+  labels: 13046
+Fetching Commons licence metadata for 3563 portraits…
+  free-licensed & usable: 2801
+
+✅ facts written: 3452   (no Wikidata match: 1986)
+⚠️  rejected as wrong-person: 1062 → data/rejected.json
+     sara-tendulkar → "Arjun Tendulkar" (Indian cricketer)
+     shay-shariatzadeh → "John Cena" (American actor and professional wrestler (born 1977))
+     aditi-hundia → "Manika Vishwakarma" (Indian beauty pageant titleholder (born 2003))
+     hridhaan-roshan → "Sussanne Khan" (Indian interior fashion designer)
+     ritika-sajdeh → "Rohit Sharma" (Indian cricketer (Captain))
+     gungun-gupta → "Gungun Uprari" (Indian actress)
+     laksh-lalwani → "Lakshya" (Indian actor)
+     malti-chahar → "Deepak Chahar" (Indian Cricket player)

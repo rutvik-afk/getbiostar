@@ -1,0 +1,169 @@
+---
+import { SITE, CONTACT, SOCIAL } from '../../site.config.mjs';
+import { allPosts } from '../lib/content.mjs';
+import { MONTHS } from '../lib/bio.mjs';
+
+const posts = allPosts();
+const trending = [...posts].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 4);
+const popular = [...posts].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 3);
+
+const fmt = (s) => {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00Z');
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+};
+
+/* only render an icon when the account actually exists */
+const socials = [
+  ['facebook', SOCIAL.facebook, 'Facebook'],
+  ['x', SOCIAL.x, 'X'],
+  ['instagram', SOCIAL.instagram, 'Instagram'],
+  ['pinterest', SOCIAL.pinterest, 'Pinterest'],
+  ['youtube', SOCIAL.youtube, 'YouTube'],
+].filter(([, url]) => url);
+
+const contactRows = [
+  CONTACT.address && ['pin', 'Address', CONTACT.address, null],
+  CONTACT.phone && ['phone', 'Phone', CONTACT.phone, `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`],
+  CONTACT.mobile && ['mobile', 'Mobile', CONTACT.mobile, `tel:${CONTACT.mobile.replace(/[^+\d]/g, '')}`],
+  CONTACT.email && ['mail', 'Email', CONTACT.email, `mailto:${CONTACT.email}`],
+  CONTACT.website && ['globe', 'Website', CONTACT.website, '/'],
+].filter(Boolean);
+---
+<footer class="site-footer">
+  {trending.length > 0 && (
+    <section class="trending">
+      <div class="wrap">
+        <p class="trending-label">
+          Trending now
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="tr-ico">
+            <path d="M3 17l6-6 4 4 7-7" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 8h5v5" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </p>
+        <ul class="trending-row">
+          {trending.map((p) => (
+            <li>
+              <a href={`/${p.slug}/`}>
+                <span class="tr-img">
+                  {p.image?.url
+                    ? <img src={p.image.url} alt="" loading="lazy" width="56" height="56" />
+                    : <b>{p.name[0]}</b>}
+                </span>
+                <span class="tr-t">{p.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <div class="foot-bar">
+    <div class="wrap foot-bar-in">
+      {socials.length > 0 ? (
+        <ul class="socials">
+          {socials.map(([key, url, label]) => (
+            <li><a href={url} rel="me noopener" target="_blank" aria-label={label}>
+              {key === 'facebook' && <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6c-.3 0-1.3-.13-2.45-.13-2.43 0-4.1 1.48-4.1 4.2v2.24H7.4V13h2.75v8h3.35z"/></svg>}
+              {key === 'x' && <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M17.6 3h3.2l-7 8 8.2 10h-6.4l-5-6.1L4.8 21H1.6l7.5-8.6L1.2 3h6.6l4.5 5.6L17.6 3zm-1.1 16.1h1.8L7.6 4.8H5.7l10.8 14.3z"/></svg>}
+              {key === 'instagram' && <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" d="M7.5 3.8h9a3.7 3.7 0 013.7 3.7v9a3.7 3.7 0 01-3.7 3.7h-9a3.7 3.7 0 01-3.7-3.7v-9A3.7 3.7 0 017.5 3.8z"/><circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg>}
+              {key === 'pinterest' && <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M12 2.4a9.6 9.6 0 00-3.5 18.5c-.08-.78-.15-1.98.03-2.83l1.15-4.9s-.3-.6-.3-1.47c0-1.38.8-2.4 1.8-2.4.85 0 1.26.64 1.26 1.4 0 .86-.55 2.14-.83 3.33-.24 1 .5 1.8 1.48 1.8 1.78 0 3.14-1.87 3.14-4.57 0-2.39-1.71-4.06-4.16-4.06-2.83 0-4.5 2.13-4.5 4.32 0 .86.33 1.78.75 2.28.08.1.09.19.07.29l-.28 1.13c-.04.18-.15.22-.34.13-1.25-.58-2.03-2.4-2.03-3.87 0-3.15 2.29-6.04 6.6-6.04 3.46 0 6.16 2.47 6.16 5.77 0 3.44-2.17 6.21-5.18 6.21-1.01 0-1.96-.53-2.29-1.15l-.62 2.38c-.22.87-.83 1.95-1.24 2.61A9.6 9.6 0 1012 2.4z"/></svg>}
+              {key === 'youtube' && <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21.6 7.2a2.5 2.5 0 00-1.76-1.77C18.28 5 12 5 12 5s-6.28 0-7.84.43A2.5 2.5 0 002.4 7.2 26 26 0 002 12a26 26 0 00.4 4.8 2.5 2.5 0 001.76 1.77C5.72 19 12 19 12 19s6.28 0 7.84-.43a2.5 2.5 0 001.76-1.77A26 26 0 0022 12a26 26 0 00-.4-4.8zM10 15V9l5.2 3-5.2 3z"/></svg>}
+            </a></li>
+          ))}
+        </ul>
+      ) : <span class="foot-tag">{SITE.tagline}</span>}
+
+      <ul class="foot-quick">
+        <li><a href="/about/">About</a></li>
+        <li><a href="/editorial-policy/">Editorial</a></li>
+        <li><a href="/contact/">Contact</a></li>
+        <li><a href="/dmca/">Corrections</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap foot-cols">
+    <section>
+      <h2>Popular Posts</h2>
+      <ul class="fp-list">
+        {popular.map((p) => (
+          <li>
+            <a class="fp-img" href={`/${p.slug}/`} tabindex="-1" aria-hidden="true">
+              {p.image?.url
+                ? <img src={p.image.url} alt="" loading="lazy" width="94" height="70" />
+                : <b>{p.name[0]}</b>}
+            </a>
+            <div>
+              <a class="fp-t" href={`/${p.slug}/`}>{p.title}</a>
+              <time datetime={p.publishedAt}>{fmt(p.publishedAt)}</time>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section>
+      <h2>About {SITE.name}</h2>
+      <ul class="fl">
+        <li><a href="/about/">About the site</a></li>
+        <li><a href="/editorial-policy/">Editorial policy</a></li>
+        <li><a href="/celebrities/">All profiles</a></li>
+        <li><a href="/rss.xml">RSS feed</a></li>
+      </ul>
+      <h2 class="mt">Useful Information</h2>
+      <p>
+        Biographical facts here are compiled from open public records, chiefly Wikidata, and every
+        profile links to the source item so any claim can be checked.
+      </p>
+      <p>
+        Portraits are used only under free licences, with photographer and licence credited beneath
+        each image. <a href="/dmca/">Request a correction or removal →</a>
+      </p>
+    </section>
+
+    <section>
+      <h2>Contact Info</h2>
+      <p>
+        Corrections and removal requests are actioned within 72 hours. Press and business enquiries
+        are welcome.
+      </p>
+      <ul class="fc">
+        {contactRows.map(([icon, label, value, href]) => (
+          <li>
+            <span class="fc-ico">
+              {icon === 'pin' && <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" d="M12 21s6.5-5.6 6.5-10.2A6.5 6.5 0 0012 4.3a6.5 6.5 0 00-6.5 6.5C5.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.3" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>}
+              {icon === 'phone' && <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M6.2 3.8h3l1.5 3.7-2 1.5a11.5 11.5 0 005.3 5.3l1.5-2 3.7 1.5v3a1.6 1.6 0 01-1.8 1.6C10.6 18 6 13.4 4.6 5.6a1.6 1.6 0 011.6-1.8z"/></svg>}
+              {icon === 'mobile' && <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><line x1="10.5" y1="18" x2="13.5" y2="18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>}
+              {icon === 'mail' && <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M3.6 7l8.4 6 8.4-6" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>}
+              {icon === 'globe' && <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M3.6 12h16.8M12 3.6c2.4 2.6 2.4 14.2 0 16.8-2.4-2.6-2.4-14.2 0-16.8z" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>}
+            </span>
+            <div>
+              <b>{label}:</b>
+              {href ? <a href={href}>{value}</a> : <span>{value}</span>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <div class="copy">
+    <div class="wrap">
+      <p>
+        © {new Date().getFullYear()} {SITE.name}. Biographical facts are compiled from open public
+        records including Wikidata. Portrait images are used under their stated free licences with
+        attribution shown on each profile.
+      </p>
+      <ul>
+        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+        <li><a href="/disclaimer/">Disclaimer</a></li>
+        <li><a href="/dmca/">DMCA</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,17 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+---
+<Prose title="Contact" description={`How to reach ${SITE.name} for corrections, removals, press and business enquiries.`}>
+  <p>We read everything sent to us and reply to correction requests first.</p>
+  <h2>Email</h2>
+  <p style="font-size:1.15rem"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+  <h2>What to include</h2>
+  <ul>
+    <li><strong>Corrections</strong> — the profile URL, the incorrect fact, and a source for the right one.</li>
+    <li><strong>Removal requests</strong> — the profile URL, and confirmation that you are the subject or their representative.</li>
+    <li><strong>Image takedown</strong> — the URL and the basis of your claim. See the <a href="/dmca/">DMCA page</a>.</li>
+  </ul>
+  <h2>Response time</h2>
+  <p>Corrections and takedowns: within 72 hours. Other enquiries: within a week.</p>
+</Prose>

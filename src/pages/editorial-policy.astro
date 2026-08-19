@@ -1,0 +1,61 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+---
+<Prose title="Editorial Policy" description={`How ${SITE.name} sources, verifies and corrects biographical information.`}>
+  <h2>1. Sourcing</h2>
+  <p>
+    Every biographical statement is derived from a structured public record, primarily Wikidata,
+    which is itself sourced and openly auditable. Each profile links to the exact source item.
+    We do not paraphrase articles from other celebrity sites.
+  </p>
+
+  <h2>2. The net-worth rule</h2>
+  <p>
+    We do not publish a net-worth figure unless it comes from something verifiable — a company
+    filing, an election affidavit, a court record or an official disclosure. The figures circulating
+    on most celebrity sites trace back to no source at all. Instead of repeating them, our profiles
+    describe the documented income sources a person actually has and state plainly that no audited
+    total exists.
+  </p>
+
+  <h2>3. Sensitive attributes</h2>
+  <p>
+    We do not publish caste, religion, sexual orientation, medical information or body measurements
+    for living people. These are the fields most often wrong online and least defensible to publish.
+  </p>
+
+  <h2>4. Identity verification</h2>
+  <p>
+    Before a profile is generated, the resolved record is checked against the requested name. If the
+    match is not confident — a common failure mode when a person shares a surname with someone more
+    famous — no page is produced. We would rather have a gap than the wrong person’s biography at
+    the wrong address.
+  </p>
+
+  <h2>5. Living persons</h2>
+  <p>
+    Profiles of living people are written conservatively and neutrally. We do not report allegations,
+    legal matters or private disputes.
+  </p>
+
+  <h2>6. Corrections</h2>
+  <p>
+    If a fact is wrong, <a href="/dmca/">tell us</a> with a source and we will correct or remove it.
+    Subjects of a profile may request removal of their page; we honour those requests.
+  </p>
+
+  <h2>7. Images</h2>
+  <p>
+    Portraits are used only under free licences (public domain, CC0, CC BY or CC BY-SA), and the
+    photographer, licence and source link appear under every image. Images under any other licence
+    are not used at all.
+  </p>
+
+  <h2>8. AI disclosure</h2>
+  <p>
+    Profile text is assembled programmatically from the structured fields described above, then
+    reviewed against the source record. Nothing on a profile page is a free-form generated claim:
+    every sentence maps to a data field, and where the field is empty, the sentence is omitted.
+  </p>
+</Prose>

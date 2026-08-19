@@ -1,0 +1,66 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PostCard from '../../../components/PostCard.astro';
+import Sidebar from '../../../components/Sidebar.astro';
+import Pager from '../../../components/Pager.astro';
+import { SITE } from '../../../../site.config.mjs';
+import { postsByCategory, paginate, CATEGORIES } from '../../../lib/content.mjs';
+
+export function getStaticPaths() {
+  const byCat = postsByCategory();
+  const out = [];
+  for (const [cat, posts] of Object.entries(byCat)) {
+    const sorted = [...posts].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0));
+    const pages = paginate(sorted, 20);
+    pages.forEach((items, i) => {
+      out.push({
+        params: { cat, page: i === 0 ? undefined : String(i + 1) },
+        props: { cat, items, current: i + 1, total: pages.length, all: sorted.length },
+      });
+    });
+  }
+  return out;
+}
+
+const { cat, items, current, total, all } = Astro.props;
+const meta = CATEGORIES[cat] || CATEGORIES.notable;
+const base = `/category/${cat}/`;
+const canonical = current === 1 ? `${SITE.domain}${base}` : `${SITE.domain}${base}${current}/`;
+const title = current === 1 ? `${meta.label} — Biographies, Ages & Career Facts` : `${meta.label} — Page ${current} of ${total}`;
+
+const jsonld = [{
+  '@type': 'CollectionPage', url: canonical, name: title,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: items.length,
+    itemListElement: items.map((p, i) => ({
+      '@type': 'ListItem', position: (current - 1) * 20 + i + 1,
+      url: `${SITE.domain}/${p.slug}/`, name: p.name,
+    })),
+  },
+}];
+---
+<Base
+  title={title}
+  description={current === 1
+    ? `${meta.blurb} ${all} profiles on ${SITE.name}, each built from open public records.`
+    : `${meta.label} — page ${current} of ${total}. Profiles ${items[0]?.name ?? ""} to ${items[items.length - 1]?.name ?? ""}, with ages, heights and career facts.`}
+  canonical={canonical}
+  jsonld={jsonld}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: meta.label }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">{meta.label}</li></ol>
+  </nav>
+  {/* Kept for search engines and screen readers; not shown on the page. */}
+  <h1 class="sr-title">{title}</h1>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <div class="cards-grid">{items.map((p) => <PostCard post={p} />)}</div>
+        <Pager current={current} total={total} base={base} />
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>

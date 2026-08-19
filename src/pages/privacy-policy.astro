@@ -1,0 +1,64 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+---
+<Prose title="Privacy Policy" description={`How ${SITE.name} handles visitor data, cookies, analytics and advertising.`}>
+  <p>
+    This policy explains what {SITE.name} (“we”) collects when you visit
+    <strong>{SITE.domain.replace('https://', '')}</strong>, why, and what control you have over it.
+  </p>
+
+  <h2>Information we collect</h2>
+  <p>
+    We do not ask you to create an account, and we do not run forms that collect personal
+    information. What is collected happens automatically:
+  </p>
+  <ul>
+    <li><strong>Server logs</strong> — IP address, browser user-agent, referring page and requested URL, kept by our hosting provider for security and abuse prevention.</li>
+    <li><strong>Analytics</strong> — if enabled, Google Analytics 4 records aggregated usage (pages viewed, approximate country, device type). IP addresses are anonymised by Google before storage.</li>
+    <li><strong>Advertising</strong> — if advertising is enabled, Google AdSense and its partners may set cookies or read device identifiers to serve and measure ads.</li>
+  </ul>
+
+  <h2>Cookies</h2>
+  <p>
+    The site itself sets no cookies for its own functionality. Cookies that appear come from the
+    third-party services above. You can block or delete them in your browser settings; the site will
+    continue to work normally.
+  </p>
+  <p>
+    Google, as a third-party vendor, uses cookies to serve ads. Google’s use of advertising cookies
+    lets it and its partners serve ads based on your visits to this and other sites. You can opt out
+    of personalised advertising at
+    <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a>,
+    or opt out of third-party vendors’ cookies at
+    <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>.
+  </p>
+
+  <h2>Your rights (GDPR / UK GDPR / CCPA)</h2>
+  <p>
+    If you are in the EEA, the UK or California, you have the right to request access to, correction
+    of, or deletion of personal data relating to you, and to object to processing. Because we do not
+    hold accounts, this normally concerns analytics and advertising data held by Google — their
+    policies are linked above. Requests to us: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+  </p>
+  <p>
+    Where consent is required for advertising or analytics cookies, a consent notice is shown before
+    those services load, and your choice is respected on later visits.
+  </p>
+
+  <h2>Information about the people we write about</h2>
+  <p>
+    Profiles cover public figures and are compiled from openly published records. If you are the
+    subject of a profile and want it corrected or removed, write to us and we will act on it — see
+    the <a href="/editorial-policy/">editorial policy</a> and <a href="/dmca/">removals page</a>.
+  </p>
+
+  <h2>Children</h2>
+  <p>This site is not directed at children under 13 and we do not knowingly collect their data.</p>
+
+  <h2>Changes</h2>
+  <p>Material changes to this policy will be posted here with a new “last updated” date.</p>
+
+  <h2>Contact</h2>
+  <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+</Prose>

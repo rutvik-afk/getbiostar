@@ -1,0 +1,35 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+---
+<Prose title="DMCA, Corrections & Removals" description={`How to request a correction, image takedown or profile removal on ${SITE.name}.`}>
+  <p>
+    We take accuracy and rights seriously, and we act on valid requests quickly — normally within
+    72 hours. Send everything to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+  </p>
+
+  <h2>Correcting a fact</h2>
+  <p>Include the profile URL, the statement that is wrong, what it should say, and a source we can check. Corrections are free and we do not require a legal notice for them.</p>
+
+  <h2>Requesting removal of your own profile</h2>
+  <p>
+    If you are the subject of a profile — or their authorised representative — and want the page
+    taken down, say so and confirm your identity. We honour these requests and do not require a
+    reason.
+  </p>
+
+  <h2>Image takedown (DMCA notice)</h2>
+  <p>Every portrait on this site is used under a free licence with attribution shown. If you believe an image is nonetheless infringing, send a notice containing:</p>
+  <ol>
+    <li>Your physical or electronic signature.</li>
+    <li>Identification of the copyrighted work you claim has been infringed.</li>
+    <li>The exact URL of the material on this site.</li>
+    <li>Your address, telephone number and email.</li>
+    <li>A statement that you believe in good faith the use is not authorised by the rights holder, its agent, or the law.</li>
+    <li>A statement, under penalty of perjury, that the information is accurate and you are authorised to act for the rights holder.</li>
+  </ol>
+  <p>Valid notices result in removal of the material. Counter-notices may be sent to the same address.</p>
+
+  <h2>Repeat infringers</h2>
+  <p>Sources that produce repeated valid complaints are removed from our image pipeline entirely.</p>
+</Prose>

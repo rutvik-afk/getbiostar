@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { allPosts } from '../lib/content.mjs';
+const picks = [...allPosts()].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 6);
+---
+<Base
+  title="Page not found"
+  description="That profile is not on BioStar — search by name or browse the full index."
+  noindex={true}
+>
+  <h1 class="sr-title">Page not found</h1>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <p class="notfound">
+          <b>That page isn’t here.</b>
+          The profile either hasn’t been published yet or the address has changed —
+          <a href="/search/">search by name</a> or <a href="/celebrities/">browse the full index</a>.
+        </p>
+        <div class="cards-grid">{picks.map((p) => <PostCard post={p} />)}</div>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>

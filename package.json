@@ -1,0 +1,32 @@
+{
+  "name": "biostar",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev --host",
+    "build": "astro build && node scripts/08-prune-dist.mjs",
+    "preview": "astro preview --host",
+    "targets": "node scripts/01-build-targets.mjs",
+    "fetch": "node scripts/02-fetch-facts.mjs",
+    "generate": "node scripts/03-generate-posts.mjs",
+    "covers": "node scripts/04-make-covers.mjs",
+    "publish": "node scripts/05-publish-daily.mjs",
+    "pipeline": "npm run fetch && npm run generate && npm run covers",
+    "daily": "node scripts/05-publish-daily.mjs && npm run build",
+    "seo": "node scripts/07-seo-check.mjs",
+    "audit": "node scripts/06-audit.mjs",
+    "check": "npm run build && npm run seo && npm run audit"
+  },
+  "dependencies": {
+    "astro": "^5.13.2",
+    "@astrojs/sitemap": "^3.4.1",
+    "@astrojs/rss": "^4.0.12",
+    "sharp": "^0.34.3"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "esbuild@0.27.7": true,
+    "esbuild@0.25.12": true
+  }
+}

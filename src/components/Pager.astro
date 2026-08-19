@@ -1,0 +1,15 @@
+---
+const { current, total, base } = Astro.props;
+const href = (n) => (n === 1 ? base : `${base}${n}/`);
+const around = [];
+for (let i = Math.max(1, current - 2); i <= Math.min(total, current + 2); i++) around.push(i);
+---
+{total > 1 && (
+  <nav class="pager" aria-label="Pagination">
+    {current > 1 && <a href={href(current - 1)} rel="prev">← Previous</a>}
+    {around[0] > 1 && <><a href={href(1)}>1</a>{around[0] > 2 && <span>…</span>}</>}
+    {around.map((n) => (n === current ? <span class="cur" aria-current="page">{n}</span> : <a href={href(n)}>{n}</a>))}
+    {around[around.length - 1] < total && <>{around[around.length - 1] < total - 1 && <span>…</span>}<a href={href(total)}>{total}</a></>}
+    {current < total && <a href={href(current + 1)} rel="next">Next →</a>}
+  </nav>
+)}

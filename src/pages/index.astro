@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { SITE } from '../../site.config.mjs';
+import { allPosts } from '../lib/content.mjs';
+
+const posts = allPosts();
+const byVolume = [...posts].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0));
+const feed = posts.slice(0, 12);
+
+const jsonld = [{
+  '@type': 'CollectionPage', '@id': `${SITE.domain}/#home`,
+  url: SITE.domain + '/', name: `${SITE.name} — ${SITE.tagline}`,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  about: { '@type': 'Thing', name: 'Celebrity biographies' },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: byVolume.slice(0, 12).length,
+    itemListElement: byVolume.slice(0, 12).map((p, i) => ({
+      '@type': 'ListItem', position: i + 1, url: `${SITE.domain}/${p.slug}/`, name: p.name,
+    })),
+  },
+}];
+---
+<Base
+  title={`${SITE.name} — ${SITE.tagline}`}
+  description={SITE.description}
+  canonical={SITE.domain + '/'}
+  jsonld={jsonld}
+>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        {/* Kept for search engines and screen readers; not shown on the page. */}
+        <h1 class="sr-title">Celebrity Biographies — Age, Height, Family &amp; Career Facts</h1>
+
+        <div class="cards-grid">
+          {feed.map((p) => <PostCard post={p} />)}
+        </div>
+
+        <p style="margin:34px 0 0">
+          <a class="btn-wide" href="/celebrities/">Browse all {posts.length} profiles</a>
+        </p>
+
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>

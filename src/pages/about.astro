@@ -1,0 +1,48 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+import { allPosts } from '../lib/content.mjs';
+const n = allPosts().length;
+---
+<Prose title="About BioStar" description={`Who runs ${SITE.name}, where the biography data comes from, and how profiles are verified.`}>
+  <p>
+    {SITE.name} is an independent reference site publishing biographical profiles of public figures —
+    actors, musicians, athletes, politicians and digital creators. There are currently
+    <strong>{n} published profiles</strong>, and new ones are added every day.
+  </p>
+
+  <h2>What makes this different</h2>
+  <p>
+    Most celebrity pages copy each other. A number appears on one site, gets rewritten on the next,
+    and within a month an unsourced guess is being quoted as fact. We build the other way round:
+    each profile begins as a set of structured records — date of birth, birthplace, education,
+    spouse, children, teams, offices held, awards with their years — and the page is written from
+    those fields. If a field is empty, the page says the record is not available rather than
+    inventing something to fill the space.
+  </p>
+
+  <h2>Where the data comes from</h2>
+  <ul>
+    <li><strong>Wikidata</strong> — the structured, machine-readable database behind Wikipedia. Every profile links to its source item so you can check any claim yourself.</li>
+    <li><strong>Wikimedia Commons</strong> — portrait photographs, used only where the licence permits reuse, with photographer and licence credited under every image.</li>
+    <li><strong>Official sources</strong> — verified social accounts and official websites, where they are on record.</li>
+  </ul>
+  <p>Facts themselves are not copyrightable. The wording on every page is written by us from those facts.</p>
+
+  <h2>What we deliberately do not publish</h2>
+  <ul>
+    <li><strong>Invented net-worth figures.</strong> See the <a href="/editorial-policy/">editorial policy</a>.</li>
+    <li><strong>Body measurements and similar content</strong> about real people.</li>
+    <li><strong>Relationship rumours</strong> with no documented source.</li>
+    <li><strong>Caste, religion or health claims</strong> — sensitive attributes that are frequently wrong online.</li>
+  </ul>
+
+  <h2>Ages stay current</h2>
+  <p>
+    Ages are not typed into the page. They are computed from the recorded date of birth every time
+    the site is rebuilt, which happens daily — so a profile never shows last year’s age.
+  </p>
+
+  <h2>Contact</h2>
+  <p>Corrections, takedown requests and general enquiries: <a href="/contact/">contact page</a>.</p>
+</Prose>

@@ -1,0 +1,278 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../../site.config.mjs';
+import { allPosts, CATEGORIES, relatedFor } from '../lib/content.mjs';
+import Sidebar from '../components/Sidebar.astro';
+import { computeAge, cmToFeet, kgToLb, zodiac } from '../lib/bio.mjs';
+
+export function getStaticPaths() {
+  return allPosts().map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const p = post;
+const url = `${SITE.domain}/${p.slug}/`;
+const ageInfo = computeAge(p.birthDate, p.deathDate);
+const cat = CATEGORIES[p.category] || CATEGORIES.notable;
+const related = relatedFor(p.slug);
+
+/* ---- Person schema: only fields we actually hold ---- */
+const person = {
+  '@type': 'Person', '@id': `${url}#person`, name: p.name, url,
+  ...(p.image?.url ? { image: p.image.url } : {}),
+  ...(p.role ? { description: `${p.role}${ageInfo ? `, age ${ageInfo.age}` : ''}` } : {}),
+  ...(p.birthDate?.year && p.birthDate.month && p.birthDate.day
+      ? { birthDate: `${p.birthDate.year}-${String(p.birthDate.month).padStart(2,'0')}-${String(p.birthDate.day).padStart(2,'0')}` }
+      : p.birthDate?.year ? { birthDate: String(p.birthDate.year) } : {}),
+  ...(p.deathDate?.year ? { deathDate: String(p.deathDate.year) } : {}),
+  ...(p.birthPlace?.length ? { birthPlace: { '@type': 'Place', name: p.birthPlace[0] } } : {}),
+  ...(p.nationality ? { nationality: { '@type': 'Country', name: p.nationality } } : {}),
+  ...(p.occupations?.length ? { jobTitle: p.occupations } : {}),
+  ...(p.heightCm ? { height: { '@type': 'QuantitativeValue', value: p.heightCm, unitCode: 'CMT' } } : {}),
+  ...(p.education?.length ? { alumniOf: p.education.map((e) => ({ '@type': 'EducationalOrganization', name: e })) } : {}),
+  ...(() => {
+    const sameAs = Object.entries({
+      wikipedia: p.links?.wikipedia, wikidata: p.links?.wikidata, website: p.links?.website,
+      instagram: p.links?.instagram && `https://www.instagram.com/${p.links.instagram}/`,
+      twitter: p.links?.twitter && `https://x.com/${p.links.twitter}`,
+      youtube: p.links?.youtube && `https://www.youtube.com/channel/${p.links.youtube}`,
+      facebook: p.links?.facebook && `https://www.facebook.com/${p.links.facebook}`,
+    }).map(([, v]) => v).filter(Boolean);
+    return sameAs.length ? { sameAs } : {};
+  })(),
+};
+
+const jsonld = [
+  {
+    '@type': 'ProfilePage', '@id': `${url}#page`, url, name: p.title,
+    isPartOf: { '@id': `${SITE.domain}/#website` },
+    mainEntity: { '@id': `${url}#person` },
+    datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt,
+    inLanguage: SITE.lang,
+    ...(p.image?.url ? { primaryImageOfPage: { '@type': 'ImageObject', url: p.image.url } } : {}),
+  },
+  person,
+  ...(p.faq?.length ? [{
+    '@type': 'FAQPage', '@id': `${url}#faq`,
+    mainEntity: p.faq.map((f) => ({
+      '@type': 'Question', name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  }] : []),
+];
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: cat.label, href: `/category/${p.category}/` },
+  { name: p.name },
+];
+const toc = p.sections.map((s) => ({ id: s.id, heading: s.heading.replace(`${p.name} — `, '') }));
+
+/* Headline numbers, pulled straight from the fields — never padded out
+   with a tile we cannot fill honestly. */
+const awardsCount = p.sections.find((s) => s.id === 'awards')?.awards?.length || 0;
+const stats = [
+  ageInfo && { v: String(ageInfo.age), k: p.alive ? 'Years old' : 'At death' },
+  p.heightCm && { v: `${p.heightCm} cm`, k: cmToFeet(p.heightCm) },
+  p.massKg && { v: `${p.massKg} kg`, k: `${kgToLb(p.massKg)} lb` },
+  p.worksCount >= 3 && { v: String(p.worksCount), k: 'Credits' },
+  awardsCount > 0 && { v: String(awardsCount), k: awardsCount === 1 ? 'Award' : 'Awards' },
+  zodiac(p.birthDate) && { v: zodiac(p.birthDate), k: 'Sign' },
+].filter(Boolean).slice(0, 5);
+---
+<Base
+  title={p.title}
+  description={p.metaDescription}
+  canonical={url}
+  image={p.image?.ogUrl ? SITE.domain + p.image.ogUrl : (p.image?.url || null)}
+  preloadImage={p.image?.url || null}
+  type="profile"
+  published={p.publishedAt}
+  modified={p.updatedAt || p.publishedAt}
+  jsonld={jsonld}
+  breadcrumbs={breadcrumbs}
+>
+  <section class="cover">
+    {p.image?.url && <div class="cover-bg" style={`background-image:url('${p.image.url}')`} aria-hidden="true"></div>}
+    <div class="wrap">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><a href={`/category/${p.category}/`}>{cat.label}</a></li>
+          <li aria-current="page">{p.name}</li>
+        </ol>
+      </nav>
+
+      <div class="cover-in">
+        <div class="cover-shot">
+          {p.image?.url
+            ? <img src={p.image.url} alt={`${p.name} portrait photograph`}
+                   width={p.image.width || 600} height={p.image.height || 800} fetchpriority="high" />
+            : <div style="aspect-ratio:3/4;display:grid;place-items:center;font-size:3rem;font-weight:900;color:rgba(255,255,255,.35)">{p.name[0]}</div>}
+        </div>
+        <div>
+          <p style="margin:0 0 14px"><a class="pill" href={`/category/${p.category}/`}>{cat.label}</a></p>
+          <h1>{p.name}</h1>
+          <p class="cover-sub">{p.title.replace(`${p.name} — `, '')}</p>
+          <div class="cover-rule"></div>
+          {stats.length > 0 && (
+            <ul class="statline">
+              {stats.map((s) => <li><b>{s.v}</b>{s.k}</li>)}
+            </ul>
+          )}
+          <p class="cover-meta">
+            Published {p.publishedAt}{p.updatedAt && p.updatedAt !== p.publishedAt ? ` · Updated ${p.updatedAt}` : ''}
+            · Sourced from open public records
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="cards-layout">
+      <article class="bio-body">
+        <div class="lead">
+          {p.lead.map((t) => <p>{t}</p>)}
+        </div>
+
+        {toc.length > 2 && (
+          <nav class="toc" aria-label="On this page">
+            <p>On this page</p>
+            <ol>
+              {toc.map((t) => <li><a href={`#${t.id}`}>{t.heading}</a></li>)}
+              {p.timeline.length > 0 && <li><a href="#timeline">Career Timeline</a></li>}
+              {p.faq.length > 0 && <li><a href="#faq">Frequently Asked Questions</a></li>}
+            </ol>
+          </nav>
+        )}
+
+        {p.sections.map((s) => (
+          <section id={s.id}>
+            <h2>{s.heading}</h2>
+            {s.paras.map((t) => <p>{t}</p>)}
+
+            {s.awards && (
+              <table class="data">
+                <thead><tr><th>Award / Honour</th><th>Year</th></tr></thead>
+                <tbody>
+                  {s.awards.map((a) => (
+                    <tr><td>{a.name}</td><td>{a.year || '—'}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {s.stats && (
+              <table class="data">
+                <tbody>{s.stats.map((x) => <tr><th>{x.label}</th><td>{x.value}</td></tr>)}</tbody>
+              </table>
+            )}
+
+            {s.works && (
+              <table class="data">
+                <thead><tr><th>Year</th><th>Title</th><th>Credited as</th></tr></thead>
+                <tbody>
+                  {s.works.map((w) => (
+                    <tr><td>{w.year || '—'}</td><td>{w.title}</td><td>{w.role}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {s.id === 'net-worth' && (
+              <p class="notice">
+                <strong>Why no number?</strong> Net-worth totals for public figures are almost never audited.
+                {' '}{SITE.name} publishes a figure only when a verifiable source exists, so this page describes
+                income sources instead of guessing a total.
+              </p>
+            )}
+          </section>
+        ))}
+
+        {p.timeline.length > 0 && (
+          <section id="timeline">
+            <h2>{p.name} — Career Timeline</h2>
+            <ul class="timeline">
+              {p.timeline.map((t) => <li><b>{t.year}</b>{t.text}</li>)}
+            </ul>
+          </section>
+        )}
+
+        {p.faq.length > 0 && (
+          <section id="faq" class="faq">
+            <h2>{p.name} — Frequently Asked Questions</h2>
+            {p.faq.map((f, i) => (
+              <details open={i === 0}>
+                <summary>{f.q}</summary>
+                <div class="ans">{f.a}</div>
+              </details>
+            ))}
+          </section>
+        )}
+
+        <section id="sources">
+          <h2>Sources and Corrections</h2>
+          <p>
+            Every dated fact on this page comes from structured public records rather than from
+            unsourced reporting. Primary reference:
+            {' '}<a href={p.links.wikidata} rel="nofollow noopener" target="_blank">Wikidata {p.qid}</a>
+            {p.links.wikipedia && <> and <a href={p.links.wikipedia} rel="nofollow noopener" target="_blank">the English Wikipedia entry</a></>}.
+            Records change; if you spot something out of date, please
+            {' '}<a href="/dmca/">send a correction</a> and we will review it.
+          </p>
+        </section>
+
+        {related.length > 0 && (
+          <section id="related">
+            <h2>More {cat.label.replace(' & Public Life','').replace('s & Media','s')} on BioStar</h2>
+            <div class="grid">
+              {related.map((r) => (
+                <a class="tile" href={`/${r.slug}/`}>
+                  <div class="thumb">
+                    {r.image
+                      ? <img src={r.image} alt={`${r.name} portrait`} loading="lazy" width="240" height="320" />
+                      : <div style="width:100%;height:100%;display:grid;place-items:center;font-size:1.6rem;font-weight:800;color:var(--fg-soft)">{r.name[0]}</div>}
+                  </div>
+                  <div class="meta"><b>{r.name}</b><span>{r.role}</span></div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+
+      <aside class="bio-aside">
+        <div class="side">
+          <p class="side-title">{p.name} — Quick Facts</p>
+          <table class="facts">
+            <tbody>
+              {p.quickFacts.map((f) => <tr><th scope="row">{f.label}</th><td>{f.value}</td></tr>)}
+            </tbody>
+          </table>
+
+          {p.image && (
+            <p class="attrib">
+              {p.image.generated
+                ? <>Cover: original {SITE.name} artwork — no free-licensed photograph of {p.name} is on record.</>
+                : <>Photo: {p.image.author || 'Wikimedia Commons contributor'}
+                    {' '}· <a href={p.image.licenseUrl || p.image.page} rel="nofollow noopener" target="_blank">{p.image.license}</a>
+                    {p.image.page && <> · <a href={p.image.page} rel="nofollow noopener" target="_blank">source</a></>}</>}
+            </p>
+          )}
+
+          {(p.links.instagram || p.links.twitter || p.links.youtube || p.links.website || p.links.facebook) && (
+            <div class="social">
+              {p.links.website && <a href={p.links.website} rel="nofollow noopener" target="_blank">Website</a>}
+              {p.links.instagram && <a href={`https://www.instagram.com/${p.links.instagram}/`} rel="nofollow noopener" target="_blank">Instagram</a>}
+              {p.links.twitter && <a href={`https://x.com/${p.links.twitter}`} rel="nofollow noopener" target="_blank">X</a>}
+              {p.links.youtube && <a href={`https://www.youtube.com/channel/${p.links.youtube}`} rel="nofollow noopener" target="_blank">YouTube</a>}
+              {p.links.facebook && <a href={`https://www.facebook.com/${p.links.facebook}`} rel="nofollow noopener" target="_blank">Facebook</a>}
+            </div>
+          )}
+        </div>
+        <Sidebar exclude={p.slug} />
+      </aside>
+    </div>
+  </div>
+</Base>

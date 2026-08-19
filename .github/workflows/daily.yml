@@ -1,0 +1,63 @@
+name: Daily publish
+
+on:
+  schedule:
+    - cron: '30 3 * * *'      # 03:30 UTC = 09:00 IST
+  workflow_dispatch:           # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Weekly source refresh (Sundays)
+        if: ${{ github.event.schedule && success() }}
+        run: |
+          if [ "$(date +%u)" = "7" ]; then
+            CACHE_DAYS=7 node scripts/02-fetch-facts.mjs
+            node scripts/02b-enrich-works.mjs || true
+          else
+            echo "not Sunday — skipping source refresh"
+          fi
+
+      - name: Regenerate posts (queue + refresh live pages)
+        run: node scripts/03-generate-posts.mjs
+
+      - name: Images
+        run: node scripts/04-make-covers.mjs
+
+      - name: Publish today's batch
+        run: node scripts/05-publish-daily.mjs
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit published content
+        run: |
+          git config user.name  "biostar-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add content data public/img
+          git diff --staged --quiet || git commit -m "content: daily publish $(date +%F)"
+          git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          retention-days: 5

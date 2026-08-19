@@ -1,0 +1,5 @@
+# Removal requests — one slug per line.
+# A slug listed here is never generated, and any live page is deleted
+# on the next run. Add a short note after '#' for the record.
+#
+# example-person   # removal requested by subject, 2026-08-19

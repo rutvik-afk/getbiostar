@@ -1,0 +1,12 @@
+Resolving 3000 names to Wikidata entities…
+  direct hits: 1921 / 3000; searching 1079 fallbacks…
+  …200/1079  …400/1079  …600/1079  …800/1079  …1000/1079
+  resolved: 2799/3000
+Fetching Wikidata entities…
+  entities parsed: 2799, referenced QIDs: 6751
+Resolving referenced entity labels…
+  labels: 6685
+Fetching Commons licence metadata for 1853 portraits…
+  free-licensed & usable: 1514
+
+✅ facts written: 2236   (skipped/no-match: 764)

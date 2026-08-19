@@ -1,0 +1,39 @@
+---
+import Prose from '../layouts/Prose.astro';
+import { SITE } from '../../site.config.mjs';
+---
+<Prose title="Disclaimer" description={`Accuracy, affiliation and advertising disclaimers for ${SITE.name}.`}>
+  <h2>No affiliation</h2>
+  <p>
+    {SITE.name} is an independent reference site. We are not affiliated with, endorsed by, or
+    managed by any person profiled here, nor by their agents, studios, teams or labels. Names are
+    used for identification and commentary only.
+  </p>
+
+  <h2>Accuracy</h2>
+  <p>
+    Profiles are compiled from open public records that can be incomplete or out of date. We publish
+    what the record says and link to it, so you can verify anything yourself. Spot a mistake?
+    <a href="/contact/">Tell us</a> and it gets fixed.
+  </p>
+
+  <h2>No net-worth guarantees</h2>
+  <p>
+    We deliberately publish no invented net-worth totals. Where financial context appears, it
+    describes documented income sources, not an audited valuation, and must not be relied on for any
+    financial decision.
+  </p>
+
+  <h2>Advertising</h2>
+  <p>
+    Pages may carry third-party advertising, which is served independently of our editorial process.
+    Advertisers have no influence on which profiles we publish or what they say.
+  </p>
+
+  <h2>Fair use of images</h2>
+  <p>
+    Portraits are used only under free licences that permit reuse, with photographer, licence and
+    source credited. If you hold rights in an image and believe it is used incorrectly, see the
+    <a href="/dmca/">DMCA page</a>.
+  </p>
+</Prose>

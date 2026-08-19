@@ -1,0 +1,15 @@
+---
+import Base from './Base.astro';
+const { title, description, updated = '2026-08-19', noindex = false } = Astro.props;
+---
+<Base title={title} description={description} noindex={noindex}
+      breadcrumbs={[{ name: 'Home', href: '/' }, { name: title }]}>
+  <div class="wrap">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">{title}</li></ol></nav>
+    <div class="prose">
+      <h1>{title}</h1>
+      <p class="muted small">Last updated: {updated}</p>
+      <slot />
+    </div>
+  </div>
+</Base>
