@@ -4,6 +4,11 @@
    "date": "2026-08-19",
    "kind": "seed",
    "n": 60
+  },
+  {
+   "date": "2026-08-21",
+   "kind": "daily",
+   "n": 5
   }
  ],
  "published": {
@@ -66,6 +71,11 @@
   "bobby-deol": "2026-08-19",
   "aahana-kumra": "2026-08-19",
   "abir-chatterjee": "2026-08-19",
-  "alexandra-daddario": "2026-08-19"
+  "alexandra-daddario": "2026-08-19",
+  "trisha-krishnan": "2026-08-21",
+  "mawra-hocane": "2026-08-21",
+  "madhuri-dixit": "2026-08-21",
+  "kiara-advani": "2026-08-21",
+  "sidharth-malhotra": "2026-08-21"
  }
 }
