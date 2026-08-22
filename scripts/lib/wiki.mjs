@@ -116,11 +116,6 @@ export async function commonsLicenses(files) {
       const strip = (s) => (s ? String(s.value).replace(/<[^>]+>/g, '').trim() : '');
       const license = strip(m.LicenseShortName) || strip(m.License);
       if (!FREE.test(license)) continue;               // ⛔ non-free → skip entirely
-      const author = strip(m.Artist);
-      /* Bollywood Hungama's Commons uploads carry a large burned-in logo
-         watermark on nearly every photo — technically CC-licensed, but
-         unusable as a clean portrait. Treat as if no free photo exists. */
-      if (/bollywood\s*hungama/i.test(author)) continue;
       out[p.title.replace(/^File:/, '')] = {
         url: ii.thumburl || ii.url,
         origin: ii.url,
