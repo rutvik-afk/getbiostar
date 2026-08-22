@@ -423,3 +423,20 @@ table.data tbody tr:nth-child(even){background:var(--bg-soft)}
   padding-bottom:8px;margin:44px 0 0}
 .sec-head h2{border:0;margin:0;padding:0;font-size:1.15rem}
 .sec-head span{font-size:.72rem;color:var(--fg-dim);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+
+/* ============================================================
+   CONTACT FORM (mailto — no backend, no third-party service)
+   ============================================================ */
+.contact-form{margin:20px 0 36px;padding:26px;border:1px solid var(--line);background:var(--bg-soft)}
+.cf-row{margin-bottom:16px}
+.cf-row:last-of-type{margin-bottom:0}
+.contact-form label{display:block;font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg-dim);margin-bottom:7px}
+.contact-form input,.contact-form select,.contact-form textarea{
+  width:100%;border:1px solid var(--line);background:var(--bg);color:var(--fg);
+  padding:11px 13px;font:inherit;font-size:.95rem;outline:none;resize:vertical}
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:var(--fg)}
+.cf-submit{margin-top:18px;padding:13px 26px;background:var(--accent);color:#fff;border:0;
+  font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.cf-submit:hover{background:var(--accent-dark)}
+.cf-note{font-size:.82rem;color:var(--fg-dim);margin:14px 0 0}

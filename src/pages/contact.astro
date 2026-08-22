@@ -4,8 +4,45 @@ import { SITE } from '../../site.config.mjs';
 ---
 <Prose title="Contact" description={`How to reach ${SITE.name} for corrections, removals, press and business enquiries.`}>
   <p>We read everything sent to us and reply to correction requests first.</p>
-  <h2>Email</h2>
-  <p style="font-size:1.15rem"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+
+  <h2>Send us a message</h2>
+  <p>
+    Fill this in and your email app will open with the message pre-filled, addressed to
+    <a href={`mailto:${SITE.email}`}>{SITE.email}</a> — just hit send from there.
+  </p>
+
+  <form class="contact-form" method="GET" action={`mailto:${SITE.email}`} enctype="text/plain">
+    <div class="cf-row">
+      <label for="cf-name">Your name</label>
+      <input id="cf-name" name="Name" type="text" required placeholder="Jane Doe" />
+    </div>
+    <div class="cf-row">
+      <label for="cf-email">Your email</label>
+      <input id="cf-email" name="Reply-to" type="email" required placeholder="you@example.com" />
+    </div>
+    <div class="cf-row">
+      <label for="cf-subject">Subject</label>
+      <select id="cf-subject" name="subject" required>
+        <option value="" disabled selected>Choose one</option>
+        <option value="Correction request">Correction request</option>
+        <option value="Removal request">Removal request</option>
+        <option value="Image / DMCA takedown">Image / DMCA takedown</option>
+        <option value="Press or business enquiry">Press or business enquiry</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="cf-row">
+      <label for="cf-message">Message</label>
+      <textarea id="cf-message" name="body" rows="6" required
+        placeholder="If this is about a profile, please include its URL."></textarea>
+    </div>
+    <button type="submit" class="cf-submit">Open in email app →</button>
+    <p class="cf-note">
+      This opens your own email app with the message ready to send — {SITE.name} never
+      sees anything until you actually send it.
+    </p>
+  </form>
+
   <h2>What to include</h2>
   <ul>
     <li><strong>Corrections</strong> — the profile URL, the incorrect fact, and a source for the right one.</li>
