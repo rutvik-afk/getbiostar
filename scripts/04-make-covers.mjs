@@ -79,7 +79,7 @@ async function buildOgCard(photoBuf, name, subtitle, out) {
   if (photoBuf) {
     base = await sharp(photoBuf).resize(1200, 630, { fit: 'cover', position: 'top' }).blur(28).modulate({ brightness: 0.5 }).toBuffer();
     const card = await sharp(photoBuf)
-      .resize(300, 400, { fit: 'cover', position: sharp.strategy.attention })
+      .resize(300, 400, { fit: 'cover', position: sharp.strategy.entropy })
       .modulate({ brightness: 1.12, saturation: 1.06 })
       .toBuffer();
     /* thin light frame so the portrait separates from the dark backdrop */
@@ -184,7 +184,7 @@ async function processOne(fp) {
   try {
     if (buf) {
       if (!fs.existsSync(webp)) {
-        await sharp(buf).resize(600, 800, { fit: 'cover', position: sharp.strategy.attention })
+        await sharp(buf).resize(600, 800, { fit: 'cover', position: sharp.strategy.entropy })
           .webp({ quality: 82, effort: 4 }).toFile(webp);
       }
       if (wantOg) await buildOgCard(buf, p.name, p.role || '', ogj);

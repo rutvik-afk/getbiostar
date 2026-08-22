@@ -70,14 +70,12 @@ Aa site **static** che (badha HTML files pehla thi banela). Etle:
 
 #### Step A — Code GitHub par mukо
 
-```bash
-cd "bio-site"
-git init
-git add -A
-git commit -m "BioStar initial"
-```
+> ✅ **git repo already banavelo che ane commit pan thai gayo che.** Tamare fakt
+> GitHub par repo banavi ne push karvanu che.
 
-GitHub.com par jai ne navu **private** repository banavo (naam: `getbiostar`), pachi:
+GitHub.com par jai ne navu **private** repository banavo (naam: `getbiostar`).
+**Important:** "Add a README" / "Add .gitignore" ni tick **na** karo — khaali repo joye.
+Pachi:
 
 ```bash
 git remote add origin https://github.com/TAMARU-USERNAME/getbiostar.git
@@ -131,12 +129,42 @@ Pachi:
 git add -A && git commit -m "set live domain" && git push
 ```
 
+### Vercel par deploy (jo Cloudflare na badle Vercel vaparvu hoy)
+
+Step A (GitHub par push) upar mujab j karo — e badhu host mate common che.
+Pachi:
+
+1. https://vercel.com → **Sign up** (GitHub thi login karo — sauthi saral)
+2. Dashboard → **Add New...** → **Project**
+3. `getbiostar` repo **Import** karo
+4. Vercel Astro ne **apoaap** olkhi jashe — "Framework Preset: Astro" pote j set thai jashe
+5. Build settings ma kai badalvani jarur nathi (Build command: `npm run build`, Output: `dist` — pote j bharai jashe)
+6. **Deploy** dabavo → 2-3 min ma live (`getbiostar.vercel.app`)
+
+#### Domain jodvu (Vercel par)
+
+1. Project → **Settings** → **Domains** → `getbiostar.com` lakho → **Add**
+2. Vercel A-record / CNAME batavse, jem ke:
+   ```
+   A     @     76.76.21.21
+   CNAME www   cname.vercel-dns.com
+   ```
+3. **Hostinger** (jya domain kharidelu che) → hPanel → **Domains** → `getbiostar.com`
+   → **DNS / Nameservers** → **DNS Zone Editor** (Hostinger na j DNS rakho,
+   nameservers badalvani jarur nathi) → upar na A ane CNAME records **Add** karo.
+   Jo already koi A/CNAME record `@` ke `www` mate hoy to e pehla **delete** karo,
+   pachi navo umero (be record ek j name mate na chale).
+4. 15 min – 24 kalak wait → Vercel dashboard ma "Valid Configuration" ✅ dekhashe
+5. SSL apoaap lagi jashe
+
+> Cloudflare Pages ane Vercel banne free ane saras che — je pasand hoy e vaparo,
+> DEPLOY steps (GitHub push, Search Console, indexing) baki badha same j rahe che.
+
 ### Alternative hosts (badha free, same kaam)
 
 | Host | Build command | Output dir |
 |---|---|---|
 | **Netlify** | `npm run build` | `dist` |
-| **Vercel** | `npm run build` | `dist` |
 | **GitHub Pages** | `npm run build` | `dist` (Actions joye) |
 
 ### ❌ Shu **nahi** joye
