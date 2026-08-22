@@ -1,7 +1,7 @@
 # BioStar — Localhost thi Live Website sudhi
 
 Aa file ma **badhu step-by-step** che: local par chalavvu, domain kharidvu,
-hosting par mukvu, Google ma index karavvu, ane roj-ni-5-post automatic karvi.
+hosting par mukvu, Google ma index karavvu, ane roj-ni-4-post (4 vaar/roj) automatic karvi.
 
 ---
 
@@ -228,7 +228,7 @@ File already banelo che: `.github/workflows/daily.yml`
 Fakt GitHub par push karo, ane repo → **Actions** → enable karo. Bas.
 
 Roj 03:30 UTC (= 9:00 AM IST) e:
-1. 5 navi post publish thashe
+1. Roj 4 vaar (6am, 12pm, 6pm, 11pm IST) — dareek vaar 1 navi post publish thashe
 2. Badha live pages ni age recalculate thashe
 3. Site rebuild thai ne deploy thashe
 
@@ -240,7 +240,7 @@ Manually chalavvu hoy to: repo → Actions → **Daily publish** → **Run workf
 node scripts/05-publish-daily.mjs --dry
 ```
 
-Aa batavse ke queue ma ketli post baki che ane 5/day e ketla divas chalse.
+Aa batavse ke queue ma ketli post baki che ane 4/day e ketla divas chalse.
 
 ---
 

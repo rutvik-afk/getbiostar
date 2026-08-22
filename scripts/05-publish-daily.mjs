@@ -3,10 +3,14 @@
    Moves N posts/day from content/queue -> content/published.
    Highest-opportunity posts (volume vs difficulty) go first.
 
-     node scripts/05-publish-daily.mjs            # publish today's 5
-     node scripts/05-publish-daily.mjs --seed 60  # launch batch
-     node scripts/05-publish-daily.mjs --count 12 # custom
+     node scripts/05-publish-daily.mjs            # publish this run's share
+     node scripts/05-publish-daily.mjs --count 1   # publish exactly 1 (used by the 4x/day cron)
+     node scripts/05-publish-daily.mjs --seed 60   # launch batch
      node scripts/05-publish-daily.mjs --dry
+
+   Runs multiple times a day (see .github/workflows/daily.yml, 4 fixed
+   IST times). Each run publishes --count posts, but the total across
+   all of today's runs never exceeds SITE.postsPerDay.
    ============================================================ */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,11 +31,20 @@ const count = seed || flag('count', SITE.postsPerDay);
 const today = new Date().toISOString().slice(0, 10);
 const log = fs.existsSync(LOG) ? JSON.parse(fs.readFileSync(LOG, 'utf8')) : { runs: [], published: {} };
 
-/* Guard: only one drip per calendar day unless forced. */
-const already = log.runs.filter((r) => r.date === today && r.kind === 'daily');
-if (!seed && already.length && !argv.includes('--force')) {
-  console.log(`⏭  Already published ${already[0].n} posts today (${today}). Use --force to override.`);
-  process.exit(0);
+/* Guard: today's runs together never exceed SITE.postsPerDay, however many
+   times this script fires (the 4x/day cron each publishing a slice). */
+const publishedToday = log.runs
+  .filter((r) => r.date === today && r.kind === 'daily')
+  .reduce((sum, r) => sum + r.n, 0);
+if (!seed) {
+  const remaining = Math.max(0, SITE.postsPerDay - publishedToday);
+  if (remaining <= 0 && !argv.includes('--force')) {
+    console.log(`⏭  Today's quota already met (${publishedToday}/${SITE.postsPerDay} published). Use --force to override.`);
+    process.exit(0);
+  }
+  if (count > remaining && !argv.includes('--force')) {
+    console.log(`  (capping this run to ${remaining} — ${publishedToday}/${SITE.postsPerDay} already published today)`);
+  }
 }
 
 const queued = fs.readdirSync(QUEUE).filter((f) => f.endsWith('.json'));
@@ -47,7 +60,10 @@ const scored = queued.map((f) => {
   return { file: f, post: p, prio: (p.seo?.score || 0) + richness };
 }).sort((a, b) => b.prio - a.prio);
 
-const batch = scored.slice(0, count);
+const effectiveCount = seed || argv.includes('--force')
+  ? count
+  : Math.min(count, Math.max(0, SITE.postsPerDay - publishedToday));
+const batch = scored.slice(0, effectiveCount);
 console.log(`${dry ? '[dry run] ' : ''}Publishing ${batch.length} of ${scored.length} queued posts…`);
 
 let n = 0;

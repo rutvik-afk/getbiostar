@@ -1,9 +1,14 @@
 name: Daily publish
 
+# 4 runs/day, spread across IST, each publishing 1 post (postsPerDay: 4
+# in site.config.mjs). Times below are UTC = IST minus 5:30.
 on:
   schedule:
-    - cron: '30 3 * * *'      # 03:30 UTC = 09:00 IST
-  workflow_dispatch:           # manual "Run workflow" button
+    - cron: '30 0 * * *'       # 00:30 UTC = 06:00 IST
+    - cron: '30 6 * * *'       # 06:30 UTC = 12:00 IST
+    - cron: '30 12 * * *'      # 12:30 UTC = 18:00 IST
+    - cron: '30 17 * * *'      # 17:30 UTC = 23:00 IST
+  workflow_dispatch:            # manual "Run workflow" button
 
 permissions:
   contents: write
@@ -26,8 +31,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Weekly source refresh (Sundays)
-        if: ${{ github.event.schedule && success() }}
+      - name: Weekly source refresh (Sunday, first run of the day only)
+        if: ${{ github.event.schedule == '30 0 * * *' }}
         run: |
           if [ "$(date +%u)" = "7" ]; then
             CACHE_DAYS=7 node scripts/02-fetch-facts.mjs
@@ -42,8 +47,8 @@ jobs:
       - name: Images
         run: node scripts/04-make-covers.mjs
 
-      - name: Publish today's batch
-        run: node scripts/05-publish-daily.mjs
+      - name: Publish this run's post (1 of 4 today)
+        run: node scripts/05-publish-daily.mjs --count 1
 
       - name: Build
         run: npm run build
@@ -53,7 +58,7 @@ jobs:
           git config user.name  "biostar-bot"
           git config user.email "bot@users.noreply.github.com"
           git add content data public/img
-          git diff --staged --quiet || git commit -m "content: daily publish $(date +%F)"
+          git diff --staged --quiet || git commit -m "content: publish $(date -u +%F' '%H:%M) UTC"
           git push
 
       - uses: actions/upload-artifact@v4

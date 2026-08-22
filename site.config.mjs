@@ -16,7 +16,7 @@ export const SITE = {
   gscVerification: '',
   gaMeasurementId: '',
   adsenseClient: '', // ex: 'ca-pub-XXXXXXXXXXXXXXXX'
-  postsPerDay: 5,
+  postsPerDay: 4,
   perPage: 24,
   description:
     'Fact-checked celebrity biographies: age, height, birthplace, family, education, career timeline and awards — sourced from open public records.',

@@ -30,7 +30,7 @@ data/facts/*.json
      ▼
 content/queue/*.json
      │  04-make-covers.mjs        self-host portraits, build social cards
-     │  05-publish-daily.mjs      drip 5/day → content/published/
+     │  05-publish-daily.mjs      drip 4/day (4 runs) → content/published/
      ▼
 Astro build → dist/
 ```
