@@ -1,5 +1,5 @@
 ---
-import { SITE, NAV } from '../../site.config.mjs';
+import { SITE, NAV, SOCIAL } from '../../site.config.mjs';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 
@@ -29,6 +29,10 @@ const graph = [
     '@type': 'Organization', '@id': `${SITE.domain}/#org`,
     name: SITE.name, url: SITE.domain + '/',
     logo: { '@type': 'ImageObject', url: SITE.domain + SITE.publisherLogo, width: 512, height: 512 },
+    ...(() => {
+      const sameAs = Object.values(SOCIAL).filter(Boolean);
+      return sameAs.length ? { sameAs } : {};
+    })(),
   },
   ...(breadcrumbs.length ? [{
     '@type': 'BreadcrumbList', '@id': `${url}#breadcrumb`,

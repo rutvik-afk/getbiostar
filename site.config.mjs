@@ -11,7 +11,7 @@ export const SITE = {
   lang: 'en',
   twitter: '@getbiostar',
   publisherLogo: '/brand/logo.png',
-  email: 'contact@getbiostar.com',
+  email: 'getbiostar@gmail.com',
   // Google Search Console / Analytics — mali jaay pachi bharo
   gscVerification: '',
   gaMeasurementId: '',
@@ -26,7 +26,7 @@ export const SITE = {
    Leave a value EMPTY and that row/icon simply doesn't render —
    nothing fake ever ships. Fill these in once the accounts exist. */
 export const CONTACT = {
-  email: 'contact@getbiostar.com',
+  email: 'getbiostar@gmail.com',
   phone: '',            // e.g. '+91 98765 43210'
   mobile: '',
   address: '',          // e.g. 'Ahmedabad, Gujarat, India'
@@ -37,7 +37,7 @@ export const SOCIAL = {
   facebook:  '',        // full URL, e.g. 'https://facebook.com/getbiostar'
   x:         '',
   instagram: '',
-  pinterest: '',
+  pinterest: 'https://www.pinterest.com/getbiostar/',
   youtube:   '',
 };
 
