@@ -24,6 +24,11 @@
    "date": "2026-08-23",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -98,6 +103,7 @@
   "malaika-arora": "2026-08-22",
   "sara-ali-khan": "2026-08-22",
   "tripti-dimri": "2026-08-23",
-  "rachita-ram": "2026-08-23"
+  "rachita-ram": "2026-08-23",
+  "jyothika": "2026-08-23"
  }
 }
