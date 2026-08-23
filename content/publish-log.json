@@ -19,6 +19,11 @@
    "date": "2026-08-23",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-23",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -92,6 +97,7 @@
   "samantha-ruth-prabhu": "2026-08-22",
   "malaika-arora": "2026-08-22",
   "sara-ali-khan": "2026-08-22",
-  "tripti-dimri": "2026-08-23"
+  "tripti-dimri": "2026-08-23",
+  "rachita-ram": "2026-08-23"
  }
 }
