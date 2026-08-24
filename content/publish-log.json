@@ -39,6 +39,11 @@
    "date": "2026-08-24",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-24",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -116,6 +121,7 @@
   "rachita-ram": "2026-08-23",
   "jyothika": "2026-08-23",
   "mithun-chakraborty": "2026-08-24",
-  "prabhas": "2026-08-24"
+  "prabhas": "2026-08-24",
+  "preity-zinta": "2026-08-24"
  }
 }
