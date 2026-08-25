@@ -64,6 +64,11 @@
    "date": "2026-08-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-25",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -146,6 +151,7 @@
   "deepika-padukone": "2026-08-24",
   "urvashi-rautela": "2026-08-25",
   "kajol": "2026-08-25",
-  "jacqueline-fernandez": "2026-08-25"
+  "jacqueline-fernandez": "2026-08-25",
+  "regina-cassandra": "2026-08-25"
  }
 }
