@@ -54,6 +54,11 @@
    "date": "2026-08-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-25",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -134,6 +139,7 @@
   "prabhas": "2026-08-24",
   "preity-zinta": "2026-08-24",
   "deepika-padukone": "2026-08-24",
-  "urvashi-rautela": "2026-08-25"
+  "urvashi-rautela": "2026-08-25",
+  "kajol": "2026-08-25"
  }
 }
