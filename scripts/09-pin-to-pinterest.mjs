@@ -23,11 +23,13 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const PUB = path.join(ROOT, 'content/published');
 const LOG = path.join(ROOT, 'content/pinterest-log.json');
 
-/* Copy-pasting a token from a curl/JSON response commonly drags along a
-   trailing newline or surrounding quotes — either makes it an invalid
-   HTTP header value and fails with a cryptic Headers.append error. Strip
-   both defensively so a slightly-messy paste into GitHub Secrets still works. */
-const TOKEN = (process.env.PINTEREST_ACCESS_TOKEN || '').trim().replace(/^["']|["']$/g, '');
+/* Copy-pasting a token from a curl/JSON response commonly drags along
+   whitespace — including newlines embedded mid-string, not just at the
+   ends (e.g. a GitHub Secret pasted with line wraps). A real Pinterest
+   token never contains whitespace, so strip ALL of it, then any leftover
+   surrounding quotes — otherwise this becomes an invalid HTTP header
+   value and fails with a cryptic Headers.append error. */
+const TOKEN = (process.env.PINTEREST_ACCESS_TOKEN || '').replace(/\s/g, '').replace(/^["']|["']$/g, '');
 const argv = process.argv.slice(2);
 const dry = argv.includes('--dry');
 const onlySlug = (() => { const i = argv.indexOf('--slug'); return i === -1 ? null : argv[i + 1]; })();
