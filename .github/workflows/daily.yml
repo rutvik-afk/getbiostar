@@ -61,6 +61,13 @@ jobs:
           git diff --staged --quiet || git commit -m "content: publish $(date -u +%F' '%H:%M) UTC"
           git push
 
+      - name: Pin today's new post to Pinterest
+        if: ${{ secrets.PINTEREST_ACCESS_TOKEN != '' }}
+        env:
+          PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
+        run: node scripts/09-pin-to-pinterest.mjs
+        continue-on-error: true  # a Pinterest hiccup should never fail the whole daily run
+
       - uses: actions/upload-artifact@v4
         with:
           name: site
