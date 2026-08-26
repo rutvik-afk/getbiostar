@@ -23,7 +23,11 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const PUB = path.join(ROOT, 'content/published');
 const LOG = path.join(ROOT, 'content/pinterest-log.json');
 
-const TOKEN = process.env.PINTEREST_ACCESS_TOKEN;
+/* Copy-pasting a token from a curl/JSON response commonly drags along a
+   trailing newline or surrounding quotes — either makes it an invalid
+   HTTP header value and fails with a cryptic Headers.append error. Strip
+   both defensively so a slightly-messy paste into GitHub Secrets still works. */
+const TOKEN = (process.env.PINTEREST_ACCESS_TOKEN || '').trim().replace(/^["']|["']$/g, '');
 const argv = process.argv.slice(2);
 const dry = argv.includes('--dry');
 const onlySlug = (() => { const i = argv.indexOf('--slug'); return i === -1 ? null : argv[i + 1]; })();
