@@ -30,10 +30,13 @@ const onlySlug = (() => { const i = argv.indexOf('--slug'); return i === -1 ? nu
 const BOARD_NAME = 'Bollywood & Celebrity Biography';
 
 if (!TOKEN && !dry) {
-  console.error('✗ PINTEREST_ACCESS_TOKEN is not set. Add it as a GitHub Actions secret');
-  console.error('  (Settings → Secrets and variables → Actions → New repository secret)');
-  console.error('  or export it locally before running this script. Refusing to continue.');
-  process.exit(1);
+  /* Exit quietly (code 0) rather than failing the workflow — GitHub Actions
+     can't reference `secrets.*` directly in a step's `if:`, so this step
+     always runs and the secret being unset is a normal, expected state
+     (e.g. before it's been configured yet), not an error. */
+  console.log('⏭  PINTEREST_ACCESS_TOKEN is not set — skipping Pinterest step.');
+  console.log('   Add it in Settings → Secrets and variables → Actions to enable auto-pinning.');
+  process.exit(0);
 }
 
 const API = 'https://api.pinterest.com/v5';
