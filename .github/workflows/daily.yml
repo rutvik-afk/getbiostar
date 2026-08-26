@@ -9,6 +9,11 @@ on:
     - cron: '30 12 * * *'      # 12:30 UTC = 18:00 IST
     - cron: '30 17 * * *'      # 17:30 UTC = 23:00 IST
   workflow_dispatch:            # manual "Run workflow" button
+    inputs:
+      test_pin_slug:
+        description: 'Optional: slug of an already-published post to force-pin right now (leave empty for normal behaviour)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -64,7 +69,12 @@ jobs:
       - name: Pin today's new post to Pinterest
         env:
           PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
-        run: node scripts/09-pin-to-pinterest.mjs
+        run: |
+          if [ -n "${{ inputs.test_pin_slug }}" ]; then
+            node scripts/09-pin-to-pinterest.mjs --slug "${{ inputs.test_pin_slug }}"
+          else
+            node scripts/09-pin-to-pinterest.mjs
+          fi
         continue-on-error: true  # a Pinterest hiccup should never fail the whole daily run
 
       - uses: actions/upload-artifact@v4
