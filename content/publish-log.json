@@ -89,6 +89,11 @@
    "date": "2026-08-26",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-27",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -176,6 +181,7 @@
   "sreeleela": "2026-08-26",
   "rekha": "2026-08-26",
   "dhanush": "2026-08-26",
-  "vishal-krishna": "2026-08-26"
+  "vishal-krishna": "2026-08-26",
+  "varun-tej": "2026-08-27"
  }
 }
