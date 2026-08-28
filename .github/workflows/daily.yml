@@ -1,13 +1,21 @@
 name: Daily publish
 
-# 4 runs/day, spread across IST, each publishing 1 post (postsPerDay: 4
-# in site.config.mjs). Times below are UTC = IST minus 5:30.
+# 4 posts/day at fixed IST times (postsPerDay: 4 in site.config.mjs), each
+# with a backup run ~1h later — GitHub occasionally drops a scheduled
+# trigger under load, and 05-publish-daily.mjs's own daily cap means an
+# extra run on a day that already hit quota is a safe no-op, so the backup
+# silently catches whatever the primary slot missed. Times below are UTC =
+# IST minus 5:30.
 on:
   schedule:
-    - cron: '30 0 * * *'       # 00:30 UTC = 06:00 IST
-    - cron: '30 6 * * *'       # 06:30 UTC = 12:00 IST
-    - cron: '30 12 * * *'      # 12:30 UTC = 18:00 IST
-    - cron: '30 17 * * *'      # 17:30 UTC = 23:00 IST
+    - cron: '30 0 * * *'       # 00:30 UTC = 06:00 IST  (primary)
+    - cron: '30 1 * * *'       # 01:30 UTC = 07:00 IST  (backup)
+    - cron: '30 6 * * *'       # 06:30 UTC = 12:00 IST  (primary)
+    - cron: '30 7 * * *'       # 07:30 UTC = 13:00 IST  (backup)
+    - cron: '30 12 * * *'      # 12:30 UTC = 18:00 IST  (primary)
+    - cron: '30 13 * * *'      # 13:30 UTC = 19:00 IST  (backup)
+    - cron: '30 17 * * *'      # 17:30 UTC = 23:00 IST  (primary)
+    - cron: '30 18 * * *'      # 18:30 UTC = 00:00 IST  (backup)
   workflow_dispatch:            # manual "Run workflow" button
     inputs:
       test_pin_slug:
@@ -37,13 +45,15 @@ jobs:
       - run: npm ci
 
       - name: Weekly source refresh (Sunday, first run of the day only)
-        if: ${{ github.event.schedule == '30 0 * * *' }}
+        if: ${{ github.event_name == 'schedule' }}
         run: |
-          if [ "$(date +%u)" = "7" ]; then
+          # "First run of the day" = the 00:xx UTC slot, checked by wall-clock
+          # hour rather than exact cron string — safe against backup slots.
+          if [ "$(date -u +%H)" = "00" ] && [ "$(date +%u)" = "7" ]; then
             CACHE_DAYS=7 node scripts/02-fetch-facts.mjs
             node scripts/02b-enrich-works.mjs || true
           else
-            echo "not Sunday — skipping source refresh"
+            echo "not Sunday 00:xx UTC — skipping source refresh"
           fi
 
       - name: Regenerate posts (queue + refresh live pages)
