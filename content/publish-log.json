@@ -99,6 +99,11 @@
    "date": "2026-08-28",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-28",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -188,6 +193,7 @@
   "dhanush": "2026-08-26",
   "vishal-krishna": "2026-08-26",
   "varun-tej": "2026-08-27",
-  "vijay-sethupathi": "2026-08-28"
+  "vijay-sethupathi": "2026-08-28",
+  "pankaj-dheer": "2026-08-28"
  }
 }
