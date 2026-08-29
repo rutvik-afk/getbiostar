@@ -114,6 +114,11 @@
    "date": "2026-08-28",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-29",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -206,6 +211,7 @@
   "vijay-sethupathi": "2026-08-28",
   "pankaj-dheer": "2026-08-28",
   "nithya-menen": "2026-08-28",
-  "vidyut-jamwal": "2026-08-28"
+  "vidyut-jamwal": "2026-08-28",
+  "keerthy-suresh": "2026-08-29"
  }
 }
