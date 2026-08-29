@@ -124,6 +124,11 @@
    "date": "2026-08-29",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-29",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -218,6 +223,7 @@
   "nithya-menen": "2026-08-28",
   "vidyut-jamwal": "2026-08-28",
   "keerthy-suresh": "2026-08-29",
-  "chiranjeevi": "2026-08-29"
+  "chiranjeevi": "2026-08-29",
+  "jaya-bachchan": "2026-08-29"
  }
 }
