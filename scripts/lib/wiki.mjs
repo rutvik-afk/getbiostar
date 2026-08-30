@@ -64,6 +64,7 @@ export async function titlesToQids(titles) {
       if (p.missing || !p.pageprops?.wikibase_item) continue;
       map[src] = { qid: p.pageprops.wikibase_item, pageid: p.pageid, title: p.title };
     }
+    await sleep(150); // stay well under Wikimedia's rate limit across a large weekly batch
   }
   return map;
 }
@@ -82,6 +83,7 @@ export async function getEntities(qids, props = 'claims|labels|descriptions|site
     const u = `https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=${encodeURIComponent(props)}&languages=en&ids=${grp.join('|')}`;
     const j = await getJSON(u);
     Object.assign(out, j?.entities || {});
+    await sleep(150);
   }
   return out;
 }
@@ -96,6 +98,7 @@ export async function getLabels(qids) {
       const l = e?.labels?.en?.value;
       if (l) out[qid] = l;
     }
+    await sleep(150);
   }
   return out;
 }
@@ -128,6 +131,7 @@ export async function commonsLicenses(files) {
         page: `https://commons.wikimedia.org/wiki/${encodeURIComponent(p.title)}`,
       };
     }
+    await sleep(150);
   }
   return out;
 }

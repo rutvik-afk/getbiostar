@@ -49,8 +49,11 @@ jobs:
         run: |
           # "First run of the day" = the 00:xx UTC slot, checked by wall-clock
           # hour rather than exact cron string — safe against backup slots.
+          # This refresh only warms the Wikidata cache for next week; a
+          # transient failure here (e.g. Wikimedia rate-limiting) must never
+          # block today's actual post publish below.
           if [ "$(date -u +%H)" = "00" ] && [ "$(date +%u)" = "7" ]; then
-            CACHE_DAYS=7 node scripts/02-fetch-facts.mjs
+            CACHE_DAYS=7 node scripts/02-fetch-facts.mjs || echo "⚠️  weekly source refresh failed — continuing with today's publish anyway"
             node scripts/02b-enrich-works.mjs || true
           else
             echo "not Sunday 00:xx UTC — skipping source refresh"
