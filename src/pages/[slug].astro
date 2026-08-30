@@ -42,12 +42,16 @@ const person = {
   })(),
 };
 
+/* Google's structured data parser rejects a bare YYYY-MM-DD for
+   datePublished/dateModified — it wants a full ISO 8601 datetime. */
+const toISODateTime = (d) => (d ? `${d}T00:00:00+05:30` : d);
+
 const jsonld = [
   {
     '@type': 'ProfilePage', '@id': `${url}#page`, url, name: p.title,
     isPartOf: { '@id': `${SITE.domain}/#website` },
     mainEntity: { '@id': `${url}#person` },
-    datePublished: p.publishedAt, dateModified: p.updatedAt || p.publishedAt,
+    datePublished: toISODateTime(p.publishedAt), dateModified: toISODateTime(p.updatedAt || p.publishedAt),
     inLanguage: SITE.lang,
     ...(p.image?.url ? { primaryImageOfPage: { '@type': 'ImageObject', url: `${SITE.domain}${p.image.url}` } } : {}),
   },
