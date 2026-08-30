@@ -149,6 +149,11 @@
    "date": "2026-08-30",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-30",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -248,6 +253,7 @@
   "nayanthara": "2026-08-29",
   "srinidhi-shetty": "2026-08-30",
   "jeetendra": "2026-08-30",
-  "nidhhi-agerwal": "2026-08-30"
+  "nidhhi-agerwal": "2026-08-30",
+  "neeru-bajwa": "2026-08-30"
  }
 }
