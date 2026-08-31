@@ -164,6 +164,11 @@
    "date": "2026-08-31",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-08-31",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -266,6 +271,7 @@
   "nidhhi-agerwal": "2026-08-30",
   "neeru-bajwa": "2026-08-30",
   "zayn-malik": "2026-08-31",
-  "rakul-preet-singh": "2026-08-31"
+  "rakul-preet-singh": "2026-08-31",
+  "salman-khan": "2026-08-31"
  }
 }
