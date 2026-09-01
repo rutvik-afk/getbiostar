@@ -189,6 +189,11 @@
    "date": "2026-09-01",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-01",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -296,6 +301,7 @@
   "nia-sharma": "2026-08-31",
   "dharmendra": "2026-09-01",
   "javed-jaffrey": "2026-09-01",
-  "kendall-jenner": "2026-09-01"
+  "kendall-jenner": "2026-09-01",
+  "sara-arjun": "2026-09-01"
  }
 }
