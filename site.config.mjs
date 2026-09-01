@@ -6,7 +6,10 @@ export const SITE = {
   name: 'BioStar',
   tagline: 'Verified Celebrity Biographies, Ages & Career Facts',
   // ⬇️ domain buy karya pachi aa ek line badlo
-  domain: 'https://getbiostar.com',
+  // Must match the host the site actually serves on — the apex 308-redirects
+  // to www, so canonicals/sitemap/JSON-LD have to say www or every URL Google
+  // sees is a redirect hop.
+  domain: 'https://www.getbiostar.com',
   locale: 'en_US',
   lang: 'en',
   twitter: '@getbiostar',
