@@ -83,10 +83,12 @@ jobs:
             # A backup slot or a manual push can race this one to the ref —
             # rebase onto whatever landed first and retry instead of failing
             # the whole run (and losing this run's post) over a push conflict.
+            # --autostash because the build leaves files outside the staged
+            # paths dirty, which otherwise makes the rebase refuse to start.
             for i in 1 2 3; do
               git push && break
               echo "push rejected — rebasing and retrying ($i)…"
-              git pull --rebase origin main
+              git pull --rebase --autostash origin main || break
             done
           fi
 
