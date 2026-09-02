@@ -204,6 +204,11 @@
    "date": "2026-09-02",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-02",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -314,6 +319,7 @@
   "kendall-jenner": "2026-09-01",
   "sara-arjun": "2026-09-01",
   "jayam-ravi": "2026-09-02",
-  "ekta-kapoor": "2026-09-02"
+  "ekta-kapoor": "2026-09-02",
+  "tiger-shroff": "2026-09-02"
  }
 }
