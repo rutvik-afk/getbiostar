@@ -17,7 +17,7 @@ export const SITE = {
   email: 'getbiostar@gmail.com',
   // Google Search Console / Analytics — mali jaay pachi bharo
   gscVerification: '',
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-B27N3MEH80',
   adsenseClient: '', // ex: 'ca-pub-XXXXXXXXXXXXXXXX'
   postsPerDay: 4,
   perPage: 24,
