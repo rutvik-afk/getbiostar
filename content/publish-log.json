@@ -224,6 +224,11 @@
    "date": "2026-09-03",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-03",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -338,6 +343,7 @@
   "tiger-shroff": "2026-09-02",
   "kriti-sanon": "2026-09-02",
   "pooja-hegde": "2026-09-03",
-  "madhubala": "2026-09-03"
+  "madhubala": "2026-09-03",
+  "girija-oak": "2026-09-03"
  }
 }
