@@ -249,6 +249,11 @@
    "date": "2026-09-04",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-04",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -368,6 +373,7 @@
   "naga-chaitanya": "2026-09-03",
   "radhika-apte": "2026-09-04",
   "ileana-dcruz": "2026-09-04",
-  "mahesh-babu": "2026-09-04"
+  "mahesh-babu": "2026-09-04",
+  "neha-sharma": "2026-09-04"
  }
 }
