@@ -264,6 +264,11 @@
    "date": "2026-09-05",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-05",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -386,6 +391,7 @@
   "mahesh-babu": "2026-09-04",
   "neha-sharma": "2026-09-04",
   "rajinikanth": "2026-09-05",
-  "tori-black": "2026-09-05"
+  "tori-black": "2026-09-05",
+  "huma-qureshi": "2026-09-05"
  }
 }
