@@ -279,6 +279,11 @@
    "date": "2026-09-06",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-06",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -404,6 +409,7 @@
   "tori-black": "2026-09-05",
   "huma-qureshi": "2026-09-05",
   "priyanka-chopra": "2026-09-05",
-  "rani-mukerji": "2026-09-06"
+  "rani-mukerji": "2026-09-06",
+  "neha-kakkar": "2026-09-06"
  }
 }
