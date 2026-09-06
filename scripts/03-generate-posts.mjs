@@ -40,9 +40,26 @@ for (const slug of BLOCKED) {
   }
 }
 
+/* Content-safety filter: BioStar is a general-audience celebrity bio site
+   (and a future AdSense applicant, which flatly bans adult content) — a
+   Wikidata occupation of pornographic actor / erotic model etc. means the
+   person is never generated, and any live page for them is taken down. */
+const ADULT_OCCUPATION = /\b(pornographic actor|porn (actor|star|actress)|erotic (photography )?model|adult (film|video) (actor|actress|performer))\b/i;
+const isAdultContent = (f) => (f.occupations || []).some((o) => ADULT_OCCUPATION.test(o));
+
 const files = fs.readdirSync(FACTS)
   .filter((f) => f.endsWith('.json'))
-  .filter((f) => !BLOCKED.has(f.replace(/\.json$/, '').toLowerCase()));
+  .filter((f) => !BLOCKED.has(f.replace(/\.json$/, '').toLowerCase()))
+  .filter((file) => {
+    const f = JSON.parse(fs.readFileSync(path.join(FACTS, file), 'utf8'));
+    if (!isAdultContent(f)) return true;
+    const slug = file.replace(/\.json$/, '');
+    for (const dir of [QUEUE, PUB]) {
+      const fp = path.join(dir, `${slug}.json`);
+      if (fs.existsSync(fp)) { fs.unlinkSync(fp); console.log(`🔞 removed (adult content, not general-audience): ${slug}`); }
+    }
+    return false;
+  });
 console.log(`Generating posts for ${files.length} people…`);
 
 const posts = [];
