@@ -289,6 +289,11 @@
    "date": "2026-09-06",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-06",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -416,6 +421,7 @@
   "priyanka-chopra": "2026-09-05",
   "rani-mukerji": "2026-09-06",
   "neha-kakkar": "2026-09-06",
-  "shraddha-kapoor": "2026-09-06"
+  "shraddha-kapoor": "2026-09-06",
+  "kriti-kharbanda": "2026-09-06"
  }
 }
