@@ -329,6 +329,11 @@
    "date": "2026-09-08",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-08",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -464,6 +469,7 @@
   "shriya-saran": "2026-09-07",
   "sunidhi-chauhan": "2026-09-08",
   "ramya-krishnan": "2026-09-08",
-  "kapil-sharma": "2026-09-08"
+  "kapil-sharma": "2026-09-08",
+  "dulquer-salmaan": "2026-09-08"
  }
 }
