@@ -16,7 +16,7 @@ export const SITE = {
   publisherLogo: '/brand/logo.png',
   email: 'getbiostar@gmail.com',
   // Google Search Console / Analytics — mali jaay pachi bharo
-  gscVerification: '',
+  gscVerification: 'yoiQRCSfjJbtwTDJt-kOmdvkpi96d8x7burL_VDrjy0',
   gaMeasurementId: 'G-B27N3MEH80',
   adsenseClient: '', // ex: 'ca-pub-XXXXXXXXXXXXXXXX'
   postsPerDay: 4,
