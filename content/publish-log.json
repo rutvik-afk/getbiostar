@@ -319,6 +319,11 @@
    "date": "2026-09-08",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-08",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -452,6 +457,7 @@
   "kareena-kapoor": "2026-09-07",
   "chitrangada-singh": "2026-09-07",
   "shriya-saran": "2026-09-07",
-  "sunidhi-chauhan": "2026-09-08"
+  "sunidhi-chauhan": "2026-09-08",
+  "ramya-krishnan": "2026-09-08"
  }
 }
