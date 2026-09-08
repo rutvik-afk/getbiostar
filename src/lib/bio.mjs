@@ -151,6 +151,13 @@ export function categoryOf(f) {
   for (const [cat, re] of CAT_RULES) if (re.test(hay)) return cat;
   return 'notable';
 }
+/* BioStar is a general-audience celebrity bio site (and a future AdSense
+   applicant, which flatly bans adult content) — shared by every pipeline
+   step that touches a facts file, so a person is never generated, never
+   given a cover image, and any live page for them is taken down. */
+const ADULT_OCCUPATION = /\b(pornographic actor|porn (actor|star|actress)|erotic (photography )?model|adult (film|video) (actor|actress|performer))\b/i;
+export const isAdultContent = (f) => (f.occupations || []).some((o) => ADULT_OCCUPATION.test(o));
+
 export const CATEGORIES = {
   actor: { label: 'Actors', blurb: 'Film and television performers — ages, heights, family backgrounds and filmography facts.' },
   musician: { label: 'Musicians', blurb: 'Singers, composers and instrumentalists — verified biography and discography facts.' },

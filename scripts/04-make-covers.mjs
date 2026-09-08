@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { SITE } from '../site.config.mjs';
-import { hash, rolePhrase, cap } from '../src/lib/bio.mjs';
+import { hash, rolePhrase, cap, isAdultContent } from '../src/lib/bio.mjs';
 import { UA } from './lib/wiki.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -110,7 +110,10 @@ const MANIFEST = path.join(ROOT, 'data/images.json');
    two can run in any order without a rebuild ever losing a downloaded photo. */
 const manifest = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
 
-const jobs = fs.readdirSync(FACTS_DIR).filter((f) => f.endsWith('.json')).map((f) => path.join(FACTS_DIR, f));
+const jobs = fs.readdirSync(FACTS_DIR)
+  .filter((f) => f.endsWith('.json'))
+  .filter((f) => !isAdultContent(JSON.parse(fs.readFileSync(path.join(FACTS_DIR, f), 'utf8'))))
+  .map((f) => path.join(FACTS_DIR, f));
 
 /* A social card is only ever fetched for a page that is live, so build it
    for published slugs only. Portraits are built for everyone, because the

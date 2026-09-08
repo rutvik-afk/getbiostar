@@ -10,6 +10,7 @@ import {
   fmtDate, fmtYear, computeAge, cmToFeet, kgToLb, zodiac, list, cap,
   pronoun, hash, pick, rolePhrase, demonym, categoryOf,
   article, withArticle, asRole, dedupeOccupations, nationalityPhrase,
+  isAdultContent,
 } from '../src/lib/bio.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -39,13 +40,6 @@ for (const slug of BLOCKED) {
     if (fs.existsSync(fp)) { fs.unlinkSync(fp); console.log(`🚫 removed on request: ${slug}`); }
   }
 }
-
-/* Content-safety filter: BioStar is a general-audience celebrity bio site
-   (and a future AdSense applicant, which flatly bans adult content) — a
-   Wikidata occupation of pornographic actor / erotic model etc. means the
-   person is never generated, and any live page for them is taken down. */
-const ADULT_OCCUPATION = /\b(pornographic actor|porn (actor|star|actress)|erotic (photography )?model|adult (film|video) (actor|actress|performer))\b/i;
-const isAdultContent = (f) => (f.occupations || []).some((o) => ADULT_OCCUPATION.test(o));
 
 const files = fs.readdirSync(FACTS)
   .filter((f) => f.endsWith('.json'))
