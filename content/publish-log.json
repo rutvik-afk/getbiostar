@@ -344,6 +344,11 @@
    "date": "2026-09-09",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-09",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -482,6 +487,7 @@
   "kapil-sharma": "2026-09-08",
   "dulquer-salmaan": "2026-09-08",
   "manju-warrier": "2026-09-09",
-  "randhir-kapoor": "2026-09-09"
+  "randhir-kapoor": "2026-09-09",
+  "vidya-balan": "2026-09-09"
  }
 }
