@@ -354,6 +354,11 @@
    "date": "2026-09-09",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-10",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -494,6 +499,7 @@
   "manju-warrier": "2026-09-09",
   "randhir-kapoor": "2026-09-09",
   "vidya-balan": "2026-09-09",
-  "jaya-prada": "2026-09-09"
+  "jaya-prada": "2026-09-09",
+  "neena-gupta": "2026-09-10"
  }
 }
