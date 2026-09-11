@@ -374,6 +374,11 @@
    "date": "2026-09-10",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-11",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -518,6 +523,7 @@
   "neena-gupta": "2026-09-10",
   "dev-anand": "2026-09-10",
   "kalyani-priyadarshan": "2026-09-10",
-  "manoj-bajpai": "2026-09-10"
+  "manoj-bajpai": "2026-09-10",
+  "siddharth-roy-kapur": "2026-09-11"
  }
 }
