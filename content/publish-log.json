@@ -389,6 +389,11 @@
    "date": "2026-09-11",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-11",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -536,6 +541,7 @@
   "manoj-bajpai": "2026-09-10",
   "siddharth-roy-kapur": "2026-09-11",
   "swastika-mukherjee": "2026-09-11",
-  "can-yaman": "2026-09-11"
+  "can-yaman": "2026-09-11",
+  "karthi": "2026-09-11"
  }
 }
