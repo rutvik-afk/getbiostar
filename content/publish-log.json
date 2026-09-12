@@ -399,6 +399,11 @@
    "date": "2026-09-12",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-12",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -548,6 +553,7 @@
   "swastika-mukherjee": "2026-09-11",
   "can-yaman": "2026-09-11",
   "karthi": "2026-09-11",
-  "nandamuri-balakrishna": "2026-09-12"
+  "nandamuri-balakrishna": "2026-09-12",
+  "jagapati-babu": "2026-09-12"
  }
 }
