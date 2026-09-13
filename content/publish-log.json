@@ -424,6 +424,11 @@
    "date": "2026-09-13",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-13",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -578,6 +583,7 @@
   "jay-z": "2026-09-12",
   "dimple-kapadia": "2026-09-12",
   "parineeti-chopra": "2026-09-13",
-  "yami-gautam": "2026-09-13"
+  "yami-gautam": "2026-09-13",
+  "ranbir-kapoor": "2026-09-13"
  }
 }
