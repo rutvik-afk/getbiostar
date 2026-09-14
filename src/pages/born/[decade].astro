@@ -1,0 +1,109 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { SITE } from '../../../site.config.mjs';
+import { allPosts } from '../../lib/content.mjs';
+
+export function getStaticPaths() {
+  /* A decade only gets a page once enough profiles are live to make it a
+     real list rather than a stub — new decades appear on their own as the
+     drip publisher works through the queue. */
+  const MIN = 15;
+  const byDecade = {};
+  for (const p of allPosts()) {
+    const y = p.birthDate?.year;
+    if (!y) continue;
+    const d = Math.floor(y / 10) * 10;
+    (byDecade[d] ||= []).push(p);
+  }
+  return Object.entries(byDecade)
+    .filter(([, items]) => items.length >= MIN)
+    .map(([decade, items]) => ({
+      params: { decade: `${decade}s` },
+      props: {
+        decade: Number(decade),
+        items: items.sort((a, b) => (a.birthDate.year - b.birthDate.year)
+          || a.name.localeCompare(b.name)),
+      },
+    }));
+}
+
+const { decade, items } = Astro.props;
+const label = `${decade}s`;
+const canonical = `${SITE.domain}/born/${label}/`;
+const title = `Celebrities Born in the ${label} — Ages & Movies`;
+
+const oldest = items[0];
+const youngest = items[items.length - 1];
+const withCredits = items.filter((p) => (p.worksCount || 0) >= 5).length;
+const nationalities = [...new Set(items.map((p) => p.nationality).filter(Boolean))];
+
+const description =
+  `${items.length} celebrities born between ${oldest.birthDate.year} and ${youngest.birthDate.year}, `
+  + `sorted by birth year. Ages, filmographies, family and career facts for each, `
+  + `built from open public records.`;
+
+const jsonld = [{
+  '@type': 'CollectionPage', url: canonical, name: title,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: items.length,
+    itemListElement: items.map((p, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      url: `${SITE.domain}/${p.slug}/`, name: p.name,
+    })),
+  },
+}];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonld={jsonld}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: `Born in the ${label}` }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">Born in the {label}</li></ol>
+  </nav>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <h1>Celebrities Born in the {label}</h1>
+        <p class="lead-p">
+          {items.length} profiles of people born between {oldest.birthDate.year} and {youngest.birthDate.year},
+          listed oldest first. {withCredits} of them have a credited filmography or discography on record.
+          {nationalities.length > 1 && ` Nationalities covered: ${nationalities.slice(0, 4).join(', ')}.`}
+        </p>
+
+        <table class="facts born-table">
+          <thead>
+            <tr><th>Name</th><th>Born</th><th>Age</th><th>Known for</th></tr>
+          </thead>
+          <tbody>
+            {items.map((p) => (
+              <tr>
+                <td><a href={`/${p.slug}/`}>{p.name}</a></td>
+                <td>{p.birthDate.year}</td>
+                <td>{p.birthDate.year && !p.deathDate
+                  ? new Date().getFullYear() - p.birthDate.year
+                  : '—'}</td>
+                <td>{p.role || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2>Profiles</h2>
+        <div class="cards-grid">{items.map((p) => <PostCard post={p} />)}</div>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lead-p { color: var(--muted, #555); margin: 0 0 1.25rem; line-height: 1.6; }
+  .born-table { width: 100%; margin-bottom: 2rem; }
+  .born-table td, .born-table th { text-align: left; }
+</style>

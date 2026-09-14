@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { SITE } from '../../../site.config.mjs';
+import { allPosts } from '../../lib/content.mjs';
+import { cmToFeet } from '../../lib/bio.mjs';
+
+const ranked = allPosts()
+  .filter((p) => p.heightCm)
+  .sort((a, b) => b.heightCm - a.heightCm)
+  .slice(0, 30);
+
+const canonical = `${SITE.domain}/lists/tallest-celebrities/`;
+const title = 'Tallest Celebrities — Height in Feet and Centimetres';
+const description =
+  `The ${ranked.length} tallest celebrities on ${SITE.name}, ranked by verified height in `
+  + `centimetres and feet. Every figure comes from open public records, not estimates.`;
+
+const jsonld = [{
+  '@type': 'CollectionPage', url: canonical, name: title,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: ranked.length,
+    itemListElement: ranked.map((p, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      url: `${SITE.domain}/${p.slug}/`, name: p.name,
+    })),
+  },
+}];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonld={jsonld}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Tallest Celebrities' }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">Tallest Celebrities</li></ol>
+  </nav>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <h1>Tallest Celebrities</h1>
+        <p class="lead-p">
+          Ranked by height on public record — tallest first. Heights are taken from open
+          reference databases; where a figure is not on record the person is left off this
+          list rather than estimated.
+        </p>
+
+        <table class="facts">
+          <thead>
+            <tr><th>#</th><th>Name</th><th>Height</th><th>Known for</th></tr>
+          </thead>
+          <tbody>
+            {ranked.map((p, i) => (
+              <tr>
+                <td>{i + 1}</td>
+                <td><a href={`/${p.slug}/`}>{p.name}</a></td>
+                <td>{p.heightCm} cm ({cmToFeet(p.heightCm)})</td>
+                <td>{p.role || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lead-p { color: var(--muted, #555); margin: 0 0 1.25rem; line-height: 1.6; }
+</style>

@@ -11,6 +11,20 @@ const popular = [...posts].filter((p) => p.slug !== exclude)
 const cats = Object.entries(CATEGORIES).filter(([k]) => byCat[k]?.length)
   .sort((a, b) => byCat[b[0]].length - byCat[a[0]].length);
 
+/* Mirrors the threshold in /born/[decade].astro — link only the decades
+   that actually have a page built, or the sidebar 404s as the queue
+   publishes into new decades. */
+const decades = (() => {
+  const counts = {};
+  for (const p of posts) {
+    const y = p.birthDate?.year;
+    if (y) counts[Math.floor(y / 10) * 10] = (counts[Math.floor(y / 10) * 10] || 0) + 1;
+  }
+  return Object.entries(counts).filter(([, n]) => n >= 15)
+    .sort((a, b) => b[0] - a[0]);
+})();
+const hasHeights = posts.filter((p) => p.heightCm).length >= 10;
+
 const fmt = (s) => {
   if (!s) return '';
   const d = new Date(s + 'T00:00:00Z');
@@ -60,4 +74,16 @@ const fmt = (s) => {
       {popular.map((p) => <li><a href={`/${p.slug}/`}>{p.name}</a></li>)}
     </ol>
   </section>
+
+  {(decades.length > 0 || hasHeights) && (
+    <section class="widget">
+      <h2 class="w-title">Browse by List</h2>
+      <ul class="w-cats">
+        {decades.map(([d, n]) => (
+          <li><a href={`/born/${d}s/`}>Born in the {d}s<span>{n}</span></a></li>
+        ))}
+        {hasHeights && <li><a href="/lists/tallest-celebrities/">Tallest Celebrities</a></li>}
+      </ul>
+    </section>
+  )}
 </aside>
