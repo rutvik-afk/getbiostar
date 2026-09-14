@@ -50,15 +50,28 @@ if (!seed) {
 const queued = fs.readdirSync(QUEUE).filter((f) => f.endsWith('.json'));
 if (!queued.length) { console.log('Queue is empty — run `npm run pipeline` first.'); process.exit(0); }
 
-/* Priority: search demand weighted against keyword difficulty,
-   with a bonus for pages that already have a portrait + rich data. */
-const scored = queued.map((f) => {
+/* Priority: search demand weighted against keyword difficulty, with page
+   richness as a tiebreaker.
+
+   Richness used to be added raw, which quietly made it the dominant term:
+   seo.score spans ~4-9 because demand enters as log10(volume), so 1.1M
+   searches sits barely half a point above 240K, while richness swings a
+   full 0-7.5. Kavya Maran — 1.1M/mo — was ranked 1,256th, ~10 months out,
+   purely for having a thinner Wikidata record. Scaling richness to 0.3
+   keeps it deciding ties without outvoting demand, and a floor drops the
+   truly bare records (a portrait and nothing else) instead of letting a
+   high score drag them onto the site. */
+const richnessOf = (p) =>
+  (p.image ? 2 : 0) + (p.timeline?.length ? 1.5 : 0) + (p.faq?.length >= 6 ? 1 : 0) +
+  (p.quickFacts?.length >= 10 ? 1 : 0) + (p.sections?.some((s) => s.works) ? 2 : 0);
+
+const all = queued.map((f) => {
   const p = JSON.parse(fs.readFileSync(path.join(QUEUE, f), 'utf8'));
-  const richness =
-    (p.image ? 2 : 0) + (p.timeline?.length ? 1.5 : 0) + (p.faq?.length >= 6 ? 1 : 0) +
-    (p.quickFacts?.length >= 10 ? 1 : 0) + (p.sections?.some((s) => s.works) ? 2 : 0);
-  return { file: f, post: p, prio: (p.seo?.score || 0) + richness };
-}).sort((a, b) => b.prio - a.prio);
+  const richness = richnessOf(p);
+  return { file: f, post: p, richness, prio: (p.seo?.score || 0) + richness * 0.3 };
+});
+const publishable = all.filter((x) => x.richness > 2);
+const scored = (publishable.length ? publishable : all).sort((a, b) => b.prio - a.prio);
 
 const effectiveCount = seed || argv.includes('--force')
   ? count
