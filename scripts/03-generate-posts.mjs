@@ -322,19 +322,41 @@ for (const file of files) {
       ? `Verified public profiles on record include ${list([f.links?.instagram && `Instagram (@${f.links.instagram})`, f.links?.twitter && `X/Twitter (@${f.links.twitter})`, f.links?.youtube && 'a YouTube channel', f.links?.website && 'an official website'].filter(Boolean))}. Links are in the profile box above.` : null);
 
   /* ---------------- TITLE + META ---------------- */
+  /* Angle order matters more than it looks. "Age" and "Height" carry the
+     biggest raw search volume, but Google answers both itself in the
+     knowledge panel — those impressions convert at ~0.1%. The credits
+     list, spouse and family are what a panel can't fit, so they lead and
+     the age/height keywords ride along at the end for coverage. */
+  /* Label from what the credits actually are, not the person's category —
+     a singer who judged one TV show still classifies as 'actor'. */
+  const creditsAngle = (() => {
+    if (works.length < 5) return null;
+    const buckets = { Movies: 0, Songs: 0, 'TV Shows': 0 };
+    for (const w of works) {
+      const t = w.type || '';
+      if (/\bfilm\b|movie/.test(t)) buckets.Movies++;
+      else if (/music|song|single|album|track|discography/.test(t)) buckets.Songs++;
+      else if (/television|web series|miniseries|series/.test(t)) buckets['TV Shows']++;
+    }
+    const [best, n] = Object.entries(buckets).sort((a, b) => b[1] - a[1])[0];
+    return n >= 5 ? best : 'Career';
+  })();
   const angles = [];
-  if (ageInfo) angles.push('Age');
-  if (f.heightCm) angles.push('Height');
+  if (creditsAngle) angles.push(creditsAngle);
   if (f.spouses?.length) angles.push(f.gender === 'female' ? 'Husband' : 'Wife');
   else if (f.children?.length) angles.push('Family');
-  if (f.awards?.length && angles.length < 3) angles.push('Awards');
+  if (f.awards?.length && angles.length < 2) angles.push('Awards');
+  if (ageInfo) angles.push('Age');
+  if (f.heightCm) angles.push('Height');
   if (angles.length < 3) angles.push('Family');
   const title = `${name} — ${angles.slice(0, 3).join(', ')} & Biography`;
   const metaDescription = [
     `${name}${ageInfo && alive ? ` is ${ageInfo.age}` : ''}${born ? `, born ${born}` : ''}${bp ? ` in ${bp}` : ''}.`,
     f.heightCm ? `Height ${f.heightCm} cm (${cmToFeet(f.heightCm)}).` : '',
     f.spouses?.length ? `Married to ${f.spouses[0].name}.` : '',
-    `Full biography, family, career and awards.`,
+    works.length >= 5
+      ? `Full ${works.length}-title credits list, family, career timeline and awards.`
+      : `Full biography, family, career and awards.`,
   ].join(' ').replace(/\s+/g, ' ').trim().slice(0, 158);
 
   posts.push({
