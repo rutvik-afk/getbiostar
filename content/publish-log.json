@@ -434,6 +434,11 @@
    "date": "2026-09-13",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-14",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -590,6 +595,7 @@
   "parineeti-chopra": "2026-09-13",
   "yami-gautam": "2026-09-13",
   "ranbir-kapoor": "2026-09-13",
-  "vivek-oberoi": "2026-09-13"
+  "vivek-oberoi": "2026-09-13",
+  "gulshan-devaiah": "2026-09-14"
  }
 }
