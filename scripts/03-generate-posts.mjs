@@ -187,6 +187,30 @@ for (const file of files) {
 
   /* Credited works — filmography / discography */
   const works = (WORKS[f.slug] || []).filter((w) => w.title);
+
+  /* What the credits actually are, judged from the work types rather than
+     the person's category — a singer who judged one TV show still
+     classifies as 'actor'. Drives both the <title> angle and the section
+     heading, and the wording matches how people search ("movies and tv
+     shows", not "filmography"). */
+  const creditKind = (() => {
+    if (works.length < 5) return null;
+    const buckets = { Movies: 0, Songs: 0, 'TV Shows': 0 };
+    for (const w of works) {
+      const t = w.type || '';
+      if (/\bfilm\b|movie/.test(t)) buckets.Movies++;
+      else if (/music|song|single|album|track|discography/.test(t)) buckets.Songs++;
+      else if (/television|web series|miniseries|series/.test(t)) buckets['TV Shows']++;
+    }
+    const [best, n] = Object.entries(buckets).sort((a, b) => b[1] - a[1])[0];
+    return n >= 5 ? best : null;
+  })();
+  const creditsHeading = {
+    Movies: 'Movies and TV Shows',
+    Songs: 'Songs and Music Credits',
+    'TV Shows': 'TV Shows and Series',
+  }[creditKind] || 'Credited Works';
+
   if (works.length >= 3) {
     const withYear = works.filter((w) => w.year);
     const span = withYear.length >= 2
@@ -200,7 +224,7 @@ for (const file of files) {
 
     sections.push({
       id: 'works',
-      heading: `${name} — ${isFilm ? 'Filmography and Screen Credits' : 'Credited Works'}`,
+      heading: `${name} — ${creditsHeading}`,
       paras: [
         roleEntries.length === 1
           ? `Public databases list ${works.length} ${noun} for ${name}${span ? `, spanning ${span}` : ''}, all as ${roleEntries[0][0]}.`
@@ -327,22 +351,9 @@ for (const file of files) {
      knowledge panel — those impressions convert at ~0.1%. The credits
      list, spouse and family are what a panel can't fit, so they lead and
      the age/height keywords ride along at the end for coverage. */
-  /* Label from what the credits actually are, not the person's category —
-     a singer who judged one TV show still classifies as 'actor'. */
-  const creditsAngle = (() => {
-    if (works.length < 5) return null;
-    const buckets = { Movies: 0, Songs: 0, 'TV Shows': 0 };
-    for (const w of works) {
-      const t = w.type || '';
-      if (/\bfilm\b|movie/.test(t)) buckets.Movies++;
-      else if (/music|song|single|album|track|discography/.test(t)) buckets.Songs++;
-      else if (/television|web series|miniseries|series/.test(t)) buckets['TV Shows']++;
-    }
-    const [best, n] = Object.entries(buckets).sort((a, b) => b[1] - a[1])[0];
-    return n >= 5 ? best : 'Career';
-  })();
   const angles = [];
-  if (creditsAngle) angles.push(creditsAngle);
+  if (creditKind) angles.push(creditKind);
+  else if (works.length >= 5) angles.push('Career');
   if (f.spouses?.length) angles.push(f.gender === 'female' ? 'Husband' : 'Wife');
   else if (f.children?.length) angles.push('Family');
   if (f.awards?.length && angles.length < 2) angles.push('Awards');
