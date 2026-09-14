@@ -19,6 +19,7 @@ const related = relatedFor(p.slug);
 /* ---- Person schema: only fields we actually hold ---- */
 const person = {
   '@type': 'Person', '@id': `${url}#person`, name: p.name, url,
+  ...(p.alsoSpelled?.length ? { alternateName: p.alsoSpelled } : {}),
   ...(p.image?.url ? { image: `${SITE.domain}${p.image.url}` } : {}),
   ...(p.role ? { description: `${p.role}${ageInfo ? `, age ${ageInfo.age}` : ''}` } : {}),
   ...(p.birthDate?.year && p.birthDate.month && p.birthDate.day

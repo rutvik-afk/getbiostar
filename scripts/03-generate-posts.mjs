@@ -77,6 +77,40 @@ for (const file of files) {
   const occ = list(occs);
   const natPhrase = nationalityPhrase(f.citizenship);
 
+  /* Wikidata stores one official spelling, but a large share of the search
+     volume arrives on a phonetic variant — 301K/mo on "keerthi suresh"
+     against the page's "Keerthy Suresh". These are genuine alternative
+     spellings, so the page says so and the Person schema carries them as
+     alternateName. Guards: no fact queries, no repeated-word spam, and an
+     edit distance of 3 keeps it to real misspellings of the same name. */
+  const alsoSpelled = (() => {
+    const canon = name.toLowerCase().replace(/[^a-z ]/g, '').trim();
+    const FACT = /\b(age|height|weight|wiki|wikipedia|biography|bio|net ?worth|husband|wife|family|children|son|daughter|movies|films|songs|birthday|date of birth|dob|photos?|images?|news|born|feet|cm|kg|size|caste|religion|salary|house|car)\b/i;
+    const dist = (a, b) => {
+      let prev = [...Array(b.length + 1).keys()];
+      for (let i = 1; i <= a.length; i++) {
+        const cur = [i];
+        for (let j = 1; j <= b.length; j++) {
+          cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        }
+        prev = cur;
+      }
+      return prev[b.length];
+    };
+    const out = [];
+    for (const k of f.seo?.keywords || []) {
+      const norm = k.kw.toLowerCase().replace(/[^a-z ]/g, '').trim();
+      if (FACT.test(k.kw) || !norm || norm === canon) continue;
+      const words = norm.split(' ');
+      if (new Set(words).size !== words.length) continue;
+      if (dist(norm, canon) > 3) continue;
+      if (out.some((o) => dist(o.toLowerCase(), norm) <= 1)) continue;
+      out.push(k.kw.replace(/\b\p{Ll}/gu, (c) => c.toUpperCase()));
+      if (out.length === 2) break;
+    }
+    return out;
+  })();
+
   /* ---------------- LEAD ---------------- */
   const leadOpen = pick([
     `${name} is ${withArticle(role)}`, `${name} is best known as ${withArticle(role)}`,
@@ -89,6 +123,10 @@ for (const file of files) {
     else if (bp) a += ` from ${bp}`;
     a += '.';
     lead.push(a);
+
+    if (alsoSpelled.length) {
+      lead.push(`The name is also commonly spelled ${list(alsoSpelled)}.`);
+    }
 
     if (ageInfo) {
       lead.push(alive
@@ -371,7 +409,7 @@ for (const file of files) {
   ].join(' ').replace(/\s+/g, ' ').trim().slice(0, 158);
 
   posts.push({
-    slug: f.slug, name, title, metaDescription, category: cat,
+    slug: f.slug, name, title, metaDescription, category: cat, alsoSpelled,
     role, nationality: f.citizenship?.[0] || null, occupations: occs,
     alive, birthDate: f.birthDate, deathDate: f.deathDate,
     birthPlace: f.birthPlace || [], heightCm: f.heightCm, massKg: f.massKg,

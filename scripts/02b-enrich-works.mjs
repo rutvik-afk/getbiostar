@@ -78,9 +78,17 @@ for (const g of groups) {
   for (const qid of g) {
     const slug = byQid[qid];
     if (!slug) continue;
-    const seen = new Set();
-    existing[slug] = (acc[slug] || [])
-      .filter((w) => { const k = w.title + '|' + w.year; return seen.has(k) ? false : seen.add(k); })
+    /* Wikidata carries a separate publication date per territory, so one
+       film arrives as several rows — Dangal as both 2016 (India) and 2017
+       (China). Keying on title+role and keeping the earliest date collapses
+       those to the original release instead of listing the film twice. */
+    const best = new Map();
+    for (const w of acc[slug] || []) {
+      const k = `${w.title.toLowerCase()}|${w.role}`;
+      const prev = best.get(k);
+      if (!prev || (w.year && (!prev.year || w.year < prev.year))) best.set(k, w);
+    }
+    existing[slug] = [...best.values()]
       .sort((a, b) => (b.year || 0) - (a.year || 0))
       .slice(0, 60);
   }

@@ -83,6 +83,26 @@ function readClaim(c) {
    publishing nothing, so every match has to survive this check.      */
 const TITLES = new Set(['major','captain','colonel','lt','general','dr','doctor','sir','shri','smt','mr','mrs','ms','prof','professor','ips','ias','justice','sant','swami','pandit','ustad','md','er','adv','late','the','of']);
 
+/* Particles that are correctly lower-case inside a name and must survive
+   the capitalisation pass — "AB de Villiers", "Mohammed bin Salman". */
+const NAME_PARTICLES = new Set(['de','del','della','van','von','der','den','bin','ibn','al','el','la','le','da','di','du','dos','das','y','e','of','the','ter','ten']);
+
+/* Wikidata labels carry disambiguators the page should never show:
+   "Uma (Tamil actress)", "Murali Mohan born 1945". Strip those, then fix
+   a stray lower-case word ("Navya nair") without touching particles. */
+function cleanName(label) {
+  if (!label) return label;
+  return label
+    .replace(/\s*\([^)]*\)\s*$/, '')
+    .replace(/\s+born\s+\d{4}\s*$/i, '')
+    .trim()
+    .split(/\s+/)
+    .map((w, i) => (i > 0 && NAME_PARTICLES.has(w.toLowerCase().split('-')[0]))
+      ? w
+      : w.replace(/^\p{Ll}/u, (c) => c.toUpperCase()))
+    .join(' ');
+}
+
 function editDistance(a, b) {
   const m = a.length, n = b.length;
   if (Math.abs(m - n) > 2) return 3;
@@ -206,7 +226,7 @@ for (const t of slice) {
   const image = typeof imgKey === 'string' ? licenses[imgKey] || null : null;
 
   const facts = {
-    slug: t.slug, name: r.label, qid: r.qid,
+    slug: t.slug, name: cleanName(r.label), qid: r.qid,
     seo: { volume: t.volume, kd: t.kd, score: t.score, keywords: t.keywords },
     shortDescription: r.description, aliases: r.aliases,
     birthName: str('birthName'),
