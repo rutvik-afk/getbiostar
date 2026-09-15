@@ -135,3 +135,44 @@ export async function commonsLicenses(files) {
   }
   return out;
 }
+
+/** Best free-licensed Commons portrait for a person, or null.
+
+    Wikidata's P18 is empty for a lot of very well-known people — Virat
+    Kohli, Dharmendra — even though Commons holds a properly licensed
+    photo of them. This is the fallback for that case.
+
+    The filename must carry the person's full name. Scoring alone is not
+    enough: "Digangana Suryavanshi..." outscored the threshold for Vaibhav
+    Suryavanshi on a shared surname, and "Jitesh Pillai..." for Jitesh
+    Sharma. A wrong face on a biography is worse than placeholder art, so
+    the name check is a filter, not a weight. */
+export async function commonsPortrait(name) {
+  const norm = (s) => s.toLowerCase().replace(/[-_]+/g, ' ').replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+  const want = norm(name);
+  if (!want) return null;
+
+  const u = `https://commons.wikimedia.org/w/api.php?action=query&format=json&list=search&srnamespace=6&srlimit=10&srsearch=${encodeURIComponent(name)}`;
+  let hits;
+  try { hits = await getJSON(u, { cache: true }); } catch { return null; }
+
+  const named = (hits?.query?.search || [])
+    .map((x) => x.title.replace(/^File:/, ''))
+    .filter((f) => /\.(jpe?g|png)$/i.test(f) && norm(f).includes(want));
+  if (!named.length) return null;
+
+  const meta = await commonsLicenses(named);
+  const ranked = named.map((f) => {
+    const m = meta[f];
+    if (!m) return null;
+    const fl = norm(f);
+    const ratio = m.height / m.width;
+    let s = 0;
+    if (/portrait|headshot|cropped/.test(fl)) s += 2;
+    if (ratio >= 1.05) s += 2; else if (ratio >= 0.85) s += 1;
+    if (/\band\b|\bwith\b|group|team|wedding|reception|funeral/.test(fl)) s -= 3;
+    return { ...m, score: s };
+  }).filter(Boolean).sort((a, b) => b.score - a.score);
+
+  return ranked[0] && ranked[0].score >= 0 ? ranked[0] : null;
+}

@@ -12,7 +12,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { SITE } from '../site.config.mjs';
 import { hash, rolePhrase, cap, isAdultContent } from '../src/lib/bio.mjs';
-import { UA } from './lib/wiki.mjs';
+import { UA, commonsPortrait } from './lib/wiki.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const BRAND = path.join(ROOT, 'public/brand');
@@ -110,11 +110,6 @@ const MANIFEST = path.join(ROOT, 'data/images.json');
    two can run in any order without a rebuild ever losing a downloaded photo. */
 const manifest = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
 
-const jobs = fs.readdirSync(FACTS_DIR)
-  .filter((f) => f.endsWith('.json'))
-  .filter((f) => !isAdultContent(JSON.parse(fs.readFileSync(path.join(FACTS_DIR, f), 'utf8'))))
-  .map((f) => path.join(FACTS_DIR, f));
-
 /* A social card is only ever fetched for a page that is live, so build it
    for published slugs only. Portraits are built for everyone, because the
    drip publisher needs them ready without re-hitting Wikimedia. */
@@ -124,10 +119,29 @@ const PUBLISHED = new Set(
     ? fs.readdirSync(PUB_DIR).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5))
     : []
 );
+
+/* Ordered so the per-run Commons budget is spent where it shows: pages
+   already live first, then whoever the publisher reaches soonest.
+   Alphabetical order burned it on profiles years down the queue. */
+const jobs = fs.readdirSync(FACTS_DIR)
+  .filter((f) => f.endsWith('.json'))
+  .map((f) => ({ f, facts: JSON.parse(fs.readFileSync(path.join(FACTS_DIR, f), 'utf8')) }))
+  .filter(({ facts }) => !isAdultContent(facts))
+  .sort((a, b) => {
+    const live = PUBLISHED.has(b.facts.slug) - PUBLISHED.has(a.facts.slug);
+    return live || (b.facts.seo?.score || 0) - (a.facts.seo?.score || 0);
+  })
+  .map(({ f }) => path.join(FACTS_DIR, f));
 if (process.env.LIMIT) jobs.length = Math.min(jobs.length, Number(process.env.LIMIT));
 console.log(`Processing images for ${jobs.length} profiles (concurrency ${CONC})…`);
 
 let downloaded = 0, generated = 0, reused = 0, failed = 0;
+
+/* Commons lookups are the one uncached network cost here, so they run on a
+   per-run budget and every result — hit or miss — is remembered. */
+let commonsBudget = Number(process.env.COMMONS_BUDGET || 40);
+let commonsFound = 0;
+const commonsChecked = new Set();
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -165,7 +179,19 @@ async function processOne(fp) {
   const role = cap(rolePhrase(f) || f.shortDescription || '');
   const webp = path.join(IMG, `${slug}.webp`);
   const ogj = path.join(IMG, `${slug}-og.jpg`);
-  const remote = f.image || null;
+  let remote = f.image || null;
+
+  /* Wikidata's P18 is empty for plenty of very well-known people, so a
+     profile that would otherwise ship placeholder art gets one Commons
+     lookup first. Capped per run and the outcome cached either way, so
+     the ~1,000 affected profiles backfill over a few days instead of
+     adding a thousand API calls to every run. */
+  if (!remote?.url && !manifest[slug]?.commonsChecked && commonsBudget > 0) {
+    commonsBudget--;
+    const found = await commonsPortrait(name);
+    if (found) { remote = found; commonsFound++; }
+    commonsChecked.add(slug);
+  }
 
   const wantPhoto = !!remote?.url;
   const wantOg = PUBLISHED.has(slug);
@@ -196,6 +222,7 @@ async function processOne(fp) {
         width: 600, height: 800,
         license: remote.license, licenseUrl: remote.licenseUrl,
         author: remote.author || remote.credit, page: remote.page,
+        ...(commonsChecked.has(slug) ? { commonsChecked: true } : {}),
       };
       downloaded++;
     } else {
@@ -210,6 +237,7 @@ async function processOne(fp) {
            instead of freezing this profile on placeholder art */
         ...(wantPhoto ? { pendingPhoto: true } : {}),
         ...(wantOg ? {} : { ogPending: true }),
+        ...(commonsChecked.has(slug) || manifest[slug]?.commonsChecked ? { commonsChecked: true } : {}),
       };
       generated++;
     }
@@ -245,3 +273,4 @@ for (const dir of [path.join(ROOT, 'content/queue'), path.join(ROOT, 'content/pu
 }
 console.log(`\n   manifest applied to ${stamped} existing posts`);
 console.log(`\n✅ images: ${downloaded} photos self-hosted, ${generated} original covers, ${reused} cached, ${failed} failed`);
+if (commonsFound) console.log(`   ${commonsFound} portrait(s) recovered from Commons where Wikidata had none`);
