@@ -79,7 +79,7 @@ async function buildOgCard(photoBuf, name, subtitle, out) {
   if (photoBuf) {
     base = await sharp(photoBuf).resize(1200, 630, { fit: 'cover', position: 'top' }).blur(28).modulate({ brightness: 0.5 }).toBuffer();
     const card = await sharp(photoBuf)
-      .resize(300, 400, { fit: 'cover', position: sharp.strategy.entropy })
+      .resize(300, 400, { fit: 'cover', position: await cropFor(photoBuf) })
       .modulate({ brightness: 1.12, saturation: 1.06 })
       .toBuffer();
     /* thin light frame so the portrait separates from the dark backdrop */
@@ -142,6 +142,26 @@ let downloaded = 0, generated = 0, reused = 0, failed = 0;
 let commonsBudget = Number(process.env.COMMONS_BUDGET || 40);
 let commonsFound = 0;
 const commonsChecked = new Set();
+
+/* Bump when the crop rule changes; profiles below it get re-cropped once. */
+const CROP_V = 2;
+let recropBudget = Number(process.env.RECROP_BUDGET || 60);
+let recropped = 0;
+
+/* Press photos of people are overwhelmingly tall full-body shots, and the
+   face sits in the top fifth. sharp's entropy and attention strategies both
+   read the busiest region instead — on a 1200x2132 red-carpet frame that is
+   patterned clothing, so the crop landed on the torso and cut the head off.
+   Anchor to the top whenever the source is taller than the 3:4 target and
+   leave the smart crop to handle wide frames, where the subject really can
+   be anywhere horizontally. */
+async function cropFor(buf) {
+  try {
+    const { width, height } = await sharp(buf).metadata();
+    if (width && height && height / width > 1.4) return 'top';
+  } catch {}
+  return sharp.strategy.attention;
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -212,13 +232,24 @@ async function processOne(fp) {
   const havePhoto = entry && !entry.generated;
   const pending = entry?.pendingPhoto;
   const ogOk = !wantOg || fs.existsSync(ogj);
-  if (entry && !pending && fs.existsSync(webp) && ogOk && wantPhoto === havePhoto) { reused++; return; }
+
+  /* Re-crop pass: the old crop cut the head off tall photos (see cropFor),
+     and a local .webp is already cropped, so fixing it means going back to
+     the source. Budgeted like the Commons lookups so the ~800 affected
+     profiles are repaired over a few runs rather than all at once. Decided
+     before the reuse check below, which would otherwise see a perfectly
+     valid-looking file and skip the profile forever. */
+  const needsRecrop = wantPhoto && havePhoto && held?.cropV !== CROP_V
+    && (held?.sourceUrl || remote?.url) && recropBudget > 0;
+  if (needsRecrop) recropBudget--;
+
+  if (entry && !pending && !needsRecrop && fs.existsSync(webp) && ogOk && wantPhoto === havePhoto) { reused++; return; }
 
   let buf = null;
   if (wantPhoto) {
-    buf = havePhoto && fs.existsSync(webp)
+    buf = havePhoto && fs.existsSync(webp) && !needsRecrop
       ? fs.readFileSync(webp)            // rebuild derivatives from our own copy
-      : await fetchBuf(remote.url);      // first time: pull it down once
+      : await fetchBuf(held?.sourceUrl || remote.url);
     if (!buf) failed++;
   }
 
@@ -230,8 +261,8 @@ async function processOne(fp) {
          existence check silently kept it after Commons finally found a real
          portrait — the manifest read "CC BY-SA 4.0" while the page still
          served the generated cover. Overwrite whenever we're upgrading. */
-      if (!fs.existsSync(webp) || !havePhoto) {
-        await sharp(buf).resize(600, 800, { fit: 'cover', position: sharp.strategy.entropy })
+      if (!fs.existsSync(webp) || !havePhoto || needsRecrop) {
+        await sharp(buf).resize(600, 800, { fit: 'cover', position: await cropFor(buf) })
           .webp({ quality: 82, effort: 4 }).toFile(webp);
       }
       if (wantOg) await buildOgCard(buf, p.name, p.role || '', ogj);
@@ -240,7 +271,7 @@ async function processOne(fp) {
         width: 600, height: 800,
         license: remote.license, licenseUrl: remote.licenseUrl,
         author: remote.author || remote.credit, page: remote.page,
-        sourceUrl: remote.url,
+        sourceUrl: remote.url, cropV: CROP_V,
         ...(commonsChecked.has(slug) || held?.commonsChecked ? { commonsChecked: true } : {}),
       };
       downloaded++;
