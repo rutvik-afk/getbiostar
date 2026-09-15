@@ -193,6 +193,19 @@ async function processOne(fp) {
     commonsChecked.add(slug);
   }
 
+  /* Wikidata re-supplies f.image on every run, but a Commons fallback is
+     found once and then cached away from the lookup — so the manifest is
+     the only record that this profile has a real photo. Treat it as the
+     source, or the next run sees no image and regenerates placeholder art
+     over a portrait we already have. */
+  const held = manifest[slug];
+  if (!remote?.url && held && !held.generated && held.sourceUrl) {
+    remote = {
+      url: held.sourceUrl, license: held.license, licenseUrl: held.licenseUrl,
+      author: held.author, page: held.page,
+    };
+  }
+
   const wantPhoto = !!remote?.url;
   const wantOg = PUBLISHED.has(slug);
   const entry = manifest[slug];
@@ -212,7 +225,12 @@ async function processOne(fp) {
   const p = { name, role };
   try {
     if (buf) {
-      if (!fs.existsSync(webp)) {
+      /* An existing file is not proof we already hold the photo: a profile
+         that shipped placeholder art has a .webp sitting there, and a plain
+         existence check silently kept it after Commons finally found a real
+         portrait — the manifest read "CC BY-SA 4.0" while the page still
+         served the generated cover. Overwrite whenever we're upgrading. */
+      if (!fs.existsSync(webp) || !havePhoto) {
         await sharp(buf).resize(600, 800, { fit: 'cover', position: sharp.strategy.entropy })
           .webp({ quality: 82, effort: 4 }).toFile(webp);
       }
@@ -222,7 +240,8 @@ async function processOne(fp) {
         width: 600, height: 800,
         license: remote.license, licenseUrl: remote.licenseUrl,
         author: remote.author || remote.credit, page: remote.page,
-        ...(commonsChecked.has(slug) ? { commonsChecked: true } : {}),
+        sourceUrl: remote.url,
+        ...(commonsChecked.has(slug) || held?.commonsChecked ? { commonsChecked: true } : {}),
       };
       downloaded++;
     } else {
