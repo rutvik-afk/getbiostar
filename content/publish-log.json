@@ -454,6 +454,11 @@
    "date": "2026-09-14",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-15",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -614,6 +619,7 @@
   "gulshan-devaiah": "2026-09-14",
   "shashi-kapoor": "2026-09-14",
   "virat-kohli": "2026-09-14",
-  "rajat-bedi": "2026-09-14"
+  "rajat-bedi": "2026-09-14",
+  "tamannaah-bhatia": "2026-09-15"
  }
 }
