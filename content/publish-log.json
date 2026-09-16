@@ -474,6 +474,11 @@
    "date": "2026-09-15",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-16",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -638,6 +643,7 @@
   "tamannaah-bhatia": "2026-09-15",
   "mamitha-baiju": "2026-09-15",
   "jannat-zubair-rahmani": "2026-09-15",
-  "disha-patani": "2026-09-15"
+  "disha-patani": "2026-09-15",
+  "sonam-bajwa": "2026-09-16"
  }
 }
