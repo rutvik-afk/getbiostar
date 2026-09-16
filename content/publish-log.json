@@ -489,6 +489,11 @@
    "date": "2026-09-16",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-16",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -656,6 +661,7 @@
   "disha-patani": "2026-09-15",
   "sonam-bajwa": "2026-09-16",
   "naslen-k-gafoor": "2026-09-16",
-  "raghav-juyal": "2026-09-16"
+  "raghav-juyal": "2026-09-16",
+  "mouni-roy": "2026-09-16"
  }
 }
