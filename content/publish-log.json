@@ -519,6 +519,11 @@
    "date": "2026-09-18",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-18",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -692,6 +697,7 @@
   "smriti-mandhana": "2026-09-17",
   "gaurav-khanna": "2026-09-17",
   "hania-aamir": "2026-09-17",
-  "priyanka-mohan": "2026-09-18"
+  "priyanka-mohan": "2026-09-18",
+  "vignesh-shivan": "2026-09-18"
  }
 }
