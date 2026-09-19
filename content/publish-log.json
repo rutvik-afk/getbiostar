@@ -539,6 +539,11 @@
    "date": "2026-09-19",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-19",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -716,6 +721,7 @@
   "vignesh-shivan": "2026-09-18",
   "fatima-sana-shaikh": "2026-09-18",
   "tara-sutaria": "2026-09-18",
-  "zarine-khan": "2026-09-19"
+  "zarine-khan": "2026-09-19",
+  "rakshit-shetty": "2026-09-19"
  }
 }
