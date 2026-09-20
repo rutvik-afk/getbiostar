@@ -559,6 +559,11 @@
    "date": "2026-09-20",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-20",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -740,6 +745,7 @@
   "rakshit-shetty": "2026-09-19",
   "nora-fatehi": "2026-09-19",
   "kavya-maran": "2026-09-19",
-  "shivangi-joshi": "2026-09-20"
+  "shivangi-joshi": "2026-09-20",
+  "nikitin-dheer": "2026-09-20"
  }
 }
