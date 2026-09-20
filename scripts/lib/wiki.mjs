@@ -2,8 +2,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+/* Wikimedia's UA policy wants a real, reachable contact — this pointed at
+   biostar.com, which isn't us, so requests were identifying against a
+   domain that doesn't exist. */
 export const UA =
-  'BioStarBot/1.0 (https://biostar.com; contact@biostar.com) node-fetch';
+  'BioStarBot/1.0 (https://www.getbiostar.com; getbiostar@gmail.com) node-fetch';
 
 const CACHE = path.resolve(import.meta.dirname, '..', '..', 'data', '.cache');
 fs.mkdirSync(CACHE, { recursive: true });

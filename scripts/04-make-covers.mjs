@@ -293,6 +293,25 @@ async function processOne(fp) {
     }
   } catch (e) {
     failed++;
+    /* Some Commons files are malformed enough that libvips refuses them —
+       Barron Trump's portrait is an "Invalid SOS parameters" JPEG. Without
+       settling the manifest here the profile keeps claiming a photo it can
+       never rebuild, so every run re-downloads the same broken file and
+       spends a recrop slot on it forever. Fall back to the cover and
+       record why, so it stops being retried. */
+    try {
+      if (!fs.existsSync(webp)) {
+        await sharp(Buffer.from(coverSVG(name, role))).resize(600).webp({ quality: 84 }).toFile(webp);
+      }
+      if (wantOg && !fs.existsSync(ogj)) await buildOgCard(null, name, role, ogj);
+      manifest[slug] = {
+        url: `/img/${slug}.webp`, ogUrl: `/img/${slug}-og.jpg`,
+        width: 600, height: 800, generated: true, cropV: CROP_V,
+        license: 'Original artwork', author: SITE.name,
+        sourceUnusable: remote?.url || true,
+        ...(commonsChecked.has(slug) || held?.commonsChecked ? { commonsChecked: true } : {}),
+      };
+    } catch {}
   }
 }
 
