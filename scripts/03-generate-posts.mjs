@@ -399,17 +399,34 @@ for (const file of files) {
   if (f.heightCm) angles.push('Height');
   if (angles.length < 3) angles.push('Family');
   const title = `${name} — ${angles.slice(0, 3).join(', ')} & Biography`;
-  const metaDescription = [
-    `${name}${ageInfo && alive ? ` is ${ageInfo.age}` : ''}${born ? `, born ${born}` : ''}${bp ? ` in ${bp}` : ''}.`,
-    f.heightCm ? `Height ${f.heightCm} cm (${cmToFeet(f.heightCm)}).` : '',
-    f.spouses?.length ? `Married to ${f.spouses[0].name}.` : '',
-    works.length >= 5
-      ? `Full ${works.length}-title credits list, family, career timeline and awards.`
-      : `Full biography, family, career and awards.`,
-  ].join(' ').replace(/\s+/g, ' ').trim().slice(0, 158);
+  /* The snippet used to open with the age — the exact fact Google has
+     already printed in its answer box above us. 8,796 impressions on
+     "katrina kaif age" returned 9 clicks, because by the time the reader
+     reached our line the question was answered. Lead instead with what a
+     panel cannot hold — the full credits list, the marriage, the
+     timeline — and let age and height close as reassurance. */
+  const offer = [
+    works.length >= 5 && `all ${works.length} ${creditKind ? creditKind.toLowerCase() : 'credits'}`,
+    f.spouses?.length && `${P('poss')} marriage to ${f.spouses[0].name}`,
+    f.awards?.length && 'awards',
+    'family background',
+    'a year-by-year timeline',
+  ].filter(Boolean);
+  const closer = [
+    ageInfo && alive ? `age ${ageInfo.age}` : null,
+    f.heightCm ? `height ${f.heightCm} cm (${cmToFeet(f.heightCm)})` : null,
+    born ? 'date of birth' : null,
+  ].filter(Boolean);
+  const pitch = `${cap(list(offer.slice(0, 3)))} for ${name}`
+    + (closer.length ? `, plus verified ${list(closer)}.` : '.');
+  /* Add the provenance line only when it fits whole — a snippet cut to
+     "Sourced from open pub" reads as broken markup in the SERP. */
+  const provenance = ' Sourced from open public records.';
+  const meta = (pitch.length + provenance.length <= 158 ? pitch + provenance : pitch)
+    .replace(/\s+/g, ' ').trim();
 
   posts.push({
-    slug: f.slug, name, title, metaDescription, category: cat, alsoSpelled,
+    slug: f.slug, name, title, metaDescription: meta, category: cat, alsoSpelled,
     role, nationality: f.citizenship?.[0] || null, occupations: occs,
     alive, birthDate: f.birthDate, deathDate: f.deathDate,
     birthPlace: f.birthPlace || [], heightCm: f.heightCm, massKg: f.massKg,
