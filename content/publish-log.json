@@ -584,6 +584,11 @@
    "date": "2026-09-21",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-21",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -770,6 +775,7 @@
   "kartik-aaryan": "2026-09-20",
   "tovino-thomas": "2026-09-20",
   "malavika-mohanan": "2026-09-21",
-  "vaani-kapoor": "2026-09-21"
+  "vaani-kapoor": "2026-09-21",
+  "meenakshi-chaudhary": "2026-09-21"
  }
 }
