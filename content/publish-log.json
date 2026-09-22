@@ -604,6 +604,11 @@
    "date": "2026-09-22",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-22",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -794,6 +799,7 @@
   "meenakshi-chaudhary": "2026-09-21",
   "ajit-doval": "2026-09-21",
   "urfi-javed": "2026-09-22",
-  "daggubati-venkatesh": "2026-09-22"
+  "daggubati-venkatesh": "2026-09-22",
+  "rishab-shetty": "2026-09-22"
  }
 }
