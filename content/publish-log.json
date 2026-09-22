@@ -594,6 +594,11 @@
    "date": "2026-09-21",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-22",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -782,6 +787,7 @@
   "malavika-mohanan": "2026-09-21",
   "vaani-kapoor": "2026-09-21",
   "meenakshi-chaudhary": "2026-09-21",
-  "ajit-doval": "2026-09-21"
+  "ajit-doval": "2026-09-21",
+  "urfi-javed": "2026-09-22"
  }
 }
