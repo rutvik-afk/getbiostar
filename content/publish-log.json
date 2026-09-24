@@ -639,6 +639,11 @@
    "date": "2026-09-24",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-24",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -836,6 +841,7 @@
   "the-great-khali": "2026-09-23",
   "shakira": "2026-09-23",
   "sania-mirza": "2026-09-23",
-  "sai-tamhankar": "2026-09-24"
+  "sai-tamhankar": "2026-09-24",
+  "sonali-bendre": "2026-09-24"
  }
 }
