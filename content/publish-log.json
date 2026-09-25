@@ -664,6 +664,11 @@
    "date": "2026-09-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-25",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -866,6 +871,7 @@
   "anushka-sen": "2026-09-24",
   "karisma-kapoor": "2026-09-24",
   "saiyami-kher": "2026-09-25",
-  "manushi-chhillar": "2026-09-25"
+  "manushi-chhillar": "2026-09-25",
+  "prajakta-koli": "2026-09-25"
  }
 }
