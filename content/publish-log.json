@@ -654,6 +654,11 @@
    "date": "2026-09-24",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-25",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -854,6 +859,7 @@
   "sai-tamhankar": "2026-09-24",
   "sonali-bendre": "2026-09-24",
   "anushka-sen": "2026-09-24",
-  "karisma-kapoor": "2026-09-24"
+  "karisma-kapoor": "2026-09-24",
+  "saiyami-kher": "2026-09-25"
  }
 }
