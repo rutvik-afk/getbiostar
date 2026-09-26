@@ -501,8 +501,13 @@ for (const p of posts) {
     const prev = JSON.parse(fs.readFileSync(livePath, 'utf8'));
     const changed = JSON.stringify({ ...p, publishedAt: 0, updatedAt: 0, generatedAt: 0 })
                  !== JSON.stringify({ ...prev, publishedAt: 0, updatedAt: 0, generatedAt: 0 });
-    p.publishedAt = prev.publishedAt;
-    p.updatedAt = changed ? today : (prev.updatedAt || prev.publishedAt);
+    /* A live file should always carry its publish date, but one can arrive
+       without it — a queue-shaped file landing on a published path through
+       a bad merge, say. Copying the blank forward would keep it blank on
+       every later run and leave the page with no datePublished in its
+       schema, so fall back to when the record was first built. */
+    p.publishedAt = prev.publishedAt || prev.generatedAt || today;
+    p.updatedAt = changed ? today : (prev.updatedAt || p.publishedAt);
     fs.writeFileSync(livePath, JSON.stringify(p));
     refreshed++;
   } else {
