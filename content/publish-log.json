@@ -674,6 +674,11 @@
    "date": "2026-09-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-26",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -878,6 +883,7 @@
   "saiyami-kher": "2026-09-25",
   "manushi-chhillar": "2026-09-25",
   "prajakta-koli": "2026-09-25",
-  "ram-pothineni": "2026-09-25"
+  "ram-pothineni": "2026-09-25",
+  "dawood-ibrahim": "2026-09-26"
  }
 }
