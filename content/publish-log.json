@@ -689,6 +689,11 @@
    "date": "2026-09-26",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-26",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -896,6 +901,7 @@
   "ram-pothineni": "2026-09-25",
   "dawood-ibrahim": "2026-09-26",
   "soundarya": "2026-09-26",
-  "raveena-tandon": "2026-09-26"
+  "raveena-tandon": "2026-09-26",
+  "raju-srivastav": "2026-09-26"
  }
 }
