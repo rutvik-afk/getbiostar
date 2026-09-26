@@ -19,7 +19,7 @@ export const SITE = {
   gscVerification: 'yoiQRCSfjJbtwTDJt-kOmdvkpi96d8x7burL_VDrjy0',
   gaMeasurementId: 'G-B27N3MEH80',
   adsenseClient: '', // ex: 'ca-pub-XXXXXXXXXXXXXXXX'
-  postsPerDay: 4,
+  postsPerDay: 8,
   perPage: 24,
   description:
     'Fact-checked celebrity biographies: age, height, birthplace, family, education, career timeline and awards — sourced from open public records.',
