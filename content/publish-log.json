@@ -704,6 +704,11 @@
    "date": "2026-09-27",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-27",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -914,6 +919,7 @@
   "raveena-tandon": "2026-09-26",
   "raju-srivastav": "2026-09-26",
   "elvish-yadav": "2026-09-27",
-  "sarath-kumar": "2026-09-27"
+  "sarath-kumar": "2026-09-27",
+  "prabhu-deva": "2026-09-27"
  }
 }
