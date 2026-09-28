@@ -769,6 +769,11 @@
    "date": "2026-09-28",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-28",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -992,6 +997,7 @@
   "danish-taimoor": "2026-09-28",
   "charulatha": "2026-09-28",
   "harleen-deol": "2026-09-28",
-  "sharad-pawar": "2026-09-28"
+  "sharad-pawar": "2026-09-28",
+  "nushrat-bharucha": "2026-09-28"
  }
 }
