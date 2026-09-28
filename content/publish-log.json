@@ -744,6 +744,11 @@
    "date": "2026-09-28",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-28",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -962,6 +967,7 @@
   "pawan-kalyan": "2026-09-27",
   "kangana-ranaut": "2026-09-27",
   "johnny-lever": "2026-09-28",
-  "nazriya-nazim": "2026-09-28"
+  "nazriya-nazim": "2026-09-28",
+  "armaan-malik": "2026-09-28"
  }
 }
