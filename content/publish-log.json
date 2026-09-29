@@ -784,6 +784,11 @@
    "date": "2026-09-29",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-29",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1010,6 +1015,7 @@
   "sharad-pawar": "2026-09-28",
   "nushrat-bharucha": "2026-09-28",
   "teja-sajja": "2026-09-29",
-  "kashmira-shah": "2026-09-29"
+  "kashmira-shah": "2026-09-29",
+  "neelima-azeem": "2026-09-29"
  }
 }
