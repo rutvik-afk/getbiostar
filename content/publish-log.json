@@ -829,6 +829,11 @@
    "date": "2026-09-30",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-30",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1064,6 +1069,7 @@
   "shweta-tiwari": "2026-09-29",
   "divya-bharti": "2026-09-30",
   "sharmila-tagore": "2026-09-30",
-  "nargis-fakhri": "2026-09-30"
+  "nargis-fakhri": "2026-09-30",
+  "roman-reigns": "2026-09-30"
  }
 }
