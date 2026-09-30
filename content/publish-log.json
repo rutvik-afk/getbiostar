@@ -814,6 +814,11 @@
    "date": "2026-09-29",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-30",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1046,6 +1051,7 @@
   "esha-gupta": "2026-09-29",
   "major-mohit-sharma": "2026-09-29",
   "kabir-bedi": "2026-09-29",
-  "shweta-tiwari": "2026-09-29"
+  "shweta-tiwari": "2026-09-29",
+  "divya-bharti": "2026-09-30"
  }
 }
