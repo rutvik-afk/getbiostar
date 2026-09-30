@@ -839,6 +839,11 @@
    "date": "2026-09-30",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-09-30",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1076,6 +1081,7 @@
   "sharmila-tagore": "2026-09-30",
   "nargis-fakhri": "2026-09-30",
   "roman-reigns": "2026-09-30",
-  "zubeen-garg": "2026-09-30"
+  "zubeen-garg": "2026-09-30",
+  "leonardo-dicaprio": "2026-09-30"
  }
 }
