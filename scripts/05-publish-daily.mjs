@@ -65,10 +65,34 @@ const richnessOf = (p) =>
   (p.image ? 2 : 0) + (p.timeline?.length ? 1.5 : 0) + (p.faq?.length >= 6 ? 1 : 0) +
   (p.quickFacts?.length >= 10 ? 1 : 0) + (p.sections?.some((s) => s.works) ? 2 : 0);
 
+/* Demand, with difficulty as a lean rather than a veto.
+
+   seo.score (from 01-build-targets) multiplies demand by an ease factor
+   that swings about 4x between an easy keyword and a hard one. That made
+   sense for a site that could plausibly win the easy ones outright. This
+   one has an authority score of 10, so the realistic landing zone for any
+   competitive name is position 8-30 either way — difficulty decides where
+   inside that band, worth maybe 2x, while volume across the queue spans
+   more than 100x.
+
+   The evidence is Virat Kohli: 4.5M/mo at kd 38.6, not an easy keyword,
+   and his page alone accounts for ~84% of the site's estimated traffic.
+   Holding the ease swing to ~1.2x lifts the top-60 average volume from
+   182K to 313K and brings Zubeen Garg in from 85 days out to the front.
+
+   Caveat worth remembering: that is one data point. If DiCaprio and
+   Jaiswal do not behave like Kohli, this weighting is wrong and should
+   move back. */
+const demandOf = (p) => {
+  const vol = p.seo?.volume || 0;
+  const ease = Math.max(0, (100 - (p.seo?.kd ?? 50)) / 100);
+  return Math.log10(vol + 10) * (0.75 + 0.45 * ease);
+};
+
 const all = queued.map((f) => {
   const p = JSON.parse(fs.readFileSync(path.join(QUEUE, f), 'utf8'));
   const richness = richnessOf(p);
-  return { file: f, post: p, richness, prio: (p.seo?.score || 0) + richness * 0.3 };
+  return { file: f, post: p, richness, prio: demandOf(p) + richness * 0.3 };
 });
 const publishable = all.filter((x) => x.richness > 2);
 const scored = (publishable.length ? publishable : all).sort((a, b) => b.prio - a.prio);
