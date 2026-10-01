@@ -879,6 +879,11 @@
    "date": "2026-10-01",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-01",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1124,6 +1129,7 @@
   "jennifer-aniston": "2026-10-01",
   "lauren-sanchez": "2026-10-01",
   "jennifer-lawrence": "2026-10-01",
-  "paris-jackson": "2026-10-01"
+  "paris-jackson": "2026-10-01",
+  "shashi-tharoor": "2026-10-01"
  }
 }
