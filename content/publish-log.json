@@ -859,6 +859,11 @@
    "date": "2026-10-01",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-01",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1100,6 +1105,7 @@
   "leonardo-dicaprio": "2026-09-30",
   "raj-arjun": "2026-09-30",
   "jungkook": "2026-09-30",
-  "fahadh-faasil": "2026-10-01"
+  "fahadh-faasil": "2026-10-01",
+  "jennifer-aniston": "2026-10-01"
  }
 }
