@@ -854,6 +854,11 @@
    "date": "2026-09-30",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-01",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1094,6 +1099,7 @@
   "zubeen-garg": "2026-09-30",
   "leonardo-dicaprio": "2026-09-30",
   "raj-arjun": "2026-09-30",
-  "jungkook": "2026-09-30"
+  "jungkook": "2026-09-30",
+  "fahadh-faasil": "2026-10-01"
  }
 }
