@@ -1,7 +1,19 @@
 ---
 import { SITE, NAV, SOCIAL } from '../../site.config.mjs';
+import { postsByCategory } from '../lib/content.mjs';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
+
+/* NAV is a static list, but a /category/<x>/ page only gets built when some
+   published post sits in that category. "Creator" had 52 profiles queued and
+   none live, so every page on the site linked to a 404 — 582 dead internal
+   links. Drop the category links that have nothing behind them yet; they
+   come back on their own the day the first profile publishes. */
+const liveCats = new Set(Object.keys(postsByCategory()));
+const nav = NAV.filter((n) => {
+  const m = n.href.match(/^\/category\/([^/]+)\//);
+  return !m || liveCats.has(m[1]);
+});
 
 const {
   title, description, canonical, image = null, type = 'website',
@@ -102,7 +114,7 @@ const graph = [
         <summary aria-label="Open menu"><span class="bars" aria-hidden="true"></span></summary>
         <nav class="menu-panel" aria-label="Main">
           <ul>
-            {NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
             <li><a href="/about/">About</a></li>
             <li><a href="/contact/">Contact</a></li>
           </ul>
@@ -124,7 +136,7 @@ const graph = [
     </div>
     <nav class="subnav" aria-label="Sections">
       <div class="wrap">
-        <ul>{NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+        <ul>{nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
       </div>
     </nav>
   </header>
