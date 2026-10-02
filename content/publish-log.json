@@ -904,6 +904,11 @@
    "date": "2026-10-02",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-02",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1154,6 +1159,7 @@
   "shah-rukh-khan": "2026-10-01",
   "ishowspeed": "2026-10-01",
   "yashasvi-jaiswal": "2026-10-02",
-  "pradeep-ranganathan": "2026-10-02"
+  "pradeep-ranganathan": "2026-10-02",
+  "bhagyashri-borse": "2026-10-02"
  }
 }
