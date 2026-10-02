@@ -924,6 +924,11 @@
    "date": "2026-10-02",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-02",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1178,6 +1183,7 @@
   "bhagyashri-borse": "2026-10-02",
   "mithali-raj": "2026-10-02",
   "rukmini-vasanth": "2026-10-02",
-  "vaibhav-suryavanshi": "2026-10-02"
+  "vaibhav-suryavanshi": "2026-10-02",
+  "walker-scobell": "2026-10-02"
  }
 }
