@@ -57,10 +57,26 @@ if (!queued.length) { console.log('Queue is empty — run `npm run pipeline` fir
    seo.score spans ~4-9 because demand enters as log10(volume), so 1.1M
    searches sits barely half a point above 240K, while richness swings a
    full 0-7.5. Kavya Maran — 1.1M/mo — was ranked 1,256th, ~10 months out,
-   purely for having a thinner Wikidata record. Scaling richness to 0.3
-   keeps it deciding ties without outvoting demand, and a floor drops the
-   truly bare records (a portrait and nothing else) instead of letting a
-   high score drag them onto the site. */
+   purely for having a thinner Wikidata record. A floor drops the truly
+   bare records (a portrait and nothing else) instead of letting a high
+   score drag them onto the site.
+
+   Scaling richness to 0.3 was meant to leave it deciding ties only. It
+   did not: across the publishable queue, richness*0.3 still spans 1.20
+   while demand spans about 1.0 for any name with real volume. Yashasvi
+   Jaiswal — 1.79M/mo, the largest number in the queue — sat 90th, and
+   Vaibhav Suryavanshi at 925K sat 438th, both beaten by 230K actors with
+   fuller Wikidata records.
+
+   That also explains the category skew. Wikidata carries deep filmography
+   for Indian film actors and little for cricketers or politicians, so
+   ranking on richness ranks on "is this person an actor": 58 of the top
+   60 were actors, and 229 of the 245 pages already live. At 0.1 the
+   richness spread drops to 0.40 — genuinely a tiebreaker — the top-60
+   average volume rises from 217K to 335K, and the mix becomes 42 actors,
+   9 athletes, 4 notable, 3 politicians, 2 musicians without any explicit
+   category balancing. */
+const RICHNESS_WEIGHT = 0.1;
 const richnessOf = (p) =>
   (p.image ? 2 : 0) + (p.timeline?.length ? 1.5 : 0) + (p.faq?.length >= 6 ? 1 : 0) +
   (p.quickFacts?.length >= 10 ? 1 : 0) + (p.sections?.some((s) => s.works) ? 2 : 0);
@@ -92,7 +108,7 @@ const demandOf = (p) => {
 const all = queued.map((f) => {
   const p = JSON.parse(fs.readFileSync(path.join(QUEUE, f), 'utf8'));
   const richness = richnessOf(p);
-  return { file: f, post: p, richness, prio: demandOf(p) + richness * 0.3 };
+  return { file: f, post: p, richness, prio: demandOf(p) + richness * RICHNESS_WEIGHT };
 });
 const publishable = all.filter((x) => x.richness > 2);
 const scored = (publishable.length ? publishable : all).sort((a, b) => b.prio - a.prio);
