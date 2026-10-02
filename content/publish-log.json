@@ -894,6 +894,11 @@
    "date": "2026-10-01",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-02",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1142,6 +1147,7 @@
   "paris-jackson": "2026-10-01",
   "shashi-tharoor": "2026-10-01",
   "shah-rukh-khan": "2026-10-01",
-  "ishowspeed": "2026-10-01"
+  "ishowspeed": "2026-10-01",
+  "yashasvi-jaiswal": "2026-10-02"
  }
 }
