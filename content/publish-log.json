@@ -914,6 +914,11 @@
    "date": "2026-10-02",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-02",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1166,6 +1171,7 @@
   "yashasvi-jaiswal": "2026-10-02",
   "pradeep-ranganathan": "2026-10-02",
   "bhagyashri-borse": "2026-10-02",
-  "mithali-raj": "2026-10-02"
+  "mithali-raj": "2026-10-02",
+  "rukmini-vasanth": "2026-10-02"
  }
 }
