@@ -934,6 +934,11 @@
    "date": "2026-10-02",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-03",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1190,6 +1195,7 @@
   "rukmini-vasanth": "2026-10-02",
   "vaibhav-suryavanshi": "2026-10-02",
   "walker-scobell": "2026-10-02",
-  "rakesh-bedi": "2026-10-02"
+  "rakesh-bedi": "2026-10-02",
+  "lalu-prasad-yadav": "2026-10-03"
  }
 }
