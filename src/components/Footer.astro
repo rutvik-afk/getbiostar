@@ -1,11 +1,14 @@
 ---
 import { SITE, CONTACT, SOCIAL } from '../../site.config.mjs';
-import { allPosts } from '../lib/content.mjs';
+import { allPosts, demandPicks } from '../lib/content.mjs';
 import { MONTHS } from '../lib/bio.mjs';
 
 const posts = allPosts();
-const trending = [...posts].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 4);
-const popular = [...posts].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 3);
+/* Seeded off the current URL so each page carries a different slice of
+   the high-demand pool — see demandPicks in lib/content.mjs. */
+const seed = Astro.url.pathname;
+const trending = demandPicks(seed, 4);
+const popular = demandPicks(seed + '#popular', 3);
 
 const fmt = (s) => {
   if (!s) return '';

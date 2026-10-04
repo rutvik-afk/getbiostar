@@ -1,7 +1,7 @@
 /* Reads published posts off disk at build time. */
 import fs from 'node:fs';
 import path from 'node:path';
-import { CATEGORIES, categoryOf } from './bio.mjs';
+import { CATEGORIES, categoryOf, hash } from './bio.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const PUB = path.join(ROOT, 'content', 'published');
@@ -78,3 +78,28 @@ export function letterIndex() {
   return m;
 }
 export { CATEGORIES, categoryOf };
+
+/* Sitewide widgets used to show the same five highest-volume profiles on
+   every page, which handed Virat Kohli and four others 313 internal
+   links each while Sara Arjun (1.78M searches a month), Smriti Mandhana
+   (1.71M) and B. R. Ambedkar (1.46M) got 30, 11 and 6.
+
+   With roughly twenty external backlinks, the links this site gives
+   itself are most of the authority it has to hand out, and piling it on
+   five pages that already rank is the least useful place to put it.
+   Picking from a wider pool, deterministically per page, spreads it
+   across the profiles that could plausibly win traffic and stops every
+   page carrying an identical "Most Searched" list. */
+let _demand = null;
+export function byDemand(poolSize = 40) {
+  _demand ||= [...allPosts()].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0));
+  return _demand.slice(0, poolSize);
+}
+
+/** Stable per-page slice of the pool — same page always gets the same picks. */
+export function demandPicks(seed, count, poolSize = 40) {
+  const pool = byDemand(poolSize).filter((p) => p.slug !== seed);
+  if (pool.length <= count) return pool;
+  const start = hash(seed || 'home') % pool.length;
+  return Array.from({ length: count }, (_, i) => pool[(start + i) % pool.length]);
+}

@@ -1,13 +1,12 @@
 ---
-import { allPosts, postsByCategory, CATEGORIES } from '../lib/content.mjs';
+import { allPosts, postsByCategory, CATEGORIES, demandPicks } from '../lib/content.mjs';
 import { MONTHS } from '../lib/bio.mjs';
 
 const { exclude = null } = Astro.props;
 const posts = allPosts();
 const byCat = postsByCategory();
 const recent = posts.filter((p) => p.slug !== exclude).slice(0, 6);
-const popular = [...posts].filter((p) => p.slug !== exclude)
-  .sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)).slice(0, 5);
+const popular = demandPicks(exclude, 5);
 const cats = Object.entries(CATEGORIES).filter(([k]) => byCat[k]?.length)
   .sort((a, b) => byCat[b[0]].length - byCat[a[0]].length);
 
