@@ -1009,6 +1009,11 @@
    "date": "2026-10-04",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-04",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1280,6 +1285,7 @@
   "justin-bieber": "2026-10-04",
   "kay-kay-menon": "2026-10-04",
   "lauren-bell": "2026-10-04",
-  "ellen-pompeo": "2026-10-04"
+  "ellen-pompeo": "2026-10-04",
+  "akeal-hosein": "2026-10-04"
  }
 }
