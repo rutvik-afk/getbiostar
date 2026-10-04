@@ -1,0 +1,100 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { SITE } from '../../../site.config.mjs';
+import { actorPoliticians } from '../../lib/content.mjs';
+
+const entries = actorPoliticians();
+
+const withYear = entries.filter((e) => e.firstYear);
+const earliest = withYear.length ? Math.min(...withYear.map((e) => e.firstYear)) : null;
+const latest = withYear.length ? Math.max(...withYear.map((e) => e.firstYear)) : null;
+
+const canonical = `${SITE.domain}/lists/actors-who-became-politicians/`;
+const title = 'Actors Who Became Politicians — Offices Held and Years';
+const description =
+  `${entries.length} film actors who went on to hold elected or appointed office — the seat, `
+  + `the house and the years, taken from open public records rather than from profiles.`;
+
+const jsonld = [{
+  '@type': 'CollectionPage', url: canonical, name: title,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: entries.length,
+    itemListElement: entries.map((e, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      url: `${SITE.domain}/${e.post.slug}/`, name: e.post.name,
+    })),
+  },
+}];
+
+/* Only the terms that actually carry a year. Rendering one dash per
+   office gave rows reading "—; —", which says nothing twice. */
+const terms = (offices) => {
+  const dated = offices
+    .filter((o) => o.from)
+    .map((o) => `${o.from}${o.to ? `–${o.to}` : '–'}`);
+  return dated.length ? dated.join('; ') : '—';
+};
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonld={jsonld}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Actors Who Became Politicians' }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">Actors Who Became Politicians</li></ol>
+  </nav>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <h1>Actors Who Became Politicians</h1>
+        <p class="lead-p">{
+          `${entries.length} film actors on this site have also held elected or appointed office`
+          + (earliest && latest && earliest !== latest
+            ? `, with recorded terms beginning between ${earliest} and ${latest}` : '')
+          + '. The table gives the seat and the years where they are on record.'
+        }</p>
+
+        <table class="facts office-table">
+          <thead>
+            <tr><th>Name</th><th>Office</th><th>Years</th></tr>
+          </thead>
+          <tbody>
+            {entries.map((e) => (
+              <tr>
+                <td><a href={`/${e.post.slug}/`}>{e.post.name}</a></td>
+                <td>{e.offices.map((o) => o.name).join('; ')}</td>
+                <td>{terms(e.offices)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <p class="note">
+          Honorary roles are deliberately left out. Wikidata records “UNICEF Goodwill
+          Ambassador” in the same field as a seat in the Rajya Sabha, which would otherwise
+          put Shah Rukh Khan, Aamir Khan and Priyanka Chopra on a page about politicians.
+          Only offices that are elected or appointed to government are counted here.
+        </p>
+
+        <h2>Profiles</h2>
+        <div class="cards-grid">{entries.map((e) => <PostCard post={e.post} />)}</div>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lead-p { color: var(--muted, #555); margin: 0 0 1.25rem; line-height: 1.6; }
+  .office-table { width: 100%; margin-bottom: 1.5rem; }
+  .office-table td, .office-table th { text-align: left; vertical-align: top; }
+  .note {
+    font-size: 0.85rem; color: var(--fg-dim); line-height: 1.55;
+    border-left: 3px solid var(--line); padding-left: 0.9rem; margin-bottom: 2rem;
+  }
+</style>

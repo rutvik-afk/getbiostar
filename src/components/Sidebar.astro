@@ -1,5 +1,5 @@
 ---
-import { allPosts, postsByCategory, CATEGORIES, demandPicks } from '../lib/content.mjs';
+import { allPosts, postsByCategory, CATEGORIES, demandPicks, actorPoliticians } from '../lib/content.mjs';
 import { MONTHS } from '../lib/bio.mjs';
 
 const { exclude = null } = Astro.props;
@@ -23,6 +23,8 @@ const decades = (() => {
     .sort((a, b) => b[0] - a[0]);
 })();
 const hasHeights = posts.filter((p) => p.heightCm).length >= 10;
+/* Mirrors the list page — link it only once it is a real list. */
+const politicianCount = actorPoliticians().length;
 
 /* Same mirroring for /born-in/[city]/ — without these links the city
    pages are orphans that only the sitemap knows about. */
@@ -88,7 +90,7 @@ const fmt = (s) => {
     </ol>
   </section>
 
-  {(decades.length > 0 || hasHeights || cities.length > 0) && (
+  {(decades.length > 0 || hasHeights || cities.length > 0 || politicianCount >= 10) && (
     <section class="widget">
       <h2 class="w-title">Browse by List</h2>
       <ul class="w-cats">
@@ -99,6 +101,9 @@ const fmt = (s) => {
           <li><a href={`/born-in/${citySlug(c)}/`}>Born in {c}<span>{n}</span></a></li>
         ))}
         {hasHeights && <li><a href="/lists/tallest-celebrities/">Tallest Celebrities</a></li>}
+        {politicianCount >= 10 && (
+          <li><a href="/lists/actors-who-became-politicians/">Actors Who Became Politicians<span>{politicianCount}</span></a></li>
+        )}
         <li><a href="/research/who-becomes-famous-in-india/">Who Becomes Famous in India?</a></li>
       </ul>
     </section>

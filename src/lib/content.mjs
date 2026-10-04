@@ -103,3 +103,41 @@ export function demandPicks(seed, count, poolSize = 40) {
   const start = hash(seed || 'home') % pool.length;
   return Array.from({ length: count }, (_, i) => pool[(start + i) % pool.length]);
 }
+
+/* Actors who have also held elected or appointed office.
+
+   Matched positively, not by excluding honorifics: Wikidata files
+   "UNICEF Goodwill Ambassador" in positionsHeld exactly as it files a
+   seat in the Rajya Sabha, so a blocklist would have put Shah Rukh Khan,
+   Aamir Khan and Priyanka Chopra on a page about politicians.
+
+   Lives here rather than in the component because offices are on the
+   facts record, and an Astro component cannot use import.meta.dirname
+   to reach it. */
+const POLITICAL_OFFICE = new RegExp(
+  '\\b(lok sabha|rajya sabha|legislative assembly|legislative council|chief minister'
+  + '|minister|governor|president|prime minister|mayor|member of parliament|senator'
+  + '|representative|municipal)\\b', 'i');
+const FACTS = path.join(ROOT, 'data', 'facts');
+
+let _actorPoliticians = null;
+export function actorPoliticians() {
+  if (_actorPoliticians) return _actorPoliticians;
+  const out = [];
+  for (const p of allPosts()) {
+    if (p.category !== 'actor') continue;
+    let f;
+    try { f = JSON.parse(fs.readFileSync(path.join(FACTS, `${p.slug}.json`), 'utf8')); } catch { continue; }
+    const offices = (f.positionsHeld || []).filter((x) => POLITICAL_OFFICE.test(x.name));
+    if (!offices.length) continue;
+    const years = offices.map((o) => o.q?.from?.year).filter(Boolean).sort((a, b) => a - b);
+    out.push({
+      post: p,
+      offices: offices.map((o) => ({ name: o.name, from: o.q?.from?.year || null, to: o.q?.to?.year || null })),
+      firstYear: years[0] || null,
+    });
+  }
+  out.sort((a, b) => (b.post.seo?.volume || 0) - (a.post.seo?.volume || 0));
+  _actorPoliticians = out;
+  return out;
+}
