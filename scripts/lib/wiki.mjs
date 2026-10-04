@@ -172,6 +172,49 @@ export async function commonsLicenses(files) {
     Suryavanshi on a shared surname, and "Jitesh Pillai..." for Jitesh
     Sharma. A wrong face on a biography is worse than placeholder art, so
     the name check is a filter, not a weight. */
+/* Preferred route: the lead image on the person's own Wikipedia article.
+
+   Matching Commons filenames against a name cannot establish identity.
+   "Yudhvir Singh" — two tokens, and Singh is one of India's commonest
+   surnames — matched "Shri Yudhvir Singh Malik", a transport ministry
+   secretary, and put his face on a cricketer's page. No filename rule
+   fixes that class: "Yudhvir Singh Malik" and "Aishwarya Rai Cannes
+   2017" are the same shape, one a different person and one correct.
+
+   An article's lead image needs no guessing — it is the image editors
+   chose for that person. It also finds portraits the name search
+   cannot: Divya Bharti's is filed as "Actress Divya Bharti.jpg", which
+   no prefix match would reach. Every one of the 685 profiles still on
+   placeholder art has a Wikipedia link, so this applies to all of them. */
+export async function wikipediaLeadImage(wikipediaUrl) {
+  if (!wikipediaUrl) return null;
+  const title = wikipediaUrl.split('/wiki/')[1];
+  if (!title) return null;
+  let sum;
+  try {
+    sum = await getJSON(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`, { cache: true },
+    );
+  } catch { return null; }
+  const src = sum?.originalimage?.source;
+  if (!src) return null;
+
+  /* A lead image served from /wikipedia/en/ rather than
+     /wikipedia/commons/ is a local English Wikipedia upload, which in
+     practice means non-free fair use — Divya Bharti's is one. Commons
+     does not hold it, so it is not ours to republish. */
+  if (!src.includes('/wikipedia/commons/')) return null;
+
+  /* MediaWiki normalises underscores to spaces in page titles, and
+     commonsLicenses keys its result by the returned title — so a
+     filename lifted straight from the URL never matched. */
+  const file = decodeURIComponent(src.split('/').pop().split('?')[0]).replace(/_/g, ' ');
+  if (!/\.(jpe?g|png)$/i.test(file)) return null;
+
+  const meta = await commonsLicenses([file]);
+  return meta[file] || null;
+}
+
 export async function commonsPortrait(name) {
   const norm = (s) => s.toLowerCase().replace(/[-_]+/g, ' ').replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
   const want = norm(name);
@@ -181,9 +224,34 @@ export async function commonsPortrait(name) {
   let hits;
   try { hits = await getJSON(u, { cache: true }); } catch { return null; }
 
+  /* A containment check alone is not enough when the name is short.
+     "Yudhvir Singh" — two tokens, and Singh is one of the commonest
+     surnames in India — matched "Shri Yudhvir Singh Malik", a transport
+     ministry secretary, and put his face on a cricketer's page. The
+     name was inside the filename; it just belonged to someone else.
+
+     So for a two-token name, reject a match that another capitalised
+     word runs straight on from: "Yudhvir Singh Malik" is a different
+     person, while "Harleen Deol.jpg", "Deepti Sharma in 2025" and
+     "Roopa Ganguly at a Swearing-in Ceremony" all continue with
+     punctuation or a lowercase word and are kept. This does turn away
+     the occasional real portrait filed under a fuller name than
+     Wikidata holds. That trade is already settled here: a wrong face is
+     worse than placeholder art. */
+  const tokens = want.split(' ');
+  const runsOn = (f) => {
+    const i = norm(f).indexOf(want);
+    const after = norm(f).slice(i + want.length);         // normalised: punctuation already gone
+    const next = after.trim().split(' ')[0];
+    if (!next) return false;
+    const raw = f.slice(f.toLowerCase().indexOf(next.toLowerCase()));
+    return /^[A-Z][a-z]+/.test(raw);                      // another capitalised name follows
+  };
+
   const named = (hits?.query?.search || [])
     .map((x) => x.title.replace(/^File:/, ''))
-    .filter((f) => /\.(jpe?g|png)$/i.test(f) && norm(f).includes(want));
+    .filter((f) => /\.(jpe?g|png)$/i.test(f) && norm(f).includes(want))
+    .filter((f) => tokens.length > 2 || !runsOn(f));
   if (!named.length) return null;
 
   const meta = await commonsLicenses(named);

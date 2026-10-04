@@ -12,7 +12,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { SITE } from '../site.config.mjs';
 import { hash, rolePhrase, cap, isAdultContent } from '../src/lib/bio.mjs';
-import { UA, commonsPortrait } from './lib/wiki.mjs';
+import { UA, wikipediaLeadImage, commonsPortrait } from './lib/wiki.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const BRAND = path.join(ROOT, 'public/brand');
@@ -208,8 +208,14 @@ async function processOne(fp) {
      adding a thousand API calls to every run. */
   if (!remote?.url && !manifest[slug]?.commonsChecked && commonsBudget > 0) {
     commonsBudget--;
-    const found = await commonsPortrait(name);
-    if (found) { remote = found; commonsFound++; }
+    /* The article's own lead image first: it needs no name guessing, and
+       matching Commons filenames against a name put a transport ministry
+       secretary's face on a cricketer's page (see commonsPortrait). The
+       name search stays as the fallback for people whose article has no
+       free lead image. */
+    const lead = await wikipediaLeadImage(f.links?.wikipedia);
+    const found = lead || await commonsPortrait(name);
+    if (found) { remote = { ...found, via: lead ? 'wikipedia-lead' : 'commons-search' }; commonsFound++; }
     commonsChecked.add(slug);
   }
 
@@ -243,7 +249,19 @@ async function processOne(fp) {
     && (held?.sourceUrl || remote?.url) && recropBudget > 0;
   if (needsRecrop) recropBudget--;
 
-  if (entry && !pending && !needsRecrop && fs.existsSync(webp) && ogOk && wantPhoto === havePhoto) { reused++; return; }
+  if (entry && !pending && !needsRecrop && fs.existsSync(webp) && ogOk && wantPhoto === havePhoto) {
+    /* This return is before the manifest write, so a Commons lookup that
+       ran above and found nothing was discarded: budget spent, nothing
+       recorded, and the next run started at the same name. The "cached
+       either way" the comment above promises never happened, so the
+       backfill never advanced past the first few hundred profiles.
+       Record the negative result before leaving. */
+    if (commonsChecked.has(slug) && !entry.commonsChecked) {
+      manifest[slug] = { ...entry, commonsChecked: true };
+    }
+    reused++;
+    return;
+  }
 
   let buf = null;
   if (wantPhoto) {
@@ -272,6 +290,13 @@ async function processOne(fp) {
         license: remote.license, licenseUrl: remote.licenseUrl,
         author: remote.author || remote.credit, page: remote.page,
         sourceUrl: remote.url, cropV: CROP_V,
+        /* Where the photo came from. Wikidata's P18 and an article's lead
+           image both identify the person; a Commons name search only ever
+           matched a filename, which is how a transport ministry
+           secretary's portrait reached a cricketer's page. Recording it
+           means the guessed ones can be audited later without working out
+           afresh how each was found. */
+        ...(remote.via ? { via: remote.via } : {}),
         ...(commonsChecked.has(slug) || held?.commonsChecked ? { commonsChecked: true } : {}),
       };
       downloaded++;
