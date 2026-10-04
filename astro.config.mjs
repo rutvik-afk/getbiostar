@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { SITE } from './site.config.mjs';
@@ -29,6 +30,22 @@ if (fs.existsSync(PUB)) {
    time their contents actually changed. */
 const newest = [...lastmodBySlug.values()].sort((a, b) => b - a)[0] || new Date();
 
+/* Static pages are not listings — /terms/ and /privacy-policy/ do not
+   change because a cricketer was published. Falling back to `newest`
+   had all seven of them claiming to change on every build, which is the
+   same "always just now" signal the per-slug dates above exist to undo,
+   on exactly the pages Google reads to judge whether a site is a real
+   publisher. Their source file's last commit is the honest answer. */
+const STATIC_PAGES = /^\/(about|contact|privacy-policy|terms|dmca|disclaimer|editorial-policy)\/$/;
+const gitDate = (file) => {
+  try {
+    const out = execFileSync('git', ['log', '-1', '--format=%cI', '--', file], {
+      cwd: import.meta.dirname, encoding: 'utf8',
+    }).trim();
+    return out ? new Date(out) : null;
+  } catch { return null; }
+};
+
 export default defineConfig({
   site: SITE.domain,
   trailingSlash: 'always',
@@ -45,8 +62,11 @@ export default defineConfig({
         else if (/\/(privacy|terms|dmca|disclaimer|contact|about)/.test(item.url)) item.priority = 0.2;
         else item.priority = 0.8;
 
-        const slug = item.url.replace(SITE.domain, '').replace(/^\/|\/$/g, '');
-        item.lastmod = lastmodBySlug.get(slug) || newest;
+        const route = item.url.replace(SITE.domain, '');
+        const slug = route.replace(/^\/|\/$/g, '');
+        item.lastmod = lastmodBySlug.get(slug)
+          || (STATIC_PAGES.test(route) ? gitDate(`src/pages/${slug}.astro`) : null)
+          || newest;
         return item;
       },
     }),

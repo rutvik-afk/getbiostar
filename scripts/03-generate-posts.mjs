@@ -499,8 +499,16 @@ for (const p of posts) {
   const livePath = path.join(PUB, `${p.slug}.json`);
   if (fs.existsSync(livePath)) {
     const prev = JSON.parse(fs.readFileSync(livePath, 'utf8'));
-    const changed = JSON.stringify({ ...p, publishedAt: 0, updatedAt: 0, generatedAt: 0 })
-                 !== JSON.stringify({ ...prev, publishedAt: 0, updatedAt: 0, generatedAt: 0 });
+    /* `related` is stored but never rendered — [slug].astro recomputes it
+       from the published set at build time. Leaving it in this comparison
+       meant every new publish shuffled the related sets of ~100 untouched
+       profiles and bumped their updatedAt, so the sitemap told Google 120
+       pages had changed on a day when 22 actually had. lastmod is only
+       worth anything while it stays honest. */
+    const comparable = (x) => JSON.stringify({
+      ...x, publishedAt: 0, updatedAt: 0, generatedAt: 0, related: 0,
+    });
+    const changed = comparable(p) !== comparable(prev);
     /* A live file should always carry its publish date, but one can arrive
        without it — a queue-shaped file landing on a published path through
        a bad merge, say. Copying the blank forward would keep it blank on

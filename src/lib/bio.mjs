@@ -112,11 +112,52 @@ export function hash(str) {
 }
 export const pick = (arr, seed, salt = 0) => arr[(seed + salt * 2654435761) % arr.length];
 
+/* Occupations Wikidata records for almost anyone photogenic, which are
+   true but are never what a person is known for. Deliberately short:
+   "YouTuber", "businessperson" and the like stay out, because for a
+   creator or a founder they are exactly the right word. */
+const SECONDARY_OCCUPATION =
+  /^(model|presenter|television presenter|television personality|beauty pageant contestant)$/i;
+
+/* The headline noun for each bucket. CAT_RULES is deliberately wide so a
+   screenwriter still files under actor; that width is wrong for choosing
+   an opening sentence, where only the core job title will do. */
+const HEADLINE_OCCUPATION = {
+  actor: /\b(actor|actress)\b/i,
+  musician: /\b(singer|rapper|musician|composer|songwriter)\b/i,
+  athlete: /\b(cricketer|footballer|wrestler|boxer|athlete|player)\b/i,
+  politics: /\b(politician|minister|president|activist)\b/i,
+  creator: /\b(youtuber|influencer|streamer|model|presenter|journalist)\b/i,
+  business: /\b(businessperson|entrepreneur|investor|founder)\b/i,
+};
+
 /** Main occupation phrase, e.g. "Indian cricketer" */
 export function rolePhrase(f) {
   const nat = demonym(f.citizenship?.[0]);
-  const occ = (f.occupations || [])[0];
-  if (nat && occ) return `${nat} ${occ}`;
+  const occs = f.occupations || [];
+
+  /* Wikidata lists occupations in no meaningful order, and taking the
+     first one opened 20 live pages by calling an actor something else:
+     Disha Patani "Indian model", Jacqueline Fernandez "Sri Lankan model",
+     Shah Rukh Khan "Indian television presenter".
+
+     Only step in when the first entry is one of the catch-alls above —
+     anything else keeps Wikidata's order, because a broader rule did far
+     more harm than good when tried: scoring every occupation against the
+     category moved 97 of 261 pages and demoted Chiranjeevi to "film
+     producer" and Arvind Swami to "voice actor". */
+  let occ = occs[0];
+  if (occ && SECONDARY_OCCUPATION.test(occ) && occs.length > 1) {
+    const headline = HEADLINE_OCCUPATION[categoryOf(f)];
+    occ = (headline && occs.find((o) => headline.test(o) && !SECONDARY_OCCUPATION.test(o)))
+      || occs.find((o) => !SECONDARY_OCCUPATION.test(o))
+      || occ;
+  }
+
+  if (nat && occ) {
+    /* "American" + "American football player" stutters. */
+    return new RegExp(`^${nat}\\b`, 'i').test(occ) ? occ : `${nat} ${occ}`;
+  }
   return occ || (nat ? `${nat} public figure` : 'public figure');
 }
 
