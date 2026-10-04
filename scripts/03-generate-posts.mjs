@@ -267,10 +267,11 @@ for (const file of files) {
         roleEntries.length === 1
           ? `Public databases list ${works.length} ${noun} for ${name}${span ? `, spanning ${span}` : ''}, all as ${roleEntries[0][0]}.`
           : `Public databases list ${works.length} ${noun} for ${name}${span ? `, spanning ${span}` : ''}. That breaks down as ${list(roleEntries.slice(0, 3).map(([r, n]) => `${n} as ${r}`))}.`,
-        works.length > 45
-          ? `The 45 most recent are listed below, newest first. Where a release year is not on record, the entry is marked with a dash rather than guessed.`
-          : `The table below is sorted newest first. Where a release year is not on record, the entry is marked with a dash rather than guessed.`,
-      ],
+        /* A sentence describing the table that follows it said nothing
+           about the person and was byte-identical on every page that had
+           one. Only the truncation note earns its place. */
+        works.length > 45 ? `The 45 most recent are listed below, newest first.` : null,
+      ].filter(Boolean),
       works: works.slice(0, 45),
     });
 
@@ -294,7 +295,7 @@ for (const file of files) {
     const rows = f.awards.map((a) => ({ name: a.name, year: a.q?.date?.year || null, forWork: a.q?.for || a.q?.of || null }));
     sections.push({
       id: 'awards', heading: `${name} — Awards and Recognition`,
-      paras: [`${Subj} has received ${rows.length} documented ${rows.length === 1 ? 'honour' : 'honours'}. The table below lists each award with the year it was conferred, where a year is on record.`],
+      paras: [`${Subj} has received ${rows.length} documented ${rows.length === 1 ? 'honour' : 'honours'}${rows.filter((r) => r.year).length ? `, the earliest recorded in ${Math.min(...rows.filter((r) => r.year).map((r) => r.year))}` : ''}.`],
       awards: rows,
     });
   }
@@ -306,7 +307,12 @@ for (const file of files) {
       const sp = f.spouses.map((x) => { const y = x.q?.from?.year; const e = x.q?.to?.year; return y ? `${x.name} (married ${y}${e ? `, until ${e}` : ''})` : x.name; });
       p.push(`${Subj} ${f.spouses.length > 1 ? 'has been married to' : (alive ? 'is married to' : 'was married to')} ${list(sp)}.`);
     } else if (alive) {
-      p.push(`Open public records do not list a spouse for ${name}. Relationship claims that appear on social media are not included here unless they are documented in a reliable public source.`);
+      /* The second half of this was a sourcing policy, not a fact about
+         the person, and it was the last sentence still appearing
+         word-for-word on a third of the site (143 pages). The policy
+         lives on /editorial-policy/; the page states only what the
+         record shows. */
+      p.push(`Open public records do not list a spouse for ${name}.`);
     }
     if (f.children?.length) p.push(`${Subj} ${P('be')} a parent to ${list(f.children)}.`);
     if (f.residence?.length) p.push(`${Subj} ${P('be')} associated with ${list(f.residence)} as a place of residence.`);
@@ -330,12 +336,20 @@ for (const file of files) {
     });
   }
 
-  /* Net worth — deliberately NOT a made-up number */
+  /* Net worth — deliberately NOT a made-up number.
+
+     This section used to open with two sentences explaining why there is
+     no figure and close with a third promising to add one. All three were
+     byte-identical on all 261 live pages, and at ~600 characters it was
+     the largest block of text on the site — 61% of all prose was repeated
+     across more than a third of pages, which is the shape Google's
+     helpful-content system is built to catch. The stance has not changed;
+     it is now stated once, briefly, and the person-specific part leads. */
   sections.push({
     id: 'net-worth', heading: `${name} — Net Worth: What Is Actually Verifiable`,
     paras: [
-      `Net-worth figures for ${name} circulate widely online, but almost none of them come from an audited or officially published source. ${'BioStar'} does not invent or repeat unsourced numbers, so no dollar figure is stated on this page.`,
-      `What can be said from the public record is where ${P('poss')} income is likely to originate: ${list([
+      `No audited net-worth figure for ${name} is on public record, so none is stated here.`,
+      `${cap(P('poss'))} documented income sources are ${list([
         occs.length ? `professional work as ${asRole(occs)}` : null,
         f.teams?.length ? 'team contracts' : null,
         f.teams?.length ? 'match fees' : null,
@@ -345,7 +359,6 @@ for (const file of files) {
         f.notableWorks?.length ? 'project fees and royalties from credited work' : null,
         f.positionsHeld?.length ? 'public office remuneration' : null,
       ].filter(Boolean)) || 'professional engagements'}.`,
-      `If a verified figure is published by a credible outlet — a company filing, an election affidavit, or an official disclosure — this section will be updated with the source attached.`,
     ],
   });
 
