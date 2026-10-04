@@ -974,6 +974,11 @@
    "date": "2026-10-03",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-04",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1238,6 +1243,7 @@
   "arjun-kapoor": "2026-10-03",
   "rohini-molleti": "2026-10-03",
   "neem-karoli-baba": "2026-10-03",
-  "mamata-banerjee": "2026-10-03"
+  "mamata-banerjee": "2026-10-03",
+  "kunika-sadanand": "2026-10-04"
  }
 }
