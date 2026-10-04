@@ -106,8 +106,30 @@ export async function getLabels(qids) {
   return out;
 }
 
-/** Batch: Commons filenames -> license metadata (only FREE licences kept) */
-const FREE = /^(cc0|cc[ -]by([ -]sa)?([ -]\d[\d.]*)?|public domain|pd|no restrictions|fal)/i;
+/** Batch: Commons filenames -> license metadata (only FREE licences kept)
+
+    GODL-India belongs on this list and its absence was expensive. The
+    Press Information Bureau releases its photography under it, and PIB
+    is who photographs Indian cricketers, politicians and award
+    ceremonies — so for the subjects this site is actually about, GODL
+    is the single most common licence on Commons: 27 of 45 results
+    across a sample of five names, against 8 for the next one. Eleven
+    live profiles were sitting on generated placeholders with
+    commonsChecked already set, including Smriti Mandhana and Harleen
+    Deol, who each have a plainly named portrait on Commons.
+
+    It qualifies on the same terms as the rest: copy, adapt and use
+    commercially, with attribution — which every image on this site
+    already carries. Commons would not host it otherwise. */
+const FREE = /^(cc0|cc[ -]by([ -]sa)?([ -]\d[\d.]*)?|public domain|pd|no restrictions|fal|godl([ -]india)?|ogl)/i;
+
+/* FREE matches a prefix and nothing anchors its tail, so "CC BY-NC 4.0"
+   passed on the strength of its first two words. No NonCommercial image
+   ever reached the manifest — Commons does not host them, so the hole
+   was never exercised — but it is one unusual licence string away from
+   putting a file we may not use on a page that credits it as free. */
+const NONFREE = /\b(nc|nd|noncommercial|non[ -]commercial|noderiv\w*)\b/i;
+const isFreeLicense = (l) => FREE.test(l) && !NONFREE.test(l);
 export async function commonsLicenses(files) {
   const out = {};
   for (const grp of chunk([...new Set(files)], 20)) {
@@ -121,7 +143,7 @@ export async function commonsLicenses(files) {
       const m = ii.extmetadata || {};
       const strip = (s) => (s ? String(s.value).replace(/<[^>]+>/g, '').trim() : '');
       const license = strip(m.LicenseShortName) || strip(m.License);
-      if (!FREE.test(license)) continue;               // ⛔ non-free → skip entirely
+      if (!isFreeLicense(license)) continue;           // ⛔ non-free → skip entirely
       out[p.title.replace(/^File:/, '')] = {
         url: ii.thumburl || ii.url,
         origin: ii.url,
