@@ -25,6 +25,20 @@ const decades = (() => {
 })();
 const hasHeights = posts.filter((p) => p.heightCm).length >= 10;
 
+/* Same mirroring for /born-in/[city]/ — without these links the city
+   pages are orphans that only the sitemap knows about. */
+const cities = (() => {
+  const counts = {};
+  for (const p of posts) {
+    const c = String((Array.isArray(p.birthPlace) ? p.birthPlace[0] : p.birthPlace) || '').trim();
+    if (c) counts[c] = (counts[c] || 0) + 1;
+  }
+  return Object.entries(counts).filter(([, n]) => n >= 15).sort((a, b) => b[1] - a[1]);
+})();
+const citySlug = (x) =>
+  x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const fmt = (s) => {
   if (!s) return '';
   const d = new Date(s + 'T00:00:00Z');
@@ -75,12 +89,15 @@ const fmt = (s) => {
     </ol>
   </section>
 
-  {(decades.length > 0 || hasHeights) && (
+  {(decades.length > 0 || hasHeights || cities.length > 0) && (
     <section class="widget">
       <h2 class="w-title">Browse by List</h2>
       <ul class="w-cats">
         {decades.map(([d, n]) => (
           <li><a href={`/born/${d}s/`}>Born in the {d}s<span>{n}</span></a></li>
+        ))}
+        {cities.map(([c, n]) => (
+          <li><a href={`/born-in/${citySlug(c)}/`}>Born in {c}<span>{n}</span></a></li>
         ))}
         {hasHeights && <li><a href="/lists/tallest-celebrities/">Tallest Celebrities</a></li>}
       </ul>

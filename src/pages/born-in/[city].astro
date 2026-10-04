@@ -1,0 +1,125 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { SITE } from '../../../site.config.mjs';
+import { allPosts } from '../../lib/content.mjs';
+
+export const citySlug = (s) =>
+  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+export function getStaticPaths() {
+  /* "Celebrities born in Mumbai" is the kind of question a knowledge
+     panel cannot answer, which is the whole point: the profile pages sit
+     at position 8-9 and still take 0.1% of the clicks because Google
+     prints the age above the results. A list has no single answer to
+     print above it.
+
+     Same MIN as /born/[decade]/ — a city earns a page once it is a real
+     list, and the rest appear on their own as the queue publishes.
+     Wikidata records "Delhi" and "New Delhi" as different places; they
+     stay separate here rather than being merged on a guess. */
+  const MIN = 15;
+  const byCity = {};
+  for (const p of allPosts()) {
+    /* birthPlace is an array — Wikidata can record more than one place
+       for the same person. The first is the one the profile page shows. */
+    const c = String((Array.isArray(p.birthPlace) ? p.birthPlace[0] : p.birthPlace) || '').trim();
+    if (!c) continue;
+    (byCity[c] ||= []).push(p);
+  }
+  return Object.entries(byCity)
+    .filter(([, items]) => items.length >= MIN)
+    .map(([city, items]) => ({
+      params: { city: citySlug(city) },
+      props: {
+        city,
+        items: items.sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0)
+          || a.name.localeCompare(b.name)),
+      },
+    }));
+}
+
+const { city, items } = Astro.props;
+const canonical = `${SITE.domain}/born-in/${citySlug(city)}/`;
+const title = `Celebrities Born in ${city} — Ages, Careers & Biographies`;
+
+const years = items.map((p) => p.birthDate?.year).filter(Boolean).sort((a, b) => a - b);
+const roles = {};
+for (const p of items) if (p.category) roles[p.category] = (roles[p.category] || 0) + 1;
+const topRoles = Object.entries(roles).sort((a, b) => b[1] - a[1]).slice(0, 3);
+const withCredits = items.filter((p) => (p.worksCount || 0) >= 5).length;
+
+const description =
+  `${items.length} verified profiles of celebrities born in ${city}`
+  + (years.length ? `, from ${years[0]} to ${years[years.length - 1]}` : '')
+  + `. Ages, careers, family and filmography facts from open public records.`;
+
+const jsonld = [{
+  '@type': 'CollectionPage', url: canonical, name: title,
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: items.length,
+    itemListElement: items.map((p, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      url: `${SITE.domain}/${p.slug}/`, name: p.name,
+    })),
+  },
+}];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonld={jsonld}
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: `Born in ${city}` }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">Born in {city}</li></ol>
+  </nav>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main">
+        <h1>Celebrities Born in {city}</h1>
+        {/* Built as one string — a newline between a JSX expression and
+            the comma that follows it renders as a space ("Mumbai ,"). */}
+        <p class="lead-p">{
+          `${items.length} profiles of people born in ${city}`
+          + (years.length > 0 ? `, spanning births from ${years[0]} to ${years[years.length - 1]}` : '')
+          + '.'
+          + (withCredits > 0 ? ` ${withCredits} have a credited filmography or discography on record.` : '')
+          + (topRoles.length > 0 ? ` Mostly ${topRoles.map(([r, n]) => `${r}s (${n})`).join(', ')}.` : '')
+        }</p>
+
+        <table class="facts born-table">
+          <thead>
+            <tr><th>Name</th><th>Born</th><th>Age</th><th>Known for</th></tr>
+          </thead>
+          <tbody>
+            {items.map((p) => (
+              <tr>
+                <td><a href={`/${p.slug}/`}>{p.name}</a></td>
+                <td>{p.birthDate?.year || '—'}</td>
+                <td>{p.birthDate?.year && !p.deathDate
+                  ? new Date().getFullYear() - p.birthDate.year
+                  : '—'}</td>
+                <td>{p.role || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2>Profiles</h2>
+        <div class="cards-grid">{items.map((p) => <PostCard post={p} />)}</div>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lead-p { color: var(--muted, #555); margin: 0 0 1.25rem; line-height: 1.6; }
+  .born-table { width: 100%; margin-bottom: 2rem; }
+  .born-table td, .born-table th { text-align: left; }
+</style>
