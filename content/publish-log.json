@@ -989,6 +989,11 @@
    "date": "2026-10-04",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-04",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1256,6 +1261,7 @@
   "mamata-banerjee": "2026-10-03",
   "kunika-sadanand": "2026-10-04",
   "abhishek-bajaj": "2026-10-04",
-  "jayalalithaa": "2026-10-04"
+  "jayalalithaa": "2026-10-04",
+  "justin-bieber": "2026-10-04"
  }
 }
