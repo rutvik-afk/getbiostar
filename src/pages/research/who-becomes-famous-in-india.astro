@@ -1,0 +1,344 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { SITE } from '../../../site.config.mjs';
+import { categoryOf } from '../../lib/bio.mjs';
+
+/* Computed from the dataset at build time rather than typed in, so the
+   numbers cannot drift away from the records they describe as the
+   dataset grows. data/facts is committed, so this runs on Vercel too. */
+const FACTS = path.resolve(import.meta.dirname, '../../../data/facts');
+const people = fs.readdirSync(FACTS)
+  .filter((f) => f.endsWith('.json'))
+  .map((f) => JSON.parse(fs.readFileSync(path.join(FACTS, f), 'utf8')));
+for (const p of people) p._c = categoryOf(p);
+
+const placeOf = (p) => (Array.isArray(p.birthPlace) ? p.birthPlace[0] : p.birthPlace);
+const FIELD = {
+  actor: 'Acting', creator: 'Digital media', musician: 'Music',
+  notable: 'Other public life', politics: 'Politics', athlete: 'Sport',
+  business: 'Business',
+};
+
+const total = people.length;
+const withPlace = people.filter(placeOf).length;
+const withYear = people.filter((p) => p.birthDate?.year).length;
+
+const gender = Object.keys(FIELD).map((c) => {
+  const g = people.filter((p) => p._c === c);
+  return { field: FIELD[c], n: g.length, pct: (g.filter((p) => p.gender === 'female').length / g.length) * 100 };
+}).sort((a, b) => b.pct - a.pct);
+
+const cityCounts = {};
+for (const p of people) { const c = placeOf(p); if (c) cityCounts[c] = (cityCounts[c] || 0) + 1; }
+const cities = Object.entries(cityCounts).sort((a, b) => b[1] - a[1]).slice(0, 10)
+  .map(([city, n]) => ({ city, n, pct: (n / withPlace) * 100 }));
+const distinctPlaces = Object.keys(cityCounts).length;
+const top10pct = (cities.reduce((s, c) => s + c.n, 0) / withPlace) * 100;
+
+const median = Object.keys(FIELD).map((c) => {
+  const y = people.filter((p) => p._c === c && p.birthDate?.year).map((p) => p.birthDate.year).sort((a, b) => a - b);
+  return { field: FIELD[c], n: y.length, year: y[Math.floor(y.length / 2)] };
+}).sort((a, b) => a.year - b.year);
+
+const eduCounts = {};
+for (const p of people) for (const e of p.education || []) eduCounts[e] = (eduCounts[e] || 0) + 1;
+const education = Object.entries(eduCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+const withEducation = people.filter((p) => p.education?.length).length;
+
+const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const dated = people.filter((p) => p.birthDate?.month && p.birthDate?.day);
+const monthCounts = {};
+for (const p of dated) monthCounts[p.birthDate.month] = (monthCounts[p.birthDate.month] || 0) + 1;
+const perDayAvg = dated.length / 365;
+const months = NAMES.map((m, i) => ({
+  m, n: monthCounts[i + 1] || 0,
+  idx: (((monthCounts[i + 1] || 0) / DAYS[i]) / perDayAvg - 1) * 100,
+}));
+const jan1 = dated.filter((p) => p.birthDate.month === 1 && p.birthDate.day === 1).length;
+const jan1Expected = Math.round(dated.length / 365);
+
+const n = (x) => x.toLocaleString('en-US');
+const pct1 = (x) => x.toFixed(1);
+
+/* --- chart geometry, worked out here so the SVG below stays readable --- */
+const BAR = { w: 680, rowH: 34, labelW: 150, valueW: 54 };
+const plotW = BAR.w - BAR.labelW - BAR.valueW;
+const genderMax = 60;
+const cityMax = cities[0].n;
+const monthMax = Math.max(...months.map((m) => Math.abs(m.idx)));
+
+const canonical = `${SITE.domain}/research/who-becomes-famous-in-india/`;
+const title = 'Who Becomes Famous in India? 3,445 Records Analysed';
+const description =
+  `An analysis of ${n(total)} biographical records: acting is the only field where women are `
+  + `the majority (${pct1(gender[0].pct)}%), one city accounts for ${pct1(cities[0].pct)}% of all `
+  + `recorded birthplaces, and politics and sport are a generation apart.`;
+
+const jsonld = [{
+  '@type': ['Article', 'Dataset'],
+  '@id': `${canonical}#article`,
+  url: canonical,
+  headline: title,
+  description,
+  datePublished: '2026-10-04',
+  dateModified: '2026-10-04',
+  isPartOf: { '@id': `${SITE.domain}/#website` },
+  author: { '@id': `${SITE.domain}/#org` },
+  publisher: { '@id': `${SITE.domain}/#org` },
+  license: 'https://creativecommons.org/licenses/by/4.0/',
+  creativeWorkStatus: 'Published',
+  variableMeasured: ['birthplace', 'birth date', 'gender', 'occupation', 'education'],
+}];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonld={jsonld}
+  type="article"
+  published="2026-10-04"
+  modified="2026-10-04"
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Research' }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">Who Becomes Famous in India?</li></ol>
+  </nav>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main study">
+        <h1>Who Becomes Famous in India?</h1>
+        <p class="standfirst">
+          We hold structured biographical records for {n(total)} public figures — actors,
+          musicians, athletes, politicians, founders and digital creators — compiled from
+          Wikidata. Instead of reading them one profile at a time, we counted them.
+          Three patterns came out clearly, and one of them is not what we expected.
+        </p>
+
+        <h2 id="gender">1. Acting is the only field where women are the majority</h2>
+        <p>
+          Across every field we hold records for, the share of women runs from
+          {pct1(gender[0].pct)}% down to {pct1(gender[gender.length - 1].pct)}%.
+          Acting and digital media are the only two above half. Business is the lowest,
+          at roughly one woman in six.
+        </p>
+
+        <figure class="chart">
+          <svg viewBox={`0 0 ${BAR.w} ${gender.length * BAR.rowH + 34}`} role="img"
+               aria-label="Share of women by field, from acting at the top to business at the bottom">
+            <line x1={BAR.labelW + (50 / genderMax) * plotW} x2={BAR.labelW + (50 / genderMax) * plotW}
+                  y1="4" y2={gender.length * BAR.rowH + 4} class="ref" />
+            <text x={BAR.labelW + (50 / genderMax) * plotW + 5} y={gender.length * BAR.rowH + 22}
+                  class="reflabel">half</text>
+            {gender.map((g, i) => (
+              <g transform={`translate(0 ${i * BAR.rowH})`}>
+                <title>{g.field}: {pct1(g.pct)}% women, {n(g.n)} records</title>
+                <text x={BAR.labelW - 10} y="20" class="rowlabel">{g.field}</text>
+                <rect x={BAR.labelW} y="8" rx="4" height="14"
+                      width={Math.max(4, (g.pct / genderMax) * plotW)} class="bar" />
+                <text x={BAR.labelW + (g.pct / genderMax) * plotW + 8} y="20" class="value">{pct1(g.pct)}%</text>
+              </g>
+            ))}
+          </svg>
+          <figcaption>
+            Share of women, by field. Based on {n(total)} records with a recorded gender.
+            Field sizes vary widely — acting is {n(gender.find((g) => g.field === 'Acting').n)} records,
+            business {n(gender.find((g) => g.field === 'Business').n)}.
+          </figcaption>
+        </figure>
+
+        <h2 id="geography">2. One city accounts for {pct1(cities[0].pct)}% of everyone</h2>
+        <p>
+          Birthplaces are on record for {n(withPlace)} people, spread across
+          {' '}{n(distinctPlaces)} distinct places. They are not spread evenly.
+          Mumbai alone accounts for {pct1(cities[0].pct)}%, more than the next three cities
+          combined, and the ten largest cities together account for {pct1(top10pct)}% of everyone.
+        </p>
+
+        <figure class="chart">
+          <svg viewBox={`0 0 ${BAR.w} ${cities.length * BAR.rowH + 10}`} role="img"
+               aria-label="The ten most common recorded birthplaces, led by Mumbai">
+            {cities.map((c, i) => (
+              <g transform={`translate(0 ${i * BAR.rowH})`}>
+                <title>{c.city}: {n(c.n)} people, {pct1(c.pct)}% of all recorded birthplaces</title>
+                <text x={BAR.labelW - 10} y="20" class="rowlabel">{c.city}</text>
+                <rect x={BAR.labelW} y="8" rx="4" height="14"
+                      width={Math.max(4, (c.n / cityMax) * plotW)} class="bar" />
+                <text x={BAR.labelW + (c.n / cityMax) * plotW + 8} y="20" class="value">{n(c.n)}</text>
+              </g>
+            ))}
+          </svg>
+          <figcaption>
+            Most common recorded birthplaces. Wikidata records “Delhi” and “New Delhi” as
+            different places and they are not merged here; taken together they would rank second.
+            “India” is a country-level record where no city was given.
+          </figcaption>
+        </figure>
+
+        <p>
+          We publish city pages for the places where enough profiles are live to make a real list —
+          currently <a href="/born-in/mumbai/">Mumbai</a>, <a href="/born-in/chennai/">Chennai</a>
+          {' '}and <a href="/born-in/new-delhi/">New Delhi</a>.
+        </p>
+
+        <h2 id="age">3. Politics and sport are a generation apart</h2>
+        <p>
+          The median politician in the dataset was born in {median[0].year}; the median
+          sportsperson in {median[median.length - 1].year}. That is a gap of
+          {' '}{median[median.length - 1].year - median[0].year} years between the typical ages of
+          two groups of people who are famous at the same moment.
+        </p>
+
+        <figure class="chart">
+          <svg viewBox={`0 0 ${BAR.w} ${median.length * BAR.rowH + 10}`} role="img"
+               aria-label="Median birth year by field, from politics earliest to sport latest">
+            {median.map((m, i) => {
+              const lo = 1960; const hi = 1995;
+              const x = BAR.labelW + ((m.year - lo) / (hi - lo)) * plotW;
+              return (
+                <g transform={`translate(0 ${i * BAR.rowH})`}>
+                  <title>{m.field}: median birth year {m.year}, {n(m.n)} records</title>
+                  <text x={BAR.labelW - 10} y="20" class="rowlabel">{m.field}</text>
+                  <line x1={BAR.labelW} x2={x} y1="15" y2="15" class="stem" />
+                  <circle cx={x} cy="15" r="6" class="dot" />
+                  <text x={x + 12} y="20" class="value">{m.year}</text>
+                </g>
+              );
+            })}
+          </svg>
+          <figcaption>
+            Median birth year by field, {n(withYear)} records with a birth year.
+            Scale runs 1960–1995.
+          </figcaption>
+        </figure>
+
+        <h2 id="education">Where they studied</h2>
+        <p>
+          Education is the thinnest field in the dataset — it is recorded for
+          {' '}{n(withEducation)} people, {Math.round((withEducation / total) * 100)}% of the total —
+          so read this as the institutions most likely to be <em>recorded</em>, not a ranking.
+        </p>
+        <table class="facts">
+          <thead><tr><th>Institution</th><th>People</th></tr></thead>
+          <tbody>
+            {education.map(([name, count]) => <tr><td>{name}</td><td>{count}</td></tr>)}
+          </tbody>
+        </table>
+
+        <h2 id="months">A September bulge</h2>
+        <p>
+          Adjusting for the differing lengths of months, births are
+          {' '}{Math.round(months[8].idx)}% above the daily average in September and
+          {' '}{Math.abs(Math.round(months[3].idx))}% below it in April. A September peak is a
+          well-documented pattern in real birth data, so this is probably not an artefact of
+          the records — but see the caveat below.
+        </p>
+
+        <figure class="chart">
+          {/* Month names sit below the deepest bar rather than just below
+              the zero line, which put "Jun" underneath its own "-6". */}
+          <svg viewBox={`0 0 ${BAR.w} 166`} role="img"
+               aria-label="Births by month relative to the daily average, peaking in September">
+            <line x1="40" x2={BAR.w - 10} y1="70" y2="70" class="ref" />
+            {months.map((mo, i) => {
+              const x = 48 + i * 52;
+              const h = Math.max(2, (Math.abs(mo.idx) / monthMax) * 50);
+              return (
+                <g>
+                  <title>{mo.m}: {n(mo.n)} births, {mo.idx > 0 ? '+' : ''}{Math.round(mo.idx)}% vs the daily average</title>
+                  <rect x={x} y={mo.idx >= 0 ? 70 - h : 70} width="26" rx="4" height={h} class="bar" />
+                  <text x={x + 13} y={mo.idx >= 0 ? 70 - h - 6 : 70 + h + 14} class="value mid">
+                    {mo.idx > 0 ? '+' : ''}{Math.round(mo.idx)}
+                  </text>
+                  <text x={x + 13} y="152" class="rowlabel mid">{mo.m}</text>
+                </g>
+              );
+            })}
+          </svg>
+          <figcaption>
+            Births per day of the month, as a percentage above or below the daily average across
+            the year. {n(dated.length)} records with a full date of birth.
+          </figcaption>
+        </figure>
+
+        <h2 id="method">Method, and what this does not show</h2>
+        <p>
+          <strong>This measures who has a record, not who is famous.</strong> Every figure above
+          describes {n(total)} people who have a structured Wikidata item and enough search
+          interest to be in our target list. Wikidata's own coverage is uneven — it is built by
+          volunteers, and fields that are easy to source get filled in first. If women in business
+          are less likely to have a Wikidata item than men in business, that gap appears in our
+          chart as a gender gap. We cannot separate the two, and nothing above should be read as
+          a measurement of the Indian film industry, Indian politics or Indian sport themselves.
+        </p>
+        <p>
+          Two known artefacts in the dates. {n(jan1)} people are recorded as born on 1 January,
+          against the {jan1Expected} you would expect by chance — the usual sign of a year being
+          known and the day not. {pct1((dated.filter((p) => p.birthDate.day === 1).length / dated.length) * 100)}%
+          are recorded as born on the 1st of some month, against about 3.3% expected. Both inflate
+          January slightly in the month chart.
+        </p>
+        <p>
+          Fields are assigned from a person's recorded occupations, so someone who both acts and
+          holds office is counted once, in whichever category matches first. Coverage varies by
+          field: {n(withPlace)} records carry a birthplace, {n(withYear)} a birth year,
+          {' '}{n(withEducation)} an education. Percentages are always taken against the number of
+          records that carry the field in question, never against the full {n(total)}.
+        </p>
+
+        <h2 id="cite">Reuse and citation</h2>
+        <p>
+          The underlying facts come from <a href="https://www.wikidata.org/" rel="noopener">Wikidata</a>,
+          which publishes them under CC0. The analysis and charts on this page are free to reuse
+          with attribution. If you quote a figure, please link back so readers can check the method.
+        </p>
+        <blockquote class="cite">
+          BioStar (2026). <em>Who Becomes Famous in India? {n(total)} Biographical Records
+          Analysed.</em><br />{canonical}
+        </blockquote>
+        <p class="muted small">
+          Figures recomputed on every build from the live dataset, so they move as the dataset
+          grows. Press and data enquiries: <a href="/contact/">contact page</a>.
+        </p>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .study { max-width: 760px; }
+  .standfirst { font-size: 1.1rem; line-height: 1.65; color: var(--fg-soft); margin-bottom: 2rem; }
+  .study h2 { margin-top: 2.5rem; }
+  .chart { margin: 1.5rem 0 2rem; }
+  .chart svg { width: 100%; height: auto; overflow: visible; }
+  .chart figcaption {
+    font-size: 0.85rem; color: var(--fg-dim); line-height: 1.5;
+    margin-top: 0.5rem; border-top: 1px solid var(--line); padding-top: 0.5rem;
+  }
+  /* One measure per chart, so one hue; the axis and reference line stay
+     recessive and every number is written out rather than estimated off
+     a gridline. */
+  .bar { fill: #c8102e; }
+  .dot { fill: #c8102e; }
+  .stem { stroke: var(--line); stroke-width: 2; }
+  .ref { stroke: var(--fg-dim); stroke-width: 1; stroke-dasharray: 3 3; }
+  .reflabel { font-size: 11px; fill: var(--fg-dim); }
+  .rowlabel { font-size: 13px; fill: var(--fg-soft); text-anchor: end; }
+  .value { font-size: 13px; font-weight: 600; fill: var(--fg); }
+  .mid { text-anchor: middle; }
+  .cite {
+    border-left: 3px solid var(--accent); padding: 0.75rem 1rem; margin: 1rem 0;
+    background: var(--bg-soft); font-size: 0.9rem; line-height: 1.6;
+  }
+  /* These sizes are in viewBox units, and the 680-unit charts scale to
+     roughly half on a phone — so 13px there renders at about 6px. Bump
+     them well past what looks right on a desktop. */
+  @media (max-width: 560px) {
+    .rowlabel, .value { font-size: 19px; }
+    .reflabel { font-size: 16px; }
+  }
+</style>
