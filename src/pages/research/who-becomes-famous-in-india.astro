@@ -1,65 +1,18 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
 import Base from '../../layouts/Base.astro';
 import Sidebar from '../../components/Sidebar.astro';
 import { SITE } from '../../../site.config.mjs';
-import { categoryOf } from '../../lib/bio.mjs';
+import { studyStats } from '../../lib/study.mjs';
 
-/* Computed from the dataset at build time rather than typed in, so the
-   numbers cannot drift away from the records they describe as the
-   dataset grows. data/facts is committed, so this runs on Vercel too. */
-const FACTS = path.resolve(import.meta.dirname, '../../../data/facts');
-const people = fs.readdirSync(FACTS)
-  .filter((f) => f.endsWith('.json'))
-  .map((f) => JSON.parse(fs.readFileSync(path.join(FACTS, f), 'utf8')));
-for (const p of people) p._c = categoryOf(p);
-
-const placeOf = (p) => (Array.isArray(p.birthPlace) ? p.birthPlace[0] : p.birthPlace);
-const FIELD = {
-  actor: 'Acting', creator: 'Digital media', musician: 'Music',
-  notable: 'Other public life', politics: 'Politics', athlete: 'Sport',
-  business: 'Business',
-};
-
-const total = people.length;
-const withPlace = people.filter(placeOf).length;
-const withYear = people.filter((p) => p.birthDate?.year).length;
-
-const gender = Object.keys(FIELD).map((c) => {
-  const g = people.filter((p) => p._c === c);
-  return { field: FIELD[c], n: g.length, pct: (g.filter((p) => p.gender === 'female').length / g.length) * 100 };
-}).sort((a, b) => b.pct - a.pct);
-
-const cityCounts = {};
-for (const p of people) { const c = placeOf(p); if (c) cityCounts[c] = (cityCounts[c] || 0) + 1; }
-const cities = Object.entries(cityCounts).sort((a, b) => b[1] - a[1]).slice(0, 10)
-  .map(([city, n]) => ({ city, n, pct: (n / withPlace) * 100 }));
-const distinctPlaces = Object.keys(cityCounts).length;
-const top10pct = (cities.reduce((s, c) => s + c.n, 0) / withPlace) * 100;
-
-const median = Object.keys(FIELD).map((c) => {
-  const y = people.filter((p) => p._c === c && p.birthDate?.year).map((p) => p.birthDate.year).sort((a, b) => a - b);
-  return { field: FIELD[c], n: y.length, year: y[Math.floor(y.length / 2)] };
-}).sort((a, b) => a.year - b.year);
-
-const eduCounts = {};
-for (const p of people) for (const e of p.education || []) eduCounts[e] = (eduCounts[e] || 0) + 1;
-const education = Object.entries(eduCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
-const withEducation = people.filter((p) => p.education?.length).length;
-
-const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-const NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const dated = people.filter((p) => p.birthDate?.month && p.birthDate?.day);
-const monthCounts = {};
-for (const p of dated) monthCounts[p.birthDate.month] = (monthCounts[p.birthDate.month] || 0) + 1;
-const perDayAvg = dated.length / 365;
-const months = NAMES.map((m, i) => ({
-  m, n: monthCounts[i + 1] || 0,
-  idx: (((monthCounts[i + 1] || 0) / DAYS[i]) / perDayAvg - 1) * 100,
-}));
-const jan1 = dated.filter((p) => p.birthDate.month === 1 && p.birthDate.day === 1).length;
-const jan1Expected = Math.round(dated.length / 365);
+/* Computed at build time from data/facts, and shared with the CSV
+   endpoint next to this file so the page and the download cannot
+   disagree. data/facts is committed, so this runs on Vercel too. */
+const {
+  total, withPlace, withYear, withEducation,
+  gender, cities, median, education, months,
+  distinctPlaces, top10pct, datedCount, jan1, jan1Expected, firstOfMonthPct,
+  earliestBirthYear, latestBirthYear,
+} = studyStats();
 
 const n = (x) => x.toLocaleString('en-US');
 const pct1 = (x) => x.toFixed(1);
@@ -78,21 +31,54 @@ const description =
   + `the majority (${pct1(gender[0].pct)}%), one city accounts for ${pct1(cities[0].pct)}% of all `
   + `recorded birthplaces, and politics and sport are a generation apart.`;
 
-const jsonld = [{
-  '@type': ['Article', 'Dataset'],
-  '@id': `${canonical}#article`,
-  url: canonical,
-  headline: title,
-  description,
-  datePublished: '2026-10-04',
-  dateModified: '2026-10-04',
-  isPartOf: { '@id': `${SITE.domain}/#website` },
-  author: { '@id': `${SITE.domain}/#org` },
-  publisher: { '@id': `${SITE.domain}/#org` },
-  license: 'https://creativecommons.org/licenses/by/4.0/',
-  creativeWorkStatus: 'Published',
-  variableMeasured: ['birthplace', 'birth date', 'gender', 'occupation', 'education'],
-}];
+const csvUrl = `${SITE.domain}/research/who-becomes-famous-in-india.csv`;
+
+/* Two nodes, not one with both types. Search Console rejected
+   ['Article','Dataset'] as an invalid Data set item: Dataset requires
+   `name`, and this object only carried Article's `headline`. Splitting
+   them also lets each one say what it actually is — the Article is the
+   write-up, the Dataset is the table you can download. */
+const jsonld = [
+  {
+    '@type': 'Article',
+    '@id': `${canonical}#article`,
+    url: canonical,
+    headline: title,
+    description,
+    datePublished: '2026-10-04',
+    dateModified: '2026-10-04',
+    isPartOf: { '@id': `${SITE.domain}/#website` },
+    author: { '@id': `${SITE.domain}/#org` },
+    publisher: { '@id': `${SITE.domain}/#org` },
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    about: { '@id': `${canonical}#dataset` },
+  },
+  {
+    '@type': 'Dataset',
+    '@id': `${canonical}#dataset`,
+    name: `Who Becomes Famous in India? Aggregate tables from ${n(total)} biographical records`,
+    description:
+      `Aggregate counts from ${n(total)} structured biographical records of public figures with `
+      + `an Indian or South Asian connection: share of women by field, the most common recorded `
+      + `birthplaces, median birth year by field, most frequently recorded institutions, and `
+      + `births by month. Derived from Wikidata. Measures who holds a Wikidata record, not who is famous.`,
+    url: canonical,
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    creator: { '@id': `${SITE.domain}/#org` },
+    isAccessibleForFree: true,
+    temporalCoverage: `${earliestBirthYear}/${latestBirthYear}`,
+    spatialCoverage: 'India',
+    measurementTechnique: 'Aggregation of structured Wikidata records',
+    variableMeasured: ['birthplace', 'birth year', 'gender', 'occupation field', 'education'],
+    isBasedOn: 'https://www.wikidata.org/',
+    distribution: [{
+      '@type': 'DataDownload',
+      encodingFormat: 'text/csv',
+      contentUrl: csvUrl,
+      name: 'Aggregate tables (CSV)',
+    }],
+  },
+];
 ---
 <Base
   title={title}
@@ -224,7 +210,7 @@ const jsonld = [{
         <table class="facts">
           <thead><tr><th>Institution</th><th>People</th></tr></thead>
           <tbody>
-            {education.map(([name, count]) => <tr><td>{name}</td><td>{count}</td></tr>)}
+            {education.map((e) => <tr><td>{e.name}</td><td>{e.n}</td></tr>)}
           </tbody>
         </table>
 
@@ -260,7 +246,7 @@ const jsonld = [{
           </svg>
           <figcaption>
             Births per day of the month, as a percentage above or below the daily average across
-            the year. {n(dated.length)} records with a full date of birth.
+            the year. {n(datedCount)} records with a full date of birth.
           </figcaption>
         </figure>
 
@@ -277,7 +263,7 @@ const jsonld = [{
         <p>
           Two known artefacts in the dates. {n(jan1)} people are recorded as born on 1 January,
           against the {jan1Expected} you would expect by chance — the usual sign of a year being
-          known and the day not. {pct1((dated.filter((p) => p.birthDate.day === 1).length / dated.length) * 100)}%
+          known and the day not. {pct1(firstOfMonthPct)}%
           are recorded as born on the 1st of some month, against about 3.3% expected. Both inflate
           January slightly in the month chart.
         </p>
@@ -294,6 +280,12 @@ const jsonld = [{
           The underlying facts come from <a href="https://www.wikidata.org/" rel="noopener">Wikidata</a>,
           which publishes them under CC0. The analysis and charts on this page are free to reuse
           with attribution. If you quote a figure, please link back so readers can check the method.
+        </p>
+        <p>
+          <a class="dl" href="/research/who-becomes-famous-in-india.csv"
+             download="biostar-who-becomes-famous-in-india.csv">
+            Download every table on this page (CSV)
+          </a>
         </p>
         <blockquote class="cite">
           BioStar (2026). <em>Who Becomes Famous in India? {n(total)} Biographical Records
@@ -330,6 +322,12 @@ const jsonld = [{
   .rowlabel { font-size: 13px; fill: var(--fg-soft); text-anchor: end; }
   .value { font-size: 13px; font-weight: 600; fill: var(--fg); }
   .mid { text-anchor: middle; }
+  .dl {
+    display: inline-block; font-weight: 600;
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    padding: 0.6rem 1rem; text-decoration: none;
+  }
+  .dl:hover { background: var(--bg-soft); }
   .cite {
     border-left: 3px solid var(--accent); padding: 0.75rem 1rem; margin: 1rem 0;
     background: var(--bg-soft); font-size: 0.9rem; line-height: 1.6;
