@@ -90,14 +90,46 @@ export { CATEGORIES, categoryOf };
    Picking from a wider pool, deterministically per page, spreads it
    across the profiles that could plausibly win traffic and stops every
    page carrying an identical "Most Searched" list. */
+/* The pool was ordered by Semrush's estimated volume. Search Console
+   says the opportunity is somewhere else: Manju Warrier draws 11,132
+   impressions at position 7.7 and had 5 internal links, while Kajal
+   Aggarwal had 130 and Rashmika Mandanna 118 because their estimated
+   volume is higher. Position 3-5 earns this site 1.05% against 0.079%
+   at 9-11, so a page already sitting at 7-10 with real impressions is
+   worth far more link equity than a high-volume page that is not
+   ranking at all.
+
+   data/striking-distance.json is an export, not a live feed — refresh
+   it from Search Console rather than editing it. When it is missing the
+   pool falls back to estimated volume, which is what it did before. */
+let _strike = null;
+function strikingDistance() {
+  if (_strike) return _strike;
+  try {
+    const f = path.join(ROOT, 'data', 'striking-distance.json');
+    const order = JSON.parse(fs.readFileSync(f, 'utf8')).pages
+      .map((p, i) => [p.slug, i]);
+    _strike = new Map(order);
+  } catch { _strike = new Map(); }
+  return _strike;
+}
+
 let _demand = null;
-export function byDemand(poolSize = 40) {
-  _demand ||= [...allPosts()].sort((a, b) => (b.seo?.volume || 0) - (a.seo?.volume || 0));
+export function byDemand(poolSize = 85) {
+  if (!_demand) {
+    const strike = strikingDistance();
+    _demand = [...allPosts()].sort((a, b) => {
+      const sa = strike.has(a.slug) ? strike.get(a.slug) : Infinity;
+      const sb = strike.has(b.slug) ? strike.get(b.slug) : Infinity;
+      if (sa !== sb) return sa - sb;                       // measured first, by impressions
+      return (b.seo?.volume || 0) - (a.seo?.volume || 0);  // then estimated
+    });
+  }
   return _demand.slice(0, poolSize);
 }
 
 /** Stable per-page slice of the pool — same page always gets the same picks. */
-export function demandPicks(seed, count, poolSize = 40) {
+export function demandPicks(seed, count, poolSize = 85) {
   const pool = byDemand(poolSize).filter((p) => p.slug !== seed);
   if (pool.length <= count) return pool;
   const start = hash(seed || 'home') % pool.length;

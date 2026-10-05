@@ -1,0 +1,494 @@
+{
+ "_note": "Pages that already rank just off page one. Exported from Search Console Performance (last 3 months) on 2026-10-05 and committed so the build can read it; regenerate from a fresh export rather than editing by hand.",
+ "source": "Google Search Console \u2014 Performance, last 3 months",
+ "exported": "2026-10-05",
+ "criteria": "average position 7.5-20 and at least 300 impressions",
+ "pages": [
+  {
+   "slug": "katrina-kaif",
+   "impressions": 26392,
+   "position": 9.17,
+   "clicks": 28
+  },
+  {
+   "slug": "allu-arjun",
+   "impressions": 11252,
+   "position": 9.05,
+   "clicks": 8
+  },
+  {
+   "slug": "manju-warrier",
+   "impressions": 11132,
+   "position": 7.67,
+   "clicks": 8
+  },
+  {
+   "slug": "akkineni-nagarjuna",
+   "impressions": 10911,
+   "position": 9.23,
+   "clicks": 10
+  },
+  {
+   "slug": "kajal-aggarwal",
+   "impressions": 5834,
+   "position": 7.67,
+   "clicks": 9
+  },
+  {
+   "slug": "mithun-chakraborty",
+   "impressions": 4418,
+   "position": 7.79,
+   "clicks": 8
+  },
+  {
+   "slug": "madhuri-dixit",
+   "impressions": 3529,
+   "position": 10.22,
+   "clicks": 1
+  },
+  {
+   "slug": "madhubala",
+   "impressions": 3407,
+   "position": 9.43,
+   "clicks": 1
+  },
+  {
+   "slug": "jacqueline-fernandez",
+   "impressions": 3328,
+   "position": 9.14,
+   "clicks": 2
+  },
+  {
+   "slug": "akshaye-khanna",
+   "impressions": 3063,
+   "position": 9.15,
+   "clicks": 3
+  },
+  {
+   "slug": "ramya-krishnan",
+   "impressions": 2779,
+   "position": 8.6,
+   "clicks": 2
+  },
+  {
+   "slug": "anirudh-ravichander",
+   "impressions": 2756,
+   "position": 7.56,
+   "clicks": 3
+  },
+  {
+   "slug": "archana-puran-singh",
+   "impressions": 2426,
+   "position": 8.71,
+   "clicks": 1
+  },
+  {
+   "slug": "rashmika-mandanna",
+   "impressions": 2277,
+   "position": 10.17,
+   "clicks": 5
+  },
+  {
+   "slug": "aditya-pancholi",
+   "impressions": 2198,
+   "position": 9.23,
+   "clicks": 6
+  },
+  {
+   "slug": "vishal-krishna",
+   "impressions": 2186,
+   "position": 9.48,
+   "clicks": 0
+  },
+  {
+   "slug": "kapil-sharma",
+   "impressions": 2076,
+   "position": 7.87,
+   "clicks": 1
+  },
+  {
+   "slug": "dulquer-salmaan",
+   "impressions": 1999,
+   "position": 8.79,
+   "clicks": 3
+  },
+  {
+   "slug": "rachita-ram",
+   "impressions": 1831,
+   "position": 9.55,
+   "clicks": 1
+  },
+  {
+   "slug": "aditya-roy-kapur",
+   "impressions": 1812,
+   "position": 9.22,
+   "clicks": 2
+  },
+  {
+   "slug": "nandamuri-balakrishna",
+   "impressions": 1787,
+   "position": 9.82,
+   "clicks": 1
+  },
+  {
+   "slug": "sunidhi-chauhan",
+   "impressions": 1775,
+   "position": 8.8,
+   "clicks": 3
+  },
+  {
+   "slug": "ananya-pandey",
+   "impressions": 1723,
+   "position": 8.07,
+   "clicks": 6
+  },
+  {
+   "slug": "radhika-apte",
+   "impressions": 1677,
+   "position": 10.42,
+   "clicks": 2
+  },
+  {
+   "slug": "amitabh-bachchan",
+   "impressions": 1671,
+   "position": 12.45,
+   "clicks": 0
+  },
+  {
+   "slug": "arbaaz-khan",
+   "impressions": 1588,
+   "position": 9.43,
+   "clicks": 3
+  },
+  {
+   "slug": "sidharth-malhotra",
+   "impressions": 1571,
+   "position": 9.89,
+   "clicks": 0
+  },
+  {
+   "slug": "rani-mukerji",
+   "impressions": 1530,
+   "position": 9.95,
+   "clicks": 0
+  },
+  {
+   "slug": "javed-jaffrey",
+   "impressions": 1482,
+   "position": 9.43,
+   "clicks": 1
+  },
+  {
+   "slug": "anil-kapoor",
+   "impressions": 1411,
+   "position": 9.57,
+   "clicks": 1
+  },
+  {
+   "slug": "ajay-devgn",
+   "impressions": 1342,
+   "position": 10.54,
+   "clicks": 0
+  },
+  {
+   "slug": "salman-khan",
+   "impressions": 1334,
+   "position": 11.11,
+   "clicks": 0
+  },
+  {
+   "slug": "bipasha-basu",
+   "impressions": 1274,
+   "position": 9.66,
+   "clicks": 3
+  },
+  {
+   "slug": "malaika-arora",
+   "impressions": 1262,
+   "position": 8.81,
+   "clicks": 1
+  },
+  {
+   "slug": "randhir-kapoor",
+   "impressions": 1242,
+   "position": 9.33,
+   "clicks": 4
+  },
+  {
+   "slug": "jyothika",
+   "impressions": 1203,
+   "position": 9.59,
+   "clicks": 0
+  },
+  {
+   "slug": "ileana-dcruz",
+   "impressions": 1189,
+   "position": 13.1,
+   "clicks": 0
+  },
+  {
+   "slug": "anushka-sharma",
+   "impressions": 1102,
+   "position": 10.96,
+   "clicks": 0
+  },
+  {
+   "slug": "ranbir-kapoor",
+   "impressions": 1037,
+   "position": 9.47,
+   "clicks": 0
+  },
+  {
+   "slug": "virat-kohli",
+   "impressions": 1001,
+   "position": 9.78,
+   "clicks": 0
+  },
+  {
+   "slug": "sridevi",
+   "impressions": 992,
+   "position": 10.64,
+   "clicks": 0
+  },
+  {
+   "slug": "naga-chaitanya",
+   "impressions": 967,
+   "position": 7.97,
+   "clicks": 0
+  },
+  {
+   "slug": "prabhas",
+   "impressions": 952,
+   "position": 9.18,
+   "clicks": 0
+  },
+  {
+   "slug": "akhil-akkineni",
+   "impressions": 934,
+   "position": 10.13,
+   "clicks": 0
+  },
+  {
+   "slug": "varun-tej",
+   "impressions": 865,
+   "position": 9.37,
+   "clicks": 1
+  },
+  {
+   "slug": "jayam-ravi",
+   "impressions": 852,
+   "position": 9.5,
+   "clicks": 0
+  },
+  {
+   "slug": "nayanthara",
+   "impressions": 748,
+   "position": 8.49,
+   "clicks": 0
+  },
+  {
+   "slug": "can-yaman",
+   "impressions": 734,
+   "position": 9.73,
+   "clicks": 5
+  },
+  {
+   "slug": "mahesh-babu",
+   "impressions": 718,
+   "position": 11.48,
+   "clicks": 0
+  },
+  {
+   "slug": "kendall-jenner",
+   "impressions": 695,
+   "position": 11.89,
+   "clicks": 0
+  },
+  {
+   "slug": "shraddha-kapoor",
+   "impressions": 690,
+   "position": 10.29,
+   "clicks": 0
+  },
+  {
+   "slug": "akshay-kumar",
+   "impressions": 671,
+   "position": 9.17,
+   "clicks": 1
+  },
+  {
+   "slug": "vivek-oberoi",
+   "impressions": 661,
+   "position": 7.66,
+   "clicks": 0
+  },
+  {
+   "slug": "trisha-krishnan",
+   "impressions": 639,
+   "position": 8.54,
+   "clicks": 0
+  },
+  {
+   "slug": "atharvaa",
+   "impressions": 630,
+   "position": 8.93,
+   "clicks": 0
+  },
+  {
+   "slug": "aamir-khan",
+   "impressions": 609,
+   "position": 10.72,
+   "clicks": 0
+  },
+  {
+   "slug": "bobby-deol",
+   "impressions": 607,
+   "position": 9.17,
+   "clicks": 0
+  },
+  {
+   "slug": "kajol",
+   "impressions": 602,
+   "position": 8.97,
+   "clicks": 0
+  },
+  {
+   "slug": "amala-akkineni",
+   "impressions": 553,
+   "position": 9.38,
+   "clicks": 3
+  },
+  {
+   "slug": "ayesha-takia",
+   "impressions": 548,
+   "position": 8.44,
+   "clicks": 4
+  },
+  {
+   "slug": "amrita-singh",
+   "impressions": 526,
+   "position": 9.84,
+   "clicks": 0
+  },
+  {
+   "slug": "ashutosh-rana",
+   "impressions": 464,
+   "position": 8.76,
+   "clicks": 2
+  },
+  {
+   "slug": "ameesha-patel",
+   "impressions": 463,
+   "position": 10.44,
+   "clicks": 0
+  },
+  {
+   "slug": "abir-chatterjee",
+   "impressions": 462,
+   "position": 8.37,
+   "clicks": 0
+  },
+  {
+   "slug": "manisha-koirala",
+   "impressions": 436,
+   "position": 9.49,
+   "clicks": 0
+  },
+  {
+   "slug": "ayeza-khan",
+   "impressions": 434,
+   "position": 10.49,
+   "clicks": 0
+  },
+  {
+   "slug": "ajith-kumar",
+   "impressions": 433,
+   "position": 9.69,
+   "clicks": 0
+  },
+  {
+   "slug": "raghav-juyal",
+   "impressions": 399,
+   "position": 10.45,
+   "clicks": 1
+  },
+  {
+   "slug": "rishab-shetty",
+   "impressions": 394,
+   "position": 10.6,
+   "clicks": 0
+  },
+  {
+   "slug": "manoj-bajpai",
+   "impressions": 387,
+   "position": 7.86,
+   "clicks": 0
+  },
+  {
+   "slug": "arjun-rampal",
+   "impressions": 377,
+   "position": 10.45,
+   "clicks": 1
+  },
+  {
+   "slug": "srinidhi-shetty",
+   "impressions": 369,
+   "position": 8.17,
+   "clicks": 0
+  },
+  {
+   "slug": "anupama-parameswaran",
+   "impressions": 363,
+   "position": 7.71,
+   "clicks": 0
+  },
+  {
+   "slug": "bhumi-pednekar",
+   "impressions": 360,
+   "position": 7.64,
+   "clicks": 0
+  },
+  {
+   "slug": "ekta-kapoor",
+   "impressions": 342,
+   "position": 8.98,
+   "clicks": 0
+  },
+  {
+   "slug": "zayn-malik",
+   "impressions": 328,
+   "position": 14.4,
+   "clicks": 0
+  },
+  {
+   "slug": "parineeti-chopra",
+   "impressions": 327,
+   "position": 16.83,
+   "clicks": 0
+  },
+  {
+   "slug": "daggubati-venkatesh",
+   "impressions": 314,
+   "position": 9.39,
+   "clicks": 1
+  },
+  {
+   "slug": "andrea-jeremiah",
+   "impressions": 312,
+   "position": 10.03,
+   "clicks": 0
+  },
+  {
+   "slug": "arun-vijay",
+   "impressions": 306,
+   "position": 9.46,
+   "clicks": 1
+  },
+  {
+   "slug": "siddharth-roy-kapur",
+   "impressions": 306,
+   "position": 11.39,
+   "clicks": 0
+  }
+ ]
+}
