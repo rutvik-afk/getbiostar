@@ -450,7 +450,19 @@ for (const file of files) {
   if (ageInfo) angles.push('Age');
   if (f.heightCm) angles.push('Height');
   if (angles.length < 3) angles.push('Family');
-  const title = `${name} — ${angles.slice(0, 3).join(', ')} & Biography`;
+  /* Four hooks, not three. Search Console's query list for this site is
+     entirely age, height, husband and net worth — not one "movies"
+     query — yet 199 of 269 titles opened with Movies and the slice at
+     three then cut Height off the end. "katrina kaif height" alone draws
+     1,438 impressions against a title that does not contain the word.
+
+     The lead angle stays as it is: it was changed on 14 Sept to open
+     with something a knowledge panel cannot hold, and CTR has risen
+     about 20% since, so that part is working. This only stops the terms
+     we actually rank for falling off the end. 44 pages gain Height, and
+     only two titles pass 60 characters, where Base.astro drops the
+     brand suffix anyway. */
+  const title = `${name} — ${angles.slice(0, 4).join(', ')} & Biography`;
   /* The snippet used to open with the age — the exact fact Google has
      already printed in its answer box above us. 8,796 impressions on
      "katrina kaif age" returned 9 clicks, because by the time the reader
