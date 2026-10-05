@@ -28,8 +28,10 @@ export const SITE = {
      the same window. The impressions collapse everyone was worried about
      ran 23 Aug to 13 Sept — 12,597/day to 1,560 — which is Google's
      August core update, finished six days before the rate ever changed,
-     and impressions have been recovering since. */
-  postsPerDay: 8,
+     and impressions have been recovering since. Settled at 5 — the
+     evidence clears 8, and 5 keeps some headroom while the crawl
+     backlog works through. */
+  postsPerDay: 5,
   perPage: 24,
   description:
     'Fact-checked celebrity biographies: age, height, birthplace, family, education, career timeline and awards — sourced from open public records.',
