@@ -84,3 +84,77 @@ export function studyStats() {
   };
   return _cache;
 }
+
+/* Second study: film school. Separate export rather than part of
+   studyStats so each page pays only for what it shows. */
+const FILM_SCHOOL = /\b(film|drama|theatre|theater|cinema|acting)\b/i;
+
+let _film = null;
+export function filmSchoolStats() {
+  if (_film) return _film;
+
+  const people = fs.readdirSync(FACTS)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => JSON.parse(fs.readFileSync(path.join(FACTS, f), 'utf8')));
+  for (const p of people) p._c = categoryOf(p);
+
+  /* Credits and search volume live on the post, not the facts record, so
+     both the queue and the published set are read — the question is about
+     the dataset, not about what happens to be live today. */
+  const posts = {};
+  for (const dir of ['content/published', 'content/queue']) {
+    const d = path.resolve(FACTS, '..', '..', dir);
+    if (!fs.existsSync(d)) continue;
+    for (const f of fs.readdirSync(d)) {
+      if (!f.endsWith('.json')) continue;
+      const p = JSON.parse(fs.readFileSync(path.join(d, f), 'utf8'));
+      posts[p.slug] = p;
+    }
+  }
+
+  const actors = people.filter((p) => p._c === 'actor' && p.education?.length);
+  const trained = actors.filter((p) => p.education.some((e) => FILM_SCHOOL.test(e)));
+  const untrained = actors.filter((p) => !p.education.some((e) => FILM_SCHOOL.test(e)));
+
+  const median = (xs) => {
+    const s = xs.filter(Boolean).sort((a, b) => a - b);
+    return s.length ? s[Math.floor(s.length / 2)] : null;
+  };
+  const credits = (g) => g.map((p) => posts[p.slug]?.worksCount || 0);
+  const volume = (g) => g.map((p) => posts[p.slug]?.seo?.volume || 0);
+
+  const tally = (g, re) => {
+    const c = {};
+    for (const p of g) for (const e of p.education) if (!re || re.test(e)) c[e] = (c[e] || 0) + 1;
+    return Object.entries(c).sort((a, b) => b[1] - a[1]).map(([name, n]) => ({ name, n }));
+  };
+
+  const FIELD = {
+    actor: 'Acting', musician: 'Music', athlete: 'Sport', politics: 'Politics',
+    business: 'Business', creator: 'Digital media', notable: 'Other public life',
+  };
+  const coverage = Object.keys(FIELD).map((k) => {
+    const g = people.filter((p) => p._c === k);
+    return { field: FIELD[k], n: g.length, withEd: g.filter((p) => p.education?.length).length };
+  }).filter((x) => x.n >= 40).sort((a, b) => (b.withEd / b.n) - (a.withEd / a.n));
+
+  _film = {
+    total: people.length,
+    actorsWithEducation: actors.length,
+    trained: trained.length,
+    untrained: untrained.length,
+    trainedPct: (trained.length / actors.length) * 100,
+    untrainedPct: (untrained.length / actors.length) * 100,
+    trainedMedianCredits: median(credits(trained)),
+    untrainedMedianCredits: median(credits(untrained)),
+    trainedAtCap: credits(trained).filter((x) => x === 60).length,
+    untrainedAtCap: credits(untrained).filter((x) => x === 60).length,
+    trainedMedianVolume: median(volume(trained)),
+    untrainedMedianVolume: median(volume(untrained)),
+    schools: tally(trained, FILM_SCHOOL).slice(0, 8),
+    elsewhere: tally(actors, null).filter((x) => !FILM_SCHOOL.test(x.name)).slice(0, 10),
+    distinctInstitutions: new Set(people.flatMap((p) => p.education || [])).size,
+    coverage,
+  };
+  return _film;
+}
