@@ -267,9 +267,19 @@ for (const file of files) {
         roleEntries.length === 1
           ? `Public databases list ${works.length} ${noun} for ${name}${span ? `, spanning ${span}` : ''}, all as ${roleEntries[0][0]}.`
           : `Public databases list ${works.length} ${noun} for ${name}${span ? `, spanning ${span}` : ''}. That breaks down as ${list(roleEntries.slice(0, 3).map(([r, n]) => `${n} as ${r}`))}.`,
-        /* A sentence describing the table that follows it said nothing
-           about the person and was byte-identical on every page that had
-           one. Only the truncation note earns its place. */
+        /* Name the most recent titles. They were only ever in the table,
+           so the prose never carried the words people actually search —
+           "shah rukh khan pathaan" found nothing written on his page
+           while Pathaan sat in a cell below. Newest first, capped at
+           four, and only where a year is on record so the sentence
+           cannot imply an order the data does not support. */
+        (() => {
+          const recent = works.filter((w) => w.year)
+            .sort((a, b) => b.year - a.year).slice(0, 4);
+          if (recent.length < 2) return null;
+          const titles = recent.map((w) => `${w.title} (${w.year})`);
+          return `The most recent on record are ${list(titles)}.`;
+        })(),
         works.length > 45 ? `The 45 most recent are listed below, newest first.` : null,
       ].filter(Boolean),
       works: works.slice(0, 45),
@@ -295,7 +305,36 @@ for (const file of files) {
     const rows = f.awards.map((a) => ({ name: a.name, year: a.q?.date?.year || null, forWork: a.q?.for || a.q?.of || null }));
     sections.push({
       id: 'awards', heading: `${name} — Awards and Recognition`,
-      paras: [`${Subj} has received ${rows.length} documented ${rows.length === 1 ? 'honour' : 'honours'}${rows.filter((r) => r.year).length ? `, the earliest recorded in ${Math.min(...rows.filter((r) => r.year).map((r) => r.year))}` : ''}.`],
+      /* The award names and years were only ever in the table. Virat
+         Kohli's section was one 68-character sentence while six honours
+         with dates sat below it, and "virat kohli padma shri" is a real
+         query the page never answered in prose. Naming them is specific
+         to the person, which generic padding would not be. */
+      paras: (() => {
+        const dated = rows.filter((r) => r.year);
+        const years = dated.map((r) => r.year);
+        const span = years.length
+          ? (Math.min(...years) === Math.max(...years)
+            ? ` in ${years[0]}`
+            : ` between ${Math.min(...years)} and ${Math.max(...years)}`)
+          : '';
+        const lead = `${Subj} has received ${rows.length} documented `
+          + `${rows.length === 1 ? 'honour' : 'honours'}${span}.`;
+
+        /* Named newest first — the recent ones are what people look for.
+           Capped at four so a heavily decorated career does not turn the
+           paragraph into the table it sits above. */
+        const named = [...rows]
+          .sort((a, b) => (b.year || 0) - (a.year || 0))
+          .slice(0, 4)
+          .map((r) => `the ${r.name}${r.year ? ` (${r.year})` : ''}`);
+        const rest = rows.length - named.length;
+        const detail = named.length
+          ? `${rows.length > named.length ? 'They include ' : 'They are '}`
+            + `${list(named)}${rest > 0 ? `, alongside ${rest} ${rest === 1 ? 'other' : 'others'}` : ''}.`
+          : null;
+        return [lead, detail];
+      })(),
       awards: rows,
     });
   }
