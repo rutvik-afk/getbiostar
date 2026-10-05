@@ -91,18 +91,33 @@ const richnessOf = (p) =>
    inside that band, worth maybe 2x, while volume across the queue spans
    more than 100x.
 
-   The evidence is Virat Kohli: 4.5M/mo at kd 38.6, not an easy keyword,
-   and his page alone accounts for ~84% of the site's estimated traffic.
-   Holding the ease swing to ~1.2x lifts the top-60 average volume from
-   182K to 313K and brings Zubeen Garg in from 85 days out to the front.
+   That was first set from Virat Kohli — 4.5M/mo at kd 38.6, whose page
+   alone was ~84% of the site's *estimated* traffic — and the caveat
+   written with it was that one data point might not hold.
 
-   Caveat worth remembering: that is one data point. If DiCaprio and
-   Jaiswal do not behave like Kohli, this weighting is wrong and should
-   move back. */
+   It did not. Search Console on 5 Oct settled it: the site ranks at
+   positions 7-11 on exactly these big-volume names and takes almost no
+   clicks, because Google answers them in a panel above the results.
+   "manju warrier age" drew 6,933 impressions at position 7.8 for two
+   clicks; "huma qureshi age" drew 291 at position 5.9 for none. The
+   pages that do convert belong to people obscure enough that Google
+   builds no panel — Swastika Mukherjee at 0.3%, ten times the rest from
+   the same position.
+
+   Difficulty is the closest proxy in the data for "Google has not
+   already answered this", so the ease swing is now ~3x across the full
+   kd range rather than ~1.1x. The cost is real and bounded: top-60
+   average volume falls 255K to 212K, while average kd falls 37.9 to
+   34.5. Dhoni (519K at kd 45.5) moves from first to 140th; Hoshiar
+   Singh (33.5K at kd 26.3) comes in from 982nd to 592nd.
+
+   Volume was never the thing worth maximising. Clicks were, and
+   impressions on a query Google has already answered are not a step
+   towards them. */
 const demandOf = (p) => {
   const vol = p.seo?.volume || 0;
   const ease = Math.max(0, (100 - (p.seo?.kd ?? 50)) / 100);
-  return Math.log10(vol + 10) * (0.75 + 0.45 * ease);
+  return Math.log10(vol + 10) * (0.5 + 1.0 * ease);
 };
 
 const all = queued.map((f) => {
