@@ -120,10 +120,30 @@ const demandOf = (p) => {
   return Math.log10(vol + 10) * (0.5 + 1.0 * ease);
 };
 
+/* Straight to the front: the handful of profiles that can realistically
+   reach page one quickly.
+
+   Search Console says this site earns 1.05% at positions 3-5 and 0.079%
+   at 9-11, so what a page is worth depends almost entirely on where it
+   lands, and difficulty is the best available predictor of that. Tuning
+   the weighting further does not help — the queue simply does not hold
+   many easy keywords. Of 3,020 publishable profiles only 6 sit below kd
+   20 and none of those clears 50K searches; the whole pool of kd under
+   30 with 50K or more is 30 profiles.
+
+   So rather than trade away volume across the entire queue to surface
+   thirty names, they are promoted explicitly. At 5/day they clear in
+   six days and the ordering returns to normal on its own. */
+const QUICK_WIN_KD = 30;
+const QUICK_WIN_VOLUME = 50_000;
+const isQuickWin = (p) =>
+  (p.seo?.kd ?? 100) < QUICK_WIN_KD && (p.seo?.volume || 0) >= QUICK_WIN_VOLUME;
+
 const all = queued.map((f) => {
   const p = JSON.parse(fs.readFileSync(path.join(QUEUE, f), 'utf8'));
   const richness = richnessOf(p);
-  return { file: f, post: p, richness, prio: demandOf(p) + richness * RICHNESS_WEIGHT };
+  const prio = demandOf(p) + richness * RICHNESS_WEIGHT + (isQuickWin(p) ? 100 : 0);
+  return { file: f, post: p, richness, prio };
 });
 const publishable = all.filter((x) => x.richness > 2);
 const scored = (publishable.length ? publishable : all).sort((a, b) => b.prio - a.prio);
