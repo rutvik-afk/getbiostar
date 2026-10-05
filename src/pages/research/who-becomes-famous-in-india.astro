@@ -26,10 +26,11 @@ const monthMax = Math.max(...months.map((m) => Math.abs(m.idx)));
 
 const canonical = `${SITE.domain}/research/who-becomes-famous-in-india/`;
 const title = 'Who Becomes Famous in India? 3,445 Records Analysed';
+/* Kept under 160 so Google shows the finding rather than cutting it
+   mid-clause — the previous version ran to 209 characters. */
 const description =
-  `An analysis of ${n(total)} biographical records: acting is the only field where women are `
-  + `the majority (${pct1(gender[0].pct)}%), one city accounts for ${pct1(cities[0].pct)}% of all `
-  + `recorded birthplaces, and politics and sport are a generation apart.`;
+  `${n(total)} biographical records counted: acting is the only field where women are the `
+  + `majority (${pct1(gender[0].pct)}%), and one city holds ${pct1(cities[0].pct)}% of all birthplaces.`;
 
 const csvUrl = `${SITE.domain}/research/who-becomes-famous-in-india.csv`;
 

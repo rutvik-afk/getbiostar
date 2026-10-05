@@ -23,7 +23,13 @@ const {
 
 const url = canonical || new URL(Astro.url.pathname, SITE.domain).href;
 const ogImage = image || `${SITE.domain}/brand/og-default.png`;
-const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
+/* The brand suffix is worth having, but not at the cost of the words
+   that earn the click. Google cuts a title around 60 characters, so
+   "Celebrities Born in New Delhi — Ages, Careers & Biographies |
+   BioStar" lost the suffix anyway and took "Biographies" with it.
+   Append it only where the result still fits; 24 pages were over. */
+const withBrand = `${title} | ${SITE.name}`;
+const fullTitle = title.includes(SITE.name) || withBrand.length > 60 ? title : withBrand;
 
 const graph = [
   {
