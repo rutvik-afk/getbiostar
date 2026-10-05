@@ -19,7 +19,17 @@ export const SITE = {
   gscVerification: 'yoiQRCSfjJbtwTDJt-kOmdvkpi96d8x7burL_VDrjy0',
   gaMeasurementId: 'G-B27N3MEH80',
   adsenseClient: '', // ex: 'ca-pub-XXXXXXXXXXXXXXXX'
-  postsPerDay: 3,
+  /* Cut to 3 on 5 Oct on the theory that 54 pages sitting in "Discovered
+     – currently not indexed" meant Google could not keep up. The GSC
+     export that arrived the same afternoon showed the theory had no
+     evidence behind it: across the 4/day period (13–26 Sept) CTR was
+     0.136% at position 9.3, and across the 8/day period (27 Sept–3 Oct)
+     it was 0.176% at position 8.5. Indexed pages rose 166 to 174 during
+     the same window. The impressions collapse everyone was worried about
+     ran 23 Aug to 13 Sept — 12,597/day to 1,560 — which is Google's
+     August core update, finished six days before the rate ever changed,
+     and impressions have been recovering since. */
+  postsPerDay: 8,
   perPage: 24,
   description:
     'Fact-checked celebrity biographies: age, height, birthplace, family, education, career timeline and awards — sourced from open public records.',
