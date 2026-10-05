@@ -1014,6 +1014,11 @@
    "date": "2026-10-04",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-05",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1286,6 +1291,7 @@
   "kay-kay-menon": "2026-10-04",
   "lauren-bell": "2026-10-04",
   "ellen-pompeo": "2026-10-04",
-  "akeal-hosein": "2026-10-04"
+  "akeal-hosein": "2026-10-04",
+  "sussanne-khan": "2026-10-05"
  }
 }
