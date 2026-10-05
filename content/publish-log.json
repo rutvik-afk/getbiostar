@@ -1029,6 +1029,11 @@
    "date": "2026-10-05",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-05",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1304,6 +1309,7 @@
   "akeal-hosein": "2026-10-04",
   "sussanne-khan": "2026-10-05",
   "mahua-moitra": "2026-10-05",
-  "milind-kumar": "2026-10-05"
+  "milind-kumar": "2026-10-05",
+  "shubhangi-atre": "2026-10-05"
  }
 }
