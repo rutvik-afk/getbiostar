@@ -55,7 +55,21 @@ export default defineConfig({
     sitemap({
       changefreq: 'weekly',
       entryLimit: 5000,
-      filter: (page) => !/\/(search|404)\//.test(page),
+      /* A sitemap is a priority list, not an inventory. Search Console
+         has 54 pages sitting in "Discovered – currently not indexed"
+         with Last crawled "N/A", including /born/1960s/ which carries
+         322 internal links — Google knows these URLs and is choosing
+         not to spend crawl on them. Listing 26 paginated index pages
+         that rank for nothing alongside them spends that budget on the
+         wrong URLs.
+
+         They stay on the site and stay crawlable through the links that
+         point at them; they are simply no longer nominated. 26 of 329
+         slots, so expect a modest effect, not a fix — the real
+         constraint is the site's authority. */
+      filter: (page) => !/\/(search|404)\//.test(page)
+        && !/\/celebrities\/\d+\/$/.test(page)
+        && !/\/category\/[^/]+\/\d+\/$/.test(page),
       serialize(item) {
         if (item.url === SITE.domain + '/') item.priority = 1.0;
         else if (/\/(celebrities|category)\//.test(item.url)) item.priority = 0.6;
