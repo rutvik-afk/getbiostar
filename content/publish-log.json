@@ -1049,6 +1049,11 @@
    "date": "2026-10-06",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-06",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1328,6 +1333,7 @@
   "shubhangi-atre": "2026-10-05",
   "shilpa-shukla": "2026-10-05",
   "nikita-dutta": "2026-10-06",
-  "chloe-east": "2026-10-06"
+  "chloe-east": "2026-10-06",
+  "rahat-fateh-ali-khan": "2026-10-06"
  }
 }
