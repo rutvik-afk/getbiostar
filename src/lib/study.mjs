@@ -158,3 +158,85 @@ export function filmSchoolStats() {
   };
   return _film;
 }
+
+/* Third study: who famous people marry, and who their parents are. */
+let _family = null;
+export function familyStats() {
+  if (_family) return _family;
+
+  const people = fs.readdirSync(FACTS)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => JSON.parse(fs.readFileSync(path.join(FACTS, f), 'utf8')));
+  for (const p of people) p._c = categoryOf(p);
+
+  const FIELD = {
+    actor: 'Acting', musician: 'Music', athlete: 'Sport', politics: 'Politics',
+    business: 'Business', creator: 'Digital media', notable: 'Other public life',
+  };
+  const byName = new Map(people.map((p) => [p.name.toLowerCase(), p]));
+
+  /* Couples where both halves are in the dataset, deduplicated — a
+     marriage is recorded on both records, so counting rows double-counts. */
+  const couples = [];
+  const seen = new Set();
+  for (const p of people) {
+    for (const s of p.spouses || []) {
+      const m = byName.get((s.name || '').toLowerCase());
+      if (!m || m.name === p.name) continue;
+      const key = [p.name, m.name].sort().join('|');
+      if (seen.has(key)) continue;
+      seen.add(key);
+      couples.push({
+        a: p.name, b: m.name,
+        fieldA: FIELD[p._c], fieldB: FIELD[m._c],
+        same: p._c === m._c,
+      });
+    }
+  }
+
+  const withSpouse = people.filter((p) => p.spouses?.length);
+  const sameField = couples.filter((c) => c.same).length;
+
+  const mixes = {};
+  for (const c of couples) {
+    if (c.same) continue;
+    const k = [c.fieldA, c.fieldB].sort().join(' + ');
+    mixes[k] = (mixes[k] || 0) + 1;
+  }
+
+  const marriageRate = Object.keys(FIELD).map((k) => {
+    const g = people.filter((p) => p._c === k);
+    return { field: FIELD[k], n: g.length, married: g.filter((p) => p.spouses?.length).length };
+  }).filter((x) => x.n >= 40).sort((a, b) => (b.married / b.n) - (a.married / a.n));
+
+  /* Parents who are themselves in the dataset. Wikidata occasionally
+     records a parent under the child's own name — one record has Vladimir
+     Putin as his own father — so self-matches are dropped. */
+  const children = {};
+  for (const p of people) {
+    for (const parent of [p.father, p.mother].filter(Boolean)) {
+      const m = byName.get(String(parent).toLowerCase());
+      if (!m || m.name === p.name) continue;
+      (children[m.name] ||= new Set()).add(p.name);
+    }
+  }
+  const families = Object.entries(children)
+    .map(([parent, kids]) => ({ parent, children: [...kids] }))
+    .sort((a, b) => b.children.length - a.children.length);
+  const withFamousParent = new Set(families.flatMap((f) => f.children)).size;
+
+  _family = {
+    total: people.length,
+    withSpouse: withSpouse.length,
+    couples: couples.length,
+    sameField,
+    sameFieldPct: (sameField / couples.length) * 100,
+    mixes: Object.entries(mixes).sort((a, b) => b[1] - a[1]).slice(0, 6)
+      .map(([pair, n]) => ({ pair, n })),
+    marriageRate,
+    withFamousParent,
+    families: families.filter((f) => f.children.length >= 2).slice(0, 10),
+    familiesTotal: families.length,
+  };
+  return _family;
+}

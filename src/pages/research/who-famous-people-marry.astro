@@ -1,0 +1,242 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { SITE } from '../../../site.config.mjs';
+import { familyStats } from '../../lib/study.mjs';
+
+const s = familyStats();
+const n = (x) => (x ?? 0).toLocaleString('en-US');
+const pct1 = (x) => x.toFixed(1);
+
+const BAR = { w: 680, rowH: 34, labelW: 170, valueW: 56 };
+const plotW = BAR.w - BAR.labelW - BAR.valueW;
+const rateMax = Math.max(...s.marriageRate.map((m) => (m.married / m.n) * 100));
+const mixMax = s.mixes[0]?.n || 1;
+
+const canonical = `${SITE.domain}/research/who-famous-people-marry/`;
+const title = 'Who Do Famous People Marry? 197 Couples Counted';
+const description =
+  `Of 197 marriages where both halves are on record, ${pct1(s.sameFieldPct)}% are between two `
+  + `people in the same line of work — and ${n(s.withFamousParent)} profiles have a parent in the `
+  + `dataset too.`;
+
+const csvUrl = `${SITE.domain}/research/who-famous-people-marry.csv`;
+
+const jsonld = [
+  {
+    '@type': 'Article',
+    '@id': `${canonical}#article`,
+    url: canonical,
+    headline: title,
+    description,
+    datePublished: '2026-10-06',
+    dateModified: '2026-10-06',
+    author: { '@id': `${SITE.domain}/#org` },
+    publisher: { '@id': `${SITE.domain}/#org` },
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    about: { '@id': `${canonical}#dataset` },
+  },
+  {
+    '@type': 'Dataset',
+    '@id': `${canonical}#dataset`,
+    name: `Marriages and parentage across ${n(s.total)} biographical records`,
+    description:
+      `Counts of marriages in which both spouses hold their own record, how often the two work `
+      + `in the same field, the share married by field, and profiles whose parent is also in the `
+      + `dataset. Derived from Wikidata. Measures what is recorded, not the population.`,
+    url: canonical,
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    creator: { '@id': `${SITE.domain}/#org` },
+    isAccessibleForFree: true,
+    spatialCoverage: 'India',
+    measurementTechnique: 'Aggregation of structured Wikidata records',
+    variableMeasured: ['marriage', 'occupation field', 'parentage'],
+    isBasedOn: 'https://www.wikidata.org/',
+    distribution: [{
+      '@type': 'DataDownload', encodingFormat: 'text/csv',
+      contentUrl: csvUrl, name: 'Aggregate tables (CSV)',
+    }],
+  },
+];
+---
+<Base
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonld={jsonld}
+  type="article"
+  published="2026-10-06"
+  modified="2026-10-06"
+  breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Who Do Famous People Marry?' }]}
+>
+  <nav class="breadcrumbs wrap" aria-label="Breadcrumb">
+    <ol><li><a href="/">Home</a></li><li aria-current="page">Who Do Famous People Marry?</li></ol>
+  </nav>
+  <div class="wrap">
+    <div class="cards-layout">
+      <main class="cards-main study">
+        <h1>Who Do Famous People Marry?</h1>
+        <p class="standfirst">
+          {n(s.withSpouse)} of our {n(s.total)} profiles have a marriage on record. In
+          {' '}{n(s.couples)} of them the spouse has a profile of their own — and almost always
+          does the same job.
+        </p>
+
+        <h2 id="same-field">1. Nearly nine in ten marry within their own field</h2>
+        <p>
+          Of the {n(s.couples)} marriages where both halves are in the dataset,
+          {' '}<strong>{n(s.sameField)} — {pct1(s.sameFieldPct)}% — are between two people working
+          in the same field</strong>. Actors marry actors, politicians marry politicians.
+        </p>
+
+        <figure class="chart">
+          {/* Each bar carries its label on its own line beneath it. Putting
+              the short bar's label beside its value ran the two together
+              as "14.7%ferent fields". */}
+          <svg viewBox="0 0 680 150" role="img"
+               aria-label="Share of couples in the same field against couples in different fields">
+            <rect x="0" y="12" rx="4" height="26" width={(s.sameFieldPct / 100) * 660} class="bar" />
+            <text x={(s.sameFieldPct / 100) * 660 - 10} y="30" class="inbar">{pct1(s.sameFieldPct)}%</text>
+            <text x="0" y="56" class="rowlabel left">Same field · {n(s.sameField)} couples</text>
+            <rect x="0" y="80" rx="4" height="26"
+                  width={Math.max(6, ((100 - s.sameFieldPct) / 100) * 660)} class="bar alt" />
+            <text x={Math.max(6, ((100 - s.sameFieldPct) / 100) * 660) + 10} y="98" class="value">
+              {pct1(100 - s.sameFieldPct)}%
+            </text>
+            <text x="0" y="124" class="rowlabel left">
+              Different fields · {n(s.couples - s.sameField)} couples
+            </text>
+          </svg>
+          <figcaption>
+            Based on {n(s.couples)} distinct marriages where both spouses hold a record of their
+            own. A marriage appears on both records, so each pair is counted once.
+          </figcaption>
+        </figure>
+
+        <h2 id="mixes">2. When they do cross over</h2>
+        <p>
+          The {n(s.couples - s.sameField)} mixed marriages are mostly an actor and someone else.
+        </p>
+        <figure class="chart">
+          <svg viewBox={`0 0 ${BAR.w} ${s.mixes.length * BAR.rowH + 8}`} role="img"
+               aria-label="Commonest pairings between different fields">
+            {s.mixes.map((m, i) => (
+              <g transform={`translate(0 ${i * BAR.rowH})`}>
+                <title>{m.pair}: {m.n} couples</title>
+                <text x={BAR.labelW - 10} y="22" class="rowlabel">{m.pair}</text>
+                <rect x={BAR.labelW} y="10" rx="4" height="14"
+                      width={Math.max(4, (m.n / mixMax) * plotW)} class="bar" />
+                <text x={BAR.labelW + (m.n / mixMax) * plotW + 8} y="22" class="value">{m.n}</text>
+              </g>
+            ))}
+          </svg>
+          <figcaption>Commonest cross-field pairings among the {n(s.couples - s.sameField)} mixed marriages.</figcaption>
+        </figure>
+
+        <h2 id="rate">3. Politicians and founders are the likeliest to have a marriage on record</h2>
+        <p>
+          This is as much about what gets written down as about who marries — a politician's
+          spouse is public in a way a musician's often is not.
+        </p>
+        <figure class="chart">
+          <svg viewBox={`0 0 ${BAR.w} ${s.marriageRate.length * BAR.rowH + 8}`} role="img"
+               aria-label="Share with a marriage on record, by field">
+            {s.marriageRate.map((m, i) => {
+              const v = (m.married / m.n) * 100;
+              return (
+                <g transform={`translate(0 ${i * BAR.rowH})`}>
+                  <title>{m.field}: {m.married} of {m.n} — {v.toFixed(0)}%</title>
+                  <text x={BAR.labelW - 10} y="22" class="rowlabel">{m.field}</text>
+                  <rect x={BAR.labelW} y="10" rx="4" height="14"
+                        width={Math.max(4, (v / rateMax) * plotW)} class="bar" />
+                  <text x={BAR.labelW + (v / rateMax) * plotW + 8} y="22" class="value">{v.toFixed(0)}%</text>
+                </g>
+              );
+            })}
+          </svg>
+          <figcaption>Share with a spouse on record, by field. Base: all profiles in each field.</figcaption>
+        </figure>
+
+        <h2 id="families">4. {n(s.withFamousParent)} profiles have a famous parent</h2>
+        <p>
+          {n(s.familiesTotal)} people in the dataset have at least one child who also has a
+          profile here. These are the largest:
+        </p>
+        <table class="facts">
+          <thead><tr><th>Parent</th><th>Children in the dataset</th></tr></thead>
+          <tbody>
+            {s.families.map((f) => (
+              <tr><td>{f.parent}</td><td>{f.children.join(', ')}</td></tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2 id="method">Method, and what this does not show</h2>
+        <p>
+          <strong>This measures what is recorded, not how people marry.</strong> A marriage counts
+          here only when both halves have their own Wikidata item, which is itself a filter for
+          fame — so the {pct1(s.sameFieldPct)}% figure says that when two famous people marry they
+          are usually in the same line of work. It does not say most actors marry actors; most of
+          the {n(s.withSpouse)} marriages on record are to someone with no profile at all, and
+          those are invisible here.
+        </p>
+        <p>
+          Wikidata occasionally records a parent under the child's own name — one record has
+          Vladimir Putin as his own father — so self-matches are dropped rather than counted.
+          Fields come from recorded occupations, so someone who both acts and holds office is
+          counted once, in whichever category matches first.
+        </p>
+
+        <h2 id="cite">Reuse and citation</h2>
+        <p>
+          Underlying facts from <a href="https://www.wikidata.org/" rel="noopener">Wikidata</a>,
+          published under CC0. This analysis is free to reuse with attribution.
+        </p>
+        <p>
+          <a class="dl" href="/research/who-famous-people-marry.csv"
+             download="biostar-who-famous-people-marry.csv">Download every table on this page (CSV)</a>
+        </p>
+        <blockquote class="cite">
+          BioStar (2026). <em>Who Do Famous People Marry? {n(s.couples)} Couples Counted.</em>
+          <br />{canonical}
+        </blockquote>
+        <p class="muted small">
+          See also: <a href="/research/who-becomes-famous-in-india/">Who Becomes Famous in India?</a>
+          {' '}· <a href="/research/do-actors-go-to-film-school/">Do Actors Go to Film School?</a>
+        </p>
+      </main>
+      <Sidebar />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .study { max-width: 760px; }
+  .standfirst { font-size: 1.1rem; line-height: 1.65; color: var(--fg-soft); margin-bottom: 2rem; }
+  .study h2 { margin-top: 2.5rem; }
+  .chart { margin: 1.5rem 0 2rem; }
+  .chart svg { width: 100%; height: auto; overflow: visible; }
+  .chart figcaption {
+    font-size: 0.85rem; color: var(--fg-dim); line-height: 1.5;
+    margin-top: 0.5rem; border-top: 1px solid var(--line); padding-top: 0.5rem;
+  }
+  .bar { fill: #c8102e; }
+  .bar.alt { fill: #1368a0; }
+  .rowlabel { font-size: 13px; fill: var(--fg-soft); text-anchor: end; }
+  .rowlabel.left { text-anchor: start; }
+  .value { font-size: 13px; font-weight: 600; fill: var(--fg); }
+  .inbar { font-size: 13px; font-weight: 600; fill: #fff; text-anchor: end; }
+  .dl {
+    display: inline-block; font-weight: 600;
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    padding: 0.6rem 1rem; text-decoration: none;
+  }
+  .dl:hover { background: var(--bg-soft); }
+  .cite {
+    border-left: 3px solid var(--accent); padding: 0.75rem 1rem; margin: 1rem 0;
+    background: var(--bg-soft); font-size: 0.9rem; line-height: 1.6;
+  }
+  @media (max-width: 560px) {
+    .rowlabel, .value, .inbar { font-size: 19px; }
+  }
+</style>
