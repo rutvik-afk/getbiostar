@@ -48,7 +48,13 @@ const jsonld = [
     description,
     datePublished: '2026-10-04',
     dateModified: '2026-10-04',
-    isPartOf: { '@id': `${SITE.domain}/#website` },
+    /* No isPartOf here. Search Console flagged "Invalid object type for
+       field 'isPartOf'" on this page: pointing an Article at the site's
+       WebSite node is valid schema.org — WebSite is a CreativeWork — but
+       Google's Article parser does not accept it, and reserves isPartOf
+       for a Periodical. The WebPage-family nodes elsewhere on the site
+       (ProfilePage, CollectionPage) keep theirs, where it is standard
+       and causes no warning. */
     author: { '@id': `${SITE.domain}/#org` },
     publisher: { '@id': `${SITE.domain}/#org` },
     license: 'https://creativecommons.org/licenses/by/4.0/',
