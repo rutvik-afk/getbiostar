@@ -1089,6 +1089,11 @@
    "date": "2026-10-07",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-08",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1376,6 +1381,7 @@
   "darshan-raval": "2026-10-07",
   "neha-mehta": "2026-10-07",
   "yogi-babu": "2026-10-07",
-  "tina-dabi": "2026-10-07"
+  "tina-dabi": "2026-10-07",
+  "mahima-nambiar": "2026-10-08"
  }
 }
