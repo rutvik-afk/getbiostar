@@ -1099,6 +1099,11 @@
    "date": "2026-10-08",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-08",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1388,6 +1393,7 @@
   "yogi-babu": "2026-10-07",
   "tina-dabi": "2026-10-07",
   "mahima-nambiar": "2026-10-08",
-  "vyjayanthimala": "2026-10-08"
+  "vyjayanthimala": "2026-10-08",
+  "sachin-pilot": "2026-10-08"
  }
 }
