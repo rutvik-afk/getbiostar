@@ -1119,6 +1119,11 @@
    "date": "2026-10-09",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-09",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1412,6 +1417,7 @@
   "sachin-pilot": "2026-10-08",
   "kavya-thapar": "2026-10-08",
   "nimrat-khaira": "2026-10-08",
-  "gayathri-arun": "2026-10-09"
+  "gayathri-arun": "2026-10-09",
+  "bhavitha-mandava": "2026-10-09"
  }
 }
