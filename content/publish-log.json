@@ -1139,6 +1139,11 @@
    "date": "2026-10-09",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-10",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1436,6 +1441,7 @@
   "bhavitha-mandava": "2026-10-09",
   "salim-durani": "2026-10-09",
   "monica-bedi": "2026-10-09",
-  "manu-bhaker": "2026-10-09"
+  "manu-bhaker": "2026-10-09",
+  "avesh-khan": "2026-10-10"
  }
 }
