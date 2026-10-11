@@ -65,6 +65,15 @@ jobs:
       - name: Images
         run: node scripts/04-make-covers.mjs
 
+      # Gate. A non-zero exit stops the job before anything is published or
+      # deployed. /shantanu-naidu/ went live carrying Ratan Tata's birth date,
+      # awards and death because no step here checked who the page was about.
+      - name: Audit identity and facts
+        run: node scripts/06b-audit-identity.mjs
+
+      - name: Audit prose
+        run: node scripts/06-audit.mjs || echo "prose audit reported defects"
+
       - name: Publish this run's post (1 of 4 today)
         run: node scripts/05-publish-daily.mjs --count 1
 

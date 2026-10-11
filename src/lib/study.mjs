@@ -7,7 +7,7 @@
    move with the dataset instead of being typed in once. */
 import fs from 'node:fs';
 import path from 'node:path';
-import { categoryOf } from './bio.mjs';
+import { categoryOf, datedToYear } from './bio.mjs';
 
 const FACTS = path.resolve(import.meta.dirname, '..', '..', 'data', 'facts');
 
@@ -68,7 +68,12 @@ export function studyStats() {
     idx: (((monthCounts[i + 1] || 0) / DAYS[i]) / perDayAvg - 1) * 100,
   }));
 
-  const years = people.map((p) => p.birthDate?.year).filter(Boolean).sort((a, b) => a - b);
+  /* Twelve records carry a century-precision date whose year field reads
+     like a real year (1901 = "20th century"), and one carries a plain
+     Wikidata typo (1834 for a politician born 1938). Either would be
+     reported here as the earliest person in the dataset. */
+  const years = people.filter((p) => datedToYear(p.birthDate)).map((p) => p.birthDate.year)
+    .filter((y) => y > 1700).sort((a, b) => a - b);
 
   _cache = {
     total, withPlace, withYear, withEducation,

@@ -31,6 +31,16 @@ node scripts/03-generate-posts.mjs
 echo "▶ Images…"
 node scripts/04-make-covers.mjs
 
+# Identity and consistency gate. This exits non-zero if anything is wrong
+# on a live page, and with set -e that stops the run BEFORE publishing and
+# deploying -- which is the whole point. /shantanu-naidu/ went out carrying
+# Ratan Tata's life because nothing stood here.
+echo "▶ Auditing identity and facts…"
+node scripts/06b-audit-identity.mjs
+
+echo "▶ Auditing prose…"
+node scripts/06-audit.mjs || echo "  (prose audit reported defects)"
+
 echo "▶ Publishing today's batch…"
 node scripts/05-publish-daily.mjs
 

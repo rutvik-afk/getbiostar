@@ -4,6 +4,7 @@ import PostCard from '../../components/PostCard.astro';
 import Sidebar from '../../components/Sidebar.astro';
 import { SITE } from '../../../site.config.mjs';
 import { allPosts } from '../../lib/content.mjs';
+import { computeAge, datedToYear } from '../../lib/bio.mjs';
 
 export const citySlug = (s) =>
   s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -100,10 +101,8 @@ const jsonld = [{
             {items.map((p) => (
               <tr>
                 <td><a href={`/${p.slug}/`}>{p.name}</a></td>
-                <td>{p.birthDate?.year || '—'}</td>
-                <td>{p.birthDate?.year && !p.deathDate
-                  ? new Date().getFullYear() - p.birthDate.year
-                  : '—'}</td>
+                <td>{datedToYear(p.birthDate) ? p.birthDate.year : '—'}</td>
+                <td>{!p.deathDate && computeAge(p.birthDate, null)?.age || '—'}</td>
                 <td>{p.role || '—'}</td>
               </tr>
             ))}

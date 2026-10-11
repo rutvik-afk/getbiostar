@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { SITE } from '../../site.config.mjs';
 import { allPosts, CATEGORIES, relatedFor } from '../lib/content.mjs';
 import Sidebar from '../components/Sidebar.astro';
-import { computeAge, cmToFeet, kgToLb, zodiac } from '../lib/bio.mjs';
+import { computeAge, cmToFeet, kgToLb, zodiac, datedToYear } from '../lib/bio.mjs';
 
 export function getStaticPaths() {
   return allPosts().map((post) => ({ params: { slug: post.slug }, props: { post } }));
@@ -22,10 +22,10 @@ const person = {
   ...(p.alsoSpelled?.length ? { alternateName: p.alsoSpelled } : {}),
   ...(p.image?.url ? { image: `${SITE.domain}${p.image.url}` } : {}),
   ...(p.role ? { description: `${p.role}${ageInfo ? `, age ${ageInfo.age}` : ''}` } : {}),
-  ...(p.birthDate?.year && p.birthDate.month && p.birthDate.day
+  ...(datedToYear(p.birthDate) && p.birthDate.month && p.birthDate.day
       ? { birthDate: `${p.birthDate.year}-${String(p.birthDate.month).padStart(2,'0')}-${String(p.birthDate.day).padStart(2,'0')}` }
-      : p.birthDate?.year ? { birthDate: String(p.birthDate.year) } : {}),
-  ...(p.deathDate?.year ? { deathDate: String(p.deathDate.year) } : {}),
+      : datedToYear(p.birthDate) ? { birthDate: String(p.birthDate.year) } : {}),
+  ...(datedToYear(p.deathDate) ? { deathDate: String(p.deathDate.year) } : {}),
   ...(p.birthPlace?.length ? { birthPlace: { '@type': 'Place', name: p.birthPlace[0] } } : {}),
   ...(p.nationality ? { nationality: { '@type': 'Country', name: p.nationality } } : {}),
   ...(p.occupations?.length ? { jobTitle: p.occupations } : {}),

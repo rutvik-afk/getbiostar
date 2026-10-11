@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  fmtDate, fmtYear, computeAge, cmToFeet, kgToLb, zodiac, list, cap,
+  fmtDate, fmtYear, computeAge, datedToYear, cmToFeet, kgToLb, zodiac, list, cap,
   pronoun, hash, pick, rolePhrase, demonym, categoryOf,
   article, withArticle, asRole, dedupeOccupations, nationalityPhrase,
   isAdultContent,
@@ -403,13 +403,13 @@ for (const file of files) {
 
   /* Timeline */
   const timeline = [...timelineExtra];
-  if (f.birthDate?.year) timeline.push({ year: f.birthDate.year, text: `Born${bp ? ` in ${bp}` : ''}.` });
+  if (datedToYear(f.birthDate)) timeline.push({ year: f.birthDate.year, text: `Born${bp ? ` in ${bp}` : ''}.` });
   for (const e of f.education || []) timeline.push({ year: null, text: `Educated at ${e}.` });
   for (const t of f.teams || []) if (t.q?.from?.year) timeline.push({ year: t.q.from.year, text: `Joined ${t.name}${t.q?.to?.year ? `, through ${t.q.to.year}` : ''}.` });
   for (const p of f.positionsHeld || []) if (p.q?.from?.year) timeline.push({ year: p.q.from.year, text: `Took office as ${p.name}${p.q?.to?.year ? `, serving until ${p.q.to.year}` : ''}.` });
   for (const a of f.awards || []) if (a.q?.date?.year) timeline.push({ year: a.q.date.year, text: `Received the ${a.name}.` });
   for (const sp of f.spouses || []) if (sp.q?.from?.year) timeline.push({ year: sp.q.from.year, text: `Married ${sp.name}.` });
-  if (f.deathDate?.year) timeline.push({ year: f.deathDate.year, text: `Died${f.deathPlace ? ` in ${f.deathPlace}` : ''}.` });
+  if (datedToYear(f.deathDate)) timeline.push({ year: f.deathDate.year, text: `Died${f.deathPlace ? ` in ${f.deathPlace}` : ''}.` });
   const tl = timeline.filter((x) => x.year).sort((a, b) => a.year - b.year);
 
   /* ---------------- FAQ (answers built from the same facts) ---------------- */

@@ -136,6 +136,26 @@ if (process.env.LIMIT) jobs.length = Math.min(jobs.length, Number(process.env.LI
 console.log(`Processing images for ${jobs.length} profiles (concurrency ${CONC})…`);
 
 let downloaded = 0, generated = 0, reused = 0, failed = 0;
+/* ---------- photos supplied by hand ----------
+   Wikidata has no free portrait for 11 live profiles and 628 queued ones,
+   and for those the pipeline can only ever generate lettered artwork. A
+   file dropped in manual-photos/<slug>.jpg outranks every other source.
+   Credits are optional and live in data/manual-photos.json; without one
+   the photo is attributed to the site, which is only honest if the site
+   actually holds the rights to it. */
+const MANUAL = path.join(ROOT, 'manual-photos');
+const MANUAL_EXT = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'JPG', 'JPEG', 'PNG', 'WEBP'];
+const CREDITS_FILE = path.join(ROOT, 'data/manual-photos.json');
+const credits = fs.existsSync(CREDITS_FILE) ? JSON.parse(fs.readFileSync(CREDITS_FILE, 'utf8')) : {};
+function manualFile(slug) {
+  if (!fs.existsSync(MANUAL)) return null;
+  for (const ext of MANUAL_EXT) {
+    const p = path.join(MANUAL, `${slug}.${ext}`);
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+let manualUsed = 0;
 
 /* Commons lookups are the one uncached network cost here, so they run on a
    per-run budget and every result — hit or miss — is remembered. */
@@ -219,18 +239,49 @@ async function fetchBuf(url, tries = 5) {
    failOn:'none' decodes them cleanly — both crops were checked by eye
    and are the right person, undamaged. It is a fallback rather than the
    default so a genuinely truncated file still fails loudly instead of
-   shipping a half-grey portrait. */
+   shipping a half-grey portrait.
+
+   The second fallback is for a crop that succeeds and is useless.
+   sharp's attention strategy looks for the busiest region, and on a wide
+   press photo against a branded backdrop that is the sponsor lettering,
+   not the face: Anurag Kashyap's page carried a blurred white wall with
+   an ear at the edge. A flat crop compresses to almost nothing, so an
+   implausibly small file is the tell — his was 6 KB where the median
+   portrait is 37 KB. Entropy picks the face in exactly the cases where
+   attention picks the wall, so when the result looks blank it is worth
+   the second encode to compare. Kendall Jenner's 11 KB crop is correctly
+   framed against a plain studio wall, which is why this compares the two
+   candidates rather than trusting the file size on its own. */
+const FLAT_CROP_BYTES = 12 * 1024;
+
 async function writeCrop(buf, out) {
   const position = await cropFor(buf);
+  const encode = (pos, tolerant) => (tolerant ? sharp(buf, { failOn: 'none' }) : sharp(buf))
+    .resize(600, 800, { fit: 'cover', position: pos })
+    .webp({ quality: 82, effort: 4 }).toBuffer();
+
+  let best;
   try {
-    await sharp(buf).resize(600, 800, { fit: 'cover', position })
-      .webp({ quality: 82, effort: 4 }).toFile(out);
+    best = await encode(position, false);
   } catch (e) {
     if (!/VipsJpeg|jpeg|corrupt/i.test(e.message)) throw e;
-    await sharp(buf, { failOn: 'none' }).resize(600, 800, { fit: 'cover', position })
-      .webp({ quality: 82, effort: 4 }).toFile(out);
+    best = await encode(position, true);
     console.warn(`  ↻ ${path.basename(out)}: recovered with a tolerant decode (${e.message})`);
   }
+
+  if (best.length < FLAT_CROP_BYTES && position === sharp.strategy.attention) {
+    try {
+      const alt = await encode(sharp.strategy.entropy, false);
+      if (alt.length > best.length * 1.5) {
+        console.warn(`  ⤢ ${path.basename(out)}: attention crop looked blank `
+          + `(${Math.round(best.length / 1024)} KB), used entropy instead (${Math.round(alt.length / 1024)} KB)`);
+        best = alt;
+      }
+    } catch (e) {
+      console.warn(`  ⤢ ${path.basename(out)}: entropy crop failed (${e.message})`);
+    }
+  }
+  fs.writeFileSync(out, best);
 }
 
 async function processOne(fp) {
@@ -242,6 +293,43 @@ async function processOne(fp) {
   const webp = path.join(IMG, `${slug}.webp`);
   const ogj = path.join(IMG, `${slug}-og.jpg`);
   let remote = f.image || null;
+  /* A hand-supplied photo wins outright: no Commons lookup, no placeholder.
+     Keyed on size+mtime so replacing the file is enough to replace the
+     photo on the next run, and unchanged files are not re-cropped. */
+  const manual = manualFile(slug);
+  /* Deleting the file has to undo the override too. Without this the
+     manifest keeps via:"manual" and a sourceUrl pointing at a path that is
+     no longer there, so the profile is stuck on the withdrawn photo and
+     every later run treats the stale entry as a real one. */
+  if (!manual && manifest[slug]?.via === 'manual') {
+    delete manifest[slug];
+    console.log(`  ↩ ${slug}: manual photo removed, falling back to the usual sources`);
+  }
+  if (manual) {
+    const st = fs.statSync(manual);
+    const stamp = `${st.size}:${Math.round(st.mtimeMs)}`;
+    const fresh = manifest[slug]?.manual === stamp
+      && fs.existsSync(webp) && (!PUBLISHED.has(slug) || fs.existsSync(ogj));
+    if (fresh) { reused++; return; }
+    const cred = credits[slug] || {};
+    const buf = fs.readFileSync(manual);
+    await writeCrop(buf, webp);
+    if (PUBLISHED.has(slug)) await buildOgCard(buf, name, role || '', ogj);
+    manifest[slug] = {
+      url: `/img/${slug}.webp`, ogUrl: `/img/${slug}-og.jpg`,
+      width: 600, height: 800,
+      license: cred.license || 'Supplied by the site owner',
+      ...(cred.licenseUrl ? { licenseUrl: cred.licenseUrl } : {}),
+      author: cred.author || SITE.name,
+      ...(cred.page ? { page: cred.page } : {}),
+      sourceUrl: cred.source || `manual-photos/${path.basename(manual)}`,
+      cropV: CROP_V, via: 'manual', manual: stamp,
+    };
+    manualUsed++;
+    console.log(`  ★ ${slug}: your photo (${path.basename(manual)})`
+      + (cred.license ? '' : ' — no licence recorded, credited to the site'));
+    return;
+  }
 
   /* Wikidata's P18 is empty for plenty of very well-known people, so a
      profile that would otherwise ship placeholder art gets one Commons
@@ -448,5 +536,6 @@ for (const dir of [path.join(ROOT, 'content/queue'), path.join(ROOT, 'content/pu
   }
 }
 console.log(`\n   manifest applied to ${stamped} existing posts`);
-console.log(`\n✅ images: ${downloaded} photos self-hosted, ${generated} original covers, ${reused} cached, ${failed} failed`);
+console.log(`\n✅ images: ${downloaded} photos self-hosted, ${generated} original covers, ${reused} cached, ${failed} failed`
+  + (manualUsed ? `, ${manualUsed} supplied by hand` : ''));
 if (commonsFound) console.log(`   ${commonsFound} portrait(s) recovered from Commons where Wikidata had none`);

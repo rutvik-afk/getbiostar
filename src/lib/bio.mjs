@@ -4,24 +4,33 @@
    ============================================================ */
 export const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+/* Wikidata precision: 11 day, 10 month, 9 year, 8 decade, 7 century. A
+   century-precision value still carries a year field -- 1901 means "the
+   20th century", not 1901 -- so anything vaguer than a year is no date at
+   all and must not be printed or counted. Twelve records are like this. */
+export const datedToYear = (d) => !!d?.year && (d.precision ?? 11) >= 9;
+
 export function fmtDate(d) {
-  if (!d || !d.year) return null;
+  if (!datedToYear(d)) return null;
   const y = d.bce ? `${Math.abs(d.year)} BCE` : d.year;
   if (d.month && d.day) return `${d.day} ${MONTHS[d.month - 1]} ${y}`;
   if (d.month) return `${MONTHS[d.month - 1]} ${y}`;
   return String(y);
 }
-export function fmtYear(d) { return d?.year ? (d.bce ? `${Math.abs(d.year)} BCE` : String(d.year)) : null; }
+export function fmtYear(d) { return datedToYear(d) ? (d.bce ? `${Math.abs(d.year)} BCE` : String(d.year)) : null; }
 
 /** Age today (or age at death). Returns null when the date is too coarse. */
 export function computeAge(birth, death, now = new Date()) {
-  if (!birth?.year || birth.bce) return null;
+  if (!datedToYear(birth) || birth.bce) return null;
   const end = death?.year ? new Date(Date.UTC(death.year, (death.month || 6) - 1, death.day || 15)) : now;
   const b = new Date(Date.UTC(birth.year, (birth.month || 6) - 1, birth.day || 15));
   let age = end.getUTCFullYear() - b.getUTCFullYear();
   const m = end.getUTCMonth() - b.getUTCMonth();
   if (m < 0 || (m === 0 && end.getUTCDate() < b.getUTCDate())) age--;
-  if (age < 0 || age > 125) return null;
+  /* 125 was the ceiling and let a bogus 125 through (two records carry a
+     century-precision 1901). Nobody living is older than this, and a
+     record that says otherwise is wrong rather than remarkable. */
+  if (age < 0 || age > 110) return null;
   return { age, approx: !birth.month || !birth.day };
 }
 
