@@ -169,6 +169,23 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
    request rate low, honour Retry-After, and back off exponentially — a
    throttled run is fine, a run that silently drops photos is not. */
 let throttleUntil = 0;
+/* Re-resolve a dead upload.wikimedia.org URL through the Commons API,
+   which follows the rename redirect and returns the current location. */
+async function resolveCommonsUrl(url) {
+  if (!url || !/upload\.wikimedia\.org\/wikipedia\/commons\//.test(url)) return null;
+  const file = decodeURIComponent(url.split('?')[0].split('/').pop());
+  if (!file) return null;
+  try {
+    const api = 'https://commons.wikimedia.org/w/api.php?action=query&format=json&redirects=1'
+      + '&prop=imageinfo&iiprop=url&titles=' + encodeURIComponent('File:' + file);
+    const r = await fetch(api, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(20000) });
+    if (!r.ok) return null;
+    const pages = (await r.json())?.query?.pages || {};
+    const info = Object.values(pages)[0]?.imageinfo?.[0]?.url;
+    return info && info !== url ? info : null;
+  } catch { return null; }
+}
+
 async function fetchBuf(url, tries = 5) {
   for (let t = 0; t < tries; t++) {
     const wait = throttleUntil - Date.now();
@@ -189,6 +206,31 @@ async function fetchBuf(url, tries = 5) {
     }
   }
   return null;
+}
+
+/* Write the 600x800 crop, retrying with a tolerant decoder.
+
+   Some Commons JPEGs have a malformed scan segment — Barron Trump's and
+   Ryan Gosling's both raise "Invalid SOS parameters for sequential
+   JPEG". The header is fine, so metadata() reads them happily and they
+   look healthy right up to the resize, which is where libvips gives up.
+   Both sat on placeholder art for a week because of it.
+
+   failOn:'none' decodes them cleanly — both crops were checked by eye
+   and are the right person, undamaged. It is a fallback rather than the
+   default so a genuinely truncated file still fails loudly instead of
+   shipping a half-grey portrait. */
+async function writeCrop(buf, out) {
+  const position = await cropFor(buf);
+  try {
+    await sharp(buf).resize(600, 800, { fit: 'cover', position })
+      .webp({ quality: 82, effort: 4 }).toFile(out);
+  } catch (e) {
+    if (!/VipsJpeg|jpeg|corrupt/i.test(e.message)) throw e;
+    await sharp(buf, { failOn: 'none' }).resize(600, 800, { fit: 'cover', position })
+      .webp({ quality: 82, effort: 4 }).toFile(out);
+    console.warn(`  ↻ ${path.basename(out)}: recovered with a tolerant decode (${e.message})`);
+  }
 }
 
 async function processOne(fp) {
@@ -268,6 +310,43 @@ async function processOne(fp) {
     buf = havePhoto && fs.existsSync(webp) && !needsRecrop
       ? fs.readFileSync(webp)            // rebuild derivatives from our own copy
       : await fetchBuf(held?.sourceUrl || remote.url);
+
+    /* A stored upload.wikimedia.org URL goes dead when the file behind it
+       is renamed or replaced, and the hash directory changes with the
+       name — "Master_Saleem_in_2015.jpg" under /8/87/ became
+       "Master_Saleem_in_2025.jpg" under /1/17/. The old path 404s for
+       good, so the profile sits on placeholder art for ever while every
+       run retries the same dead URL. Six were stuck this way.
+
+       Commons keeps a redirect under the old filename, so asking the API
+       for it returns where the file lives now. */
+    if (!buf) {
+      const fresh = await resolveCommonsUrl(held?.sourceUrl || remote.url);
+      if (fresh) {
+        buf = await fetchBuf(fresh);
+        if (buf) remote = { ...remote, url: fresh };
+      }
+    }
+
+    /* Still nothing: the file is gone from Commons rather than moved.
+       Wikidata's P18 then points at a URL that will never resolve, and
+       because the field is non-empty the Commons fallback above was
+       skipped — so the profile was pinned to placeholder art by the
+       existence of a dead link. Run the fallback now instead. */
+    if (!buf && commonsBudget > 0) {
+      commonsBudget--;
+      const lead = await wikipediaLeadImage(f.links?.wikipedia);
+      const found = lead || await commonsPortrait(name);
+      commonsChecked.add(slug);
+      if (found?.url) {
+        const b2 = await fetchBuf(found.url);
+        if (b2) {
+          buf = b2;
+          remote = { ...found, via: lead ? 'wikipedia-lead' : 'commons-search' };
+          commonsFound++;
+        }
+      }
+    }
     if (!buf) failed++;
   }
 
@@ -280,8 +359,7 @@ async function processOne(fp) {
          portrait — the manifest read "CC BY-SA 4.0" while the page still
          served the generated cover. Overwrite whenever we're upgrading. */
       if (!fs.existsSync(webp) || !havePhoto || needsRecrop) {
-        await sharp(buf).resize(600, 800, { fit: 'cover', position: await cropFor(buf) })
-          .webp({ quality: 82, effort: 4 }).toFile(webp);
+        await writeCrop(buf, webp);
       }
       if (wantOg) await buildOgCard(buf, p.name, p.role || '', ogj);
       manifest[slug] = {
@@ -318,6 +396,10 @@ async function processOne(fp) {
     }
   } catch (e) {
     failed++;
+    /* Logged rather than swallowed. Two profiles sat on placeholder art
+       for a week because this branch recorded "sourceUnusable" without
+       ever saying what libvips actually objected to. */
+    console.warn(`\n  ⚠ ${slug}: ${e.message}`);
     /* Some Commons files are malformed enough that libvips refuses them —
        Barron Trump's portrait is an "Invalid SOS parameters" JPEG. Without
        settling the manifest here the profile keeps claiming a photo it can
