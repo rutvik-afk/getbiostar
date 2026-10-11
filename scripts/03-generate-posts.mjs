@@ -64,7 +64,13 @@ for (const file of files) {
   const P = (k) => pronoun(f.gender, k);
   const Subj = cap(P('subj'));
   const name = f.name;
-  const first = name.split(' ')[0];
+  /* Normally the given name — "the Katrina facts". A stage name that
+     starts with an article has no given name to take, and splitting it
+     gives "The" (so "the The facts") or, once the article is dropped,
+     a bare "Great". Keep the whole name there: "the Great Khali facts". */
+  const first = /^(the|a|an)\s/i.test(name)
+    ? name.replace(/^(the|a|an)\s+/i, '')
+    : name.split(' ')[0];
   const alive = !f.deathDate;
   const ageInfo = computeAge(f.birthDate, f.deathDate);
   const role = rolePhrase(f);
@@ -489,7 +495,17 @@ for (const file of files) {
   const meta = (pitch.length + provenance.length <= 158 ? pitch + provenance : pitch)
     .replace(/\s+/g, ' ').trim();
 
-  posts.push({
+  /* Several templates prefix "the" to a value that may already carry its
+     own: "the The Greatest Indian", "the The Streamer Awards". The titles
+     that do this are not a closed set, so rather than special-case each
+     template the duplicate is swept up once, here, over everything. */
+  const undouble = (v) => (typeof v === 'string'
+    ? v.replace(/\b(the|a|an) (The|A|An) /g, '$2 ')
+    : Array.isArray(v) ? v.map(undouble)
+    : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, undouble(x)]))
+    : v);
+
+  posts.push(undouble({
     slug: f.slug, name, title, metaDescription: meta, category: cat, alsoSpelled,
     role, nationality: f.citizenship?.[0] || null, occupations: occs,
     alive, birthDate: f.birthDate, deathDate: f.deathDate,
@@ -500,7 +516,7 @@ for (const file of files) {
     worksCount: works.length,
     seo: f.seo, qid: f.qid, related: [],
     generatedAt: new Date().toISOString().slice(0, 10),
-  });
+  }));
 }
 
 /* ---------------- TEXT FINALISER ----------------
