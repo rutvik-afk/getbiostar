@@ -5,3 +5,7 @@ logs/
 data/.cache/
 .DS_Store
 .env
+
+# Wrong-identity records pulled out of the pipeline on 2026-10-11 — kept on disk
+# for inspection, never built and never shipped.
+data/quarantine/

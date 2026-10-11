@@ -9,8 +9,11 @@ import path from 'node:path';
 import { titlesToQids, searchTitle, getEntities, getLabels, commonsLicenses, chunk } from './lib/wiki.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const targets = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/targets.json'), 'utf8'));
-const OUTDIR = path.join(ROOT, 'data/facts');
+/* Overridable so a change to the identity guards below can be run against a
+   handful of known-bad names, writing somewhere harmless, before it is
+   trusted with the real 3,400. */
+const targets = JSON.parse(fs.readFileSync(process.env.TARGETS || path.join(ROOT, 'data/targets.json'), 'utf8'));
+const OUTDIR = process.env.OUTDIR || path.join(ROOT, 'data/facts');
 fs.mkdirSync(OUTDIR, { recursive: true });
 
 const START = Number(process.env.START || 0);
@@ -158,6 +161,49 @@ for (const grp of chunk(missing, 8)) {
 const extra = missing.filter((t) => t._searchTitle).map((t) => t._searchTitle);
 const map2 = await titlesToQids(extra);
 for (const t of missing) if (t._searchTitle && map2[t._searchTitle]) map[t.name] = map2[t._searchTitle];
+/* The fallback above is a FULL-TEXT Wikipedia search, so for someone with
+   no article of their own it cheerfully returns the article that merely
+   mentions them. Two guards, and both are needed:
+
+   a) A hit must share at least one name token with the person we asked
+      for. This is deliberately looser than nameMatches() below, which
+      would also throw away correct stage names (Karthik Siva Kumar ->
+      Karthi, Jaaved Jaaferi, Kunickaa Sadanand); what it catches is the
+      hit that has nothing to do with the name at all.
+
+   b) One entity, one person. A relative searched by name lands on the
+      famous relative's article — Suchitra and Vismaya Mohanlal both
+      resolved to Mohanlal, Silloo Manekshaw to Sam Manekshaw — and the
+      result is a clone of the wrong person rather than a profile. When
+      two names claim one QID the better name match keeps it; where
+      neither matches, both are dropped, because one of them is certainly
+      wrong and we cannot tell which. */
+const shares = (name, title) => {
+  const w = tokens(name);
+  const h = tokens(String(title).replace(/\s*\(.*\)$/, ''));
+  return w.some((a) => h.some((b) => a === b
+    || (a.length >= 4 && b.length >= 4 && editDistance(a, b) <= 1)
+    || (a.length >= 5 && b.length >= 5 && (a.startsWith(b) || b.startsWith(a)))));
+};
+for (const t of missing) {
+  if (!t._searchTitle || !map[t.name] || shares(t.name, t._searchTitle)) continue;
+  console.warn(`  ✗ ${t.name}: search returned "${t._searchTitle}" — different person, dropped`);
+  delete map[t.name];
+}
+
+const claim = new Map();
+for (const t of slice) {
+  const qid = map[t.name]?.qid;
+  if (!qid) continue;
+  const held = claim.get(qid);
+  if (!held) { claim.set(qid, t); continue; }
+  const fits = (x) => (nameMatches(x.slug, map[x.name].title) ? 1 : 0);
+  const keep = fits(t) > fits(held) ? t : held;
+  const drop = keep === t ? held : t;
+  console.warn(`  ✗ ${qid} claimed by ${held.name} and ${t.name} — keeping ${fits(keep) ? keep.name : 'neither'}`);
+  delete map[drop.name];
+  if (!fits(keep)) { delete map[keep.name]; claim.delete(qid); } else claim.set(qid, keep);
+}
 
 const resolved = slice.filter((t) => map[t.name]);
 console.log(`\n  resolved: ${resolved.length}/${slice.length}`);
@@ -174,7 +220,8 @@ for (const t of resolved) {
   const e = ents[qid];
   if (!e) continue;
   const isHuman = (e.claims?.P31 || []).some((c) => c.mainsnak?.datavalue?.value?.id === 'Q5');
-  const out = { qid, isHuman, wikipedia: e.sitelinks?.enwiki?.url || null, label: e.labels?.en?.value || t.name, description: e.descriptions?.en?.value || '', aliases: (e.aliases?.en || []).map((a) => a.value).slice(0, 6), props: {} };
+  const out = { qid, isHuman, wikipedia: e.sitelinks?.enwiki?.url || null, label: e.labels?.en?.value || (e.aliases?.en || [])[0]?.value
+    || (e.sitelinks?.enwiki?.title || null), description: e.descriptions?.en?.value || '', aliases: (e.aliases?.en || []).map((a) => a.value).slice(0, 6), props: {} };
   for (const [pid, key] of Object.entries(P)) {
     const claims = e.claims?.[pid];
     if (!claims?.length) continue;
@@ -206,6 +253,21 @@ const rejected = [];
 for (const t of slice) {
   const r = rawByslug[t.slug];
   if (!r || !r.isHuman) { skipped++; continue; }
+  /* An entity with no English name of any kind cannot be checked against
+     the name we asked for, so it is dropped. This used to fall back to
+     t.name, which made the guard below compare the wanted name with
+     itself and pass every time.
+
+     That is what put Ratan Tata on /shantanu-naidu/. Wikipedia redirects
+     "Shantanu Naidu" to "Ratan Tata#In popular culture", and titlesToQids
+     follows redirects, so the lookup returned Q333460 on the DIRECT hit --
+     not via the full-text fallback. Q333460 happens to carry no English
+     label, so the name we wanted was filled in for the name we got, the
+     check compared "Shantanu Naidu" with itself, and his birth date,
+     awards and death were published under a living man’s name. The
+     redirect is still followed, deliberately -- it is right far more often
+     than not -- but an entity we cannot name is now refused. */
+  if (!r.label) { rejected.push({ slug: t.slug, got: '(no English label)', desc: r.description }); continue; }
   if (!nameMatches(t.slug, r.label, r.aliases)) {
     rejected.push({ slug: t.slug, got: r.label, desc: r.description });
     continue;
@@ -265,7 +327,10 @@ for (const t of slice) {
 }
 console.log(`\n✅ facts written: ${written}   (no Wikidata match: ${skipped})`);
 if (rejected.length) {
-  fs.writeFileSync(path.join(ROOT, 'data/rejected.json'), JSON.stringify(rejected, null, 1));
-  console.log(`⚠️  rejected as wrong-person: ${rejected.length} → data/rejected.json`);
+  /* Beside the facts, so a test run against OUTDIR cannot overwrite the
+     real log of who was turned away. */
+  const rejPath = path.join(path.dirname(OUTDIR), 'rejected.json');
+  fs.writeFileSync(rejPath, JSON.stringify(rejected, null, 1));
+  console.log(`⚠️  rejected as wrong-person: ${rejected.length} → ${path.relative(ROOT, rejPath)}`);
   rejected.slice(0, 8).forEach((r) => console.log(`     ${r.slug} → "${r.got}" (${r.desc})`));
 }
