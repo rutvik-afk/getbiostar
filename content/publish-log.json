@@ -1189,6 +1189,11 @@
    "date": "2026-10-11",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-12",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1496,6 +1501,7 @@
   "jasmine-sandlas": "2026-10-11",
   "munmun-dutta": "2026-10-11",
   "amanjot-kaur": "2026-10-11",
-  "nita-ambani": "2026-10-11"
+  "nita-ambani": "2026-10-11",
+  "geeta-phogat": "2026-10-12"
  }
 }
