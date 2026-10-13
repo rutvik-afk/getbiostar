@@ -1214,6 +1214,11 @@
    "date": "2026-10-12",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-13",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1526,6 +1531,7 @@
   "k-chandrashekar-rao": "2026-10-12",
   "udhayanidhi-stalin": "2026-10-12",
   "harshad-mehta": "2026-10-12",
-  "tejashwi-yadav": "2026-10-12"
+  "tejashwi-yadav": "2026-10-12",
+  "sobhita-dhulipala": "2026-10-13"
  }
 }
