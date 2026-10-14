@@ -1244,6 +1244,11 @@
    "date": "2026-10-14",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-14",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1562,6 +1567,7 @@
   "lokesh-kanagaraj": "2026-10-13",
   "kiran-rathod": "2026-10-13",
   "siddhant-chaturvedi": "2026-10-13",
-  "vaishnavi-chaitanya": "2026-10-14"
+  "vaishnavi-chaitanya": "2026-10-14",
+  "samyuktha-menon": "2026-10-14"
  }
 }
