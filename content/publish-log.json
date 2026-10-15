@@ -1269,6 +1269,11 @@
    "date": "2026-10-15",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-15",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1592,6 +1597,7 @@
   "reba-monica-john": "2026-10-14",
   "rovman-powell": "2026-10-14",
   "pankaj-kapur": "2026-10-14",
-  "mona-singh": "2026-10-15"
+  "mona-singh": "2026-10-15",
+  "adarsh-gourav": "2026-10-15"
  }
 }
