@@ -157,6 +157,18 @@ function manualFile(slug) {
 }
 let manualUsed = 0;
 
+/* Wikidata's P18 ("image") is a free-for-all: editors put signatures there.
+   Tejashwi Yadav's live page showed a black squiggle on white, and six
+   queued profiles (Parveen Babi, Sadashiv Amrapurkar, Satyen Kappu,
+   Sayantika Banerjee, Shashank Ketkar, Vishnu Deo Sai) were the same.
+   The filename is the one reliable tell. The pattern wants the word on its
+   own, so "Designer" and "Flagg" pass and "Signature_of_X.png" does not;
+   a real photo of someone signing ("signing_autographs") also passes. */
+const NOT_A_PORTRAIT = /(^|[_\s.-])(signature|autograph|sign)([_\s.-]|$)/i;
+const notPortrait = (u) => !!u && NOT_A_PORTRAIT.test(
+  decodeURIComponent(String(u).split('?')[0].split('/').pop() || '').replace(/\.[a-z0-9]+$/i, ''));
+const portraitOnly = (x) => (x && !notPortrait(x.url) ? x : null);
+
 /* Commons lookups are the one uncached network cost here, so they run on a
    per-run budget and every result — hit or miss — is remembered. */
 let commonsBudget = Number(process.env.COMMONS_BUDGET || 40);
@@ -293,6 +305,16 @@ async function processOne(fp) {
   const webp = path.join(IMG, `${slug}.webp`);
   const ogj = path.join(IMG, `${slug}-og.jpg`);
   let remote = f.image || null;
+  /* A signature is not a photo. Discard it, and discard a manifest entry that
+     already holds one: otherwise havePhoto stays true, the "rebuild from our
+     own copy" branch below re-reads the signature crop from disk, and a real
+     portrait found by the fallback is never written over it. */
+  if (notPortrait(remote?.url)) remote = null;
+  if (manifest[slug] && !manifest[slug].generated && notPortrait(manifest[slug].sourceUrl)) {
+    delete manifest[slug];
+    console.log(`  ✗ ${slug}: its photo was a signature, looking for a real portrait`);
+  }
+
   /* A hand-supplied photo wins outright: no Commons lookup, no placeholder.
      Keyed on size+mtime so replacing the file is enough to replace the
      photo on the next run, and unchanged files are not re-cropped. */
@@ -344,8 +366,8 @@ async function processOne(fp) {
        name search stays as the fallback for people whose article has no
        free lead image. */
     const lead = await wikipediaLeadImage(f.links?.wikipedia);
-    const found = lead || await commonsPortrait(name);
-    if (found) { remote = { ...found, via: lead ? 'wikipedia-lead' : 'commons-search' }; commonsFound++; }
+    const found = portraitOnly(lead) || portraitOnly(await commonsPortrait(name));
+    if (found) { remote = { ...found, via: found === lead ? 'wikipedia-lead' : 'commons-search' }; commonsFound++; }
     commonsChecked.add(slug);
   }
 
@@ -424,13 +446,13 @@ async function processOne(fp) {
     if (!buf && commonsBudget > 0) {
       commonsBudget--;
       const lead = await wikipediaLeadImage(f.links?.wikipedia);
-      const found = lead || await commonsPortrait(name);
+      const found = portraitOnly(lead) || portraitOnly(await commonsPortrait(name));
       commonsChecked.add(slug);
       if (found?.url) {
         const b2 = await fetchBuf(found.url);
         if (b2) {
           buf = b2;
-          remote = { ...found, via: lead ? 'wikipedia-lead' : 'commons-search' };
+          remote = { ...found, via: found === lead ? 'wikipedia-lead' : 'commons-search' };
           commonsFound++;
         }
       }

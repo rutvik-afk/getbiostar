@@ -146,6 +146,19 @@ for (const p of posts) {
   if (kb < 12) flag(p.slug, p._live, 'portrait may be a blank crop', `${Math.round(kb)} KB`);
 }
 
+/* ---- D2. the "portrait" is a signature ----
+   Wikidata's P18 gets signatures put in it. Unlike the filename-matching
+   check removed below, this one has a precise tell: the file is literally
+   called Signature/Autograph/Sign. Tejashwi Yadav's live page showed a black
+   squiggle for a week before anyone looked. Fails the run on a live page. */
+const SIGNATURE = /(^|[_\s.-])(signature|autograph|sign)([_\s.-]|$)/i;
+for (const p of posts) {
+  const f = facts[p.slug];
+  const src = p.image?.sourceUrl || f?.image?.origin || f?.image?.url || '';
+  const file = decodeURIComponent(String(src).split('?')[0].split('/').pop() || '').replace(/\.[a-z0-9]+$/i, '');
+  if (file && SIGNATURE.test(file)) flag(p.slug, p._live, 'portrait is a signature', file);
+}
+
 /* A photo check was tried here and removed. Comparing the Commons filename
    against the name cannot work: most filenames are descriptive ("2023-11-16
    Gala de los Latin Grammy") and prove nothing, group shots name the wrong
