@@ -145,8 +145,19 @@ const all = queued.map((f) => {
   const prio = demandOf(p) + richness * RICHNESS_WEIGHT + (isQuickWin(p) ? 100 : 0);
   return { file: f, post: p, richness, prio };
 });
-const publishable = all.filter((x) => x.richness > 2);
-const scored = (publishable.length ? publishable : all).sort((a, b) => b.prio - a.prio);
+/* Posts the identity audit (06b) refused. Its gate fails the run for a bad
+   LIVE page, which is too late for a page that is bad at the moment it is
+   published: it goes live, the next run's audit fails, and publishing stops
+   until a person steps in. So a flagged post is simply never chosen. */
+const BLOCKED_FILE = path.join(ROOT, 'data/audit-blocked.json');
+const blocked = new Set(fs.existsSync(BLOCKED_FILE)
+  ? JSON.parse(fs.readFileSync(BLOCKED_FILE, 'utf8')).slugs : []);
+const eligible = all.filter((x) => !blocked.has(x.post.slug));
+if (eligible.length !== all.length) {
+  console.log(`  holding back ${all.length - eligible.length} queued post(s) the audit flagged`);
+}
+const publishable = eligible.filter((x) => x.richness > 2);
+const scored = (publishable.length ? publishable : eligible).sort((a, b) => b.prio - a.prio);
 
 const effectiveCount = seed || argv.includes('--force')
   ? count

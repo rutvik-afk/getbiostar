@@ -247,6 +247,8 @@ console.log(`Fetching Commons licence metadata for ${imgFiles.length} portraitsâ
 const licenses = await commonsLicenses(imgFiles);
 console.log(`  free-licensed & usable: ${Object.keys(licenses).length}`);
 
+const notSelf = (parent, own) => (parent && tokens(parent).join(' ') === tokens(own).join(' ') ? null : parent);
+
 /* ---------- 6. write facts files ---------- */
 let written = 0, skipped = 0;
 const rejected = [];
@@ -300,7 +302,10 @@ for (const t of slice) {
     education: listOf('education', 4).map((x) => x.name),
     languages: listOf('languages', 4).map((x) => x.name),
     residence: listOf('residence', 2).map((x) => x.name),
-    father: one('father'), mother: one('mother'),
+    /* Wikidata sometimes lists a parent under the child's own name â€” Putin's
+       father came back as "Vladimir Putin", so his page said "Public records
+       name his father, Vladimir Putin". Drop it rather than print it. */
+    father: notSelf(one('father'), r.label), mother: notSelf(one('mother'), r.label),
     spouses: listOf('spouses', 4), children: listOf('children', 6).map((x) => x.name),
     siblings: listOf('siblings', 6).map((x) => x.name),
     awards: listOf('awards', 10), notableWorks: listOf('notableWorks', 10).map((x) => x.name),

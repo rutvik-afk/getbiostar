@@ -19,6 +19,7 @@
    ============================================================ */
 import fs from 'node:fs';
 import path from 'node:path';
+import { datedToYear } from '../src/lib/bio.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const FACTS = path.join(ROOT, 'data/facts');
@@ -189,7 +190,10 @@ for (const p of posts) {
   const end = p.deathDate?.year
     ? new Date(p.deathDate.year, (p.deathDate.month || 1) - 1, p.deathDate.day || 1)
     : TODAY;
-  const age = ageOn(p.birthDate, end);
+  /* Same rule the site applies: a date vaguer than a year is not printed, so
+     it must not be aged either. Harpal Singh Sokhi's century-precision "1901"
+     read as 125 here while the page showed no birth date at all. */
+  const age = datedToYear(p.birthDate) ? ageOn(p.birthDate, end) : null;
   if (p.birthDate?.year > TODAY.getFullYear()) flag(p.slug, p._live, 'born in the future', String(p.birthDate.year));
   if (age !== null && p.alive && age > 105) flag(p.slug, p._live, 'alive and over 105', String(age));
   if (age !== null && age < 5) flag(p.slug, p._live, 'under five years old', String(age));
@@ -225,6 +229,12 @@ for (const p of posts) {
 }
 
 /* ---- report ---- */
+/* Everything non-advisory, live or queued, goes to a list the publisher
+   reads, so a queued post that would fail the gate is held back instead of
+   published and then stalling the next run. Regenerated every run. */
+const blockedSlugs = [...new Set(problems.filter((p) => !ADVISORY.has(p.kind)).map((p) => p.slug))].sort();
+fs.writeFileSync(path.join(ROOT, 'data/audit-blocked.json'),
+  JSON.stringify({ note: 'Written by 06b-audit-identity.mjs on every run; read by 05-publish-daily.mjs.', slugs: blockedSlugs }, null, 1) + '\n');
 const liveBad = problems.filter((p) => p.live && !ADVISORY.has(p.kind));
 const byKind = {};
 for (const p of problems) (byKind[p.kind] ||= []).push(p);

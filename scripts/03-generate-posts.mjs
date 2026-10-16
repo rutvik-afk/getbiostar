@@ -60,6 +60,18 @@ const posts = [];
 
 for (const file of files) {
   const f = JSON.parse(fs.readFileSync(path.join(FACTS, file), 'utf8'));
+  /* A birth date we do not believe is not a date we print. Two ways one is
+     unbelievable: Wikidata only knows it to the century or decade (the year
+     field then reads like a real year — 1901 means "the 20th century"), or
+     it describes someone alive who would be over 110 (Durai Murugan's reads
+     1834; he was born in 1938). Either way the page is better with no birth
+     date than with a wrong one, and every downstream line — age, zodiac,
+     timeline, JSON-LD — already copes with a missing date. */
+  if (f.birthDate) {
+    const vague = (f.birthDate.precision ?? 11) < 9;
+    const impossible = !f.deathDate && new Date().getFullYear() - f.birthDate.year > 110;
+    if (vague || impossible) f.birthDate = null;
+  }
   const s = hash(f.slug);
   const P = (k) => pronoun(f.gender, k);
   const Subj = cap(P('subj'));
@@ -77,6 +89,9 @@ for (const file of files) {
   const nat = demonym(f.citizenship?.[0]);
   const cat = categoryOf(f);
   const born = fmtDate(f.birthDate);
+  /* "on 16 July 1983" but "in March 1985" and "in 1985". Wikidata knows 185
+     of these people only to the year, and five templates said "born on 1985". */
+  const bornPrep = f.birthDate?.day ? 'on' : 'in';
   const bornYear = fmtYear(f.birthDate);
   const bp = list(f.birthPlace);
   const occs = dedupeOccupations(f.occupations);
@@ -125,7 +140,7 @@ for (const file of files) {
   const lead = [];
   {
     let a = alive ? leadOpen : `${name} was ${withArticle(role)}`;
-    if (born) a += `, born on ${born}${bp ? ` in ${bp}` : ''}`;
+    if (born) a += `, born ${bornPrep} ${born}${bp ? ` in ${bp}` : ''}`;
     else if (bp) a += ` from ${bp}`;
     a += '.';
     lead.push(a);
@@ -187,8 +202,8 @@ for (const file of files) {
   {
     const p = [];
     let a = '';
-    if (born && bp) a = `${name} was born on ${born} in ${bp}${natPhrase ? `, and holds ${natPhrase}` : ''}.`;
-    else if (born) a = `${name} was born on ${born}.`;
+    if (born && bp) a = `${name} was born ${bornPrep} ${born} in ${bp}${natPhrase ? `, and holds ${natPhrase}` : ''}.`;
+    else if (born) a = `${name} was born ${bornPrep} ${born}.`;
     else if (bp) a = `${name} comes from ${bp}.`;
     if (a && f.birthName && f.birthName !== name) a += ` ${Subj} was given the name ${f.birthName} at birth and is publicly known as ${name}.`;
     if (a) p.push(a);
@@ -424,9 +439,9 @@ for (const file of files) {
   const q = (question, answer) => { if (answer) faq.push({ q: question, a: answer }); };
 
   q(`How old is ${name}?`, ageInfo ? (alive
-      ? `${name} is ${ageInfo.age} years old${born ? `, having been born on ${born}` : ''}. The age shown here is recalculated on every rebuild of this page, so it never goes stale.`
+      ? `${name} is ${ageInfo.age} years old${born ? `, having been born ${bornPrep} ${born}` : ''}. The age shown here is recalculated on every rebuild of this page, so it never goes stale.`
       : `${name} was ${ageInfo.age} years old at the time of death${f.deathDate ? ` on ${fmtDate(f.deathDate)}` : ''}.`) : null);
-  q(`What is ${name}'s date of birth?`, born ? `${name} was born on ${born}${bp ? ` in ${bp}` : ''}.` : null);
+  q(`What is ${name}'s date of birth?`, born ? `${name} was born ${bornPrep} ${born}${bp ? ` in ${bp}` : ''}.` : null);
   q(`How tall is ${name}?`, f.heightCm ? `${name} is ${f.heightCm} cm tall, which is about ${cmToFeet(f.heightCm)}.` : null);
   q(`What is ${name}'s real name?`, f.birthName && f.birthName !== name ? `${P('poss') === 'their' ? 'Their' : cap(P('poss'))} birth name is ${f.birthName}; ${P('subj')} ${P('be')} publicly known as ${name}.` : null);
   q(`Where is ${name} from?`, bp ? `${name} was born in ${bp}${natPhrase ? ` and holds ${natPhrase}` : ''}.` : null);
