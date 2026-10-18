@@ -1344,6 +1344,11 @@
    "date": "2026-10-18",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-18",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1682,6 +1687,7 @@
   "shehnaz-kaur-gill": "2026-10-17",
   "miles-caton": "2026-10-17",
   "ronnie-coleman": "2026-10-17",
-  "unni-mukundan": "2026-10-18"
+  "unni-mukundan": "2026-10-18",
+  "chirag-paswan": "2026-10-18"
  }
 }
