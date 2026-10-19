@@ -1364,6 +1364,11 @@
    "date": "2026-10-18",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-19",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1706,6 +1711,7 @@
   "chirag-paswan": "2026-10-18",
   "priyamani": "2026-10-18",
   "rekha-gupta": "2026-10-18",
-  "tejaswi-wayangankar": "2026-10-18"
+  "tejaswi-wayangankar": "2026-10-18",
+  "nitish-kumar": "2026-10-19"
  }
 }
