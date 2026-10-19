@@ -1374,6 +1374,11 @@
    "date": "2026-10-19",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-19",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1718,6 +1723,7 @@
   "rekha-gupta": "2026-10-18",
   "tejaswi-wayangankar": "2026-10-18",
   "nitish-kumar": "2026-10-19",
-  "ananya-birla": "2026-10-19"
+  "ananya-birla": "2026-10-19",
+  "n-chandrababu-naidu": "2026-10-19"
  }
 }
