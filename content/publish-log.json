@@ -1399,6 +1399,11 @@
    "date": "2026-10-20",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-20",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1748,6 +1753,7 @@
   "saumya-tandon": "2026-10-19",
   "arjun-das": "2026-10-19",
   "amala-paul": "2026-10-20",
-  "dinesh-karthik": "2026-10-20"
+  "dinesh-karthik": "2026-10-20",
+  "aishwarya-lekshmi": "2026-10-20"
  }
 }
