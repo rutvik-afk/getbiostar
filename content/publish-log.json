@@ -1429,6 +1429,11 @@
    "date": "2026-10-21",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-21",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1784,6 +1789,7 @@
   "brad-pitt": "2026-10-20",
   "yogita-bihani": "2026-10-21",
   "dhruv-jurel": "2026-10-21",
-  "hrithik-roshan": "2026-10-21"
+  "hrithik-roshan": "2026-10-21",
+  "sameer-rizvi": "2026-10-21"
  }
 }
