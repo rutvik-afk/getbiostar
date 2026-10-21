@@ -1434,6 +1434,11 @@
    "date": "2026-10-21",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-21",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1790,6 +1795,7 @@
   "yogita-bihani": "2026-10-21",
   "dhruv-jurel": "2026-10-21",
   "hrithik-roshan": "2026-10-21",
-  "sameer-rizvi": "2026-10-21"
+  "sameer-rizvi": "2026-10-21",
+  "rakhee-gulzar": "2026-10-21"
  }
 }
