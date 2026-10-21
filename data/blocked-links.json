@@ -1,0 +1,15 @@
+{
+  "_note": "Outbound 'official website' links (from Wikidata P856) that must not be rendered. Wikidata is open to anyone and celebrity domains lapse and get bought, so a link that was right once can end up pointing at spam. Matched on hostname, www ignored. Checked 2026-10-21 by fetching every live outbound link; add a host here when one goes bad.",
+  "hosts": {
+    "viratkohli.foundation": "now redirects to disdukcapilkabsorong.com, an Indonesian illegal-lottery (togel) spam page",
+    "ajiththeactor.com": "serves a Chinese 'safe redirect' page with HTTP 500 — looks hijacked",
+    "bestmattressesreviews.com": "a mattress-review affiliate site listed as Monica Bedi's official website; wrong, and returns a database error",
+    "agnimitrapaul.com": "expired, parked on HugeDomains ('for sale')",
+    "kabirbedi.com": "Squarespace 'Website Expired'",
+    "mostlysane.in": "domain no longer connected to any site",
+    "ganabala.com": "domain does not resolve (lapsed)",
+    "mawrahocane.com": "domain does not resolve (lapsed)",
+    "nagachaitanyaakkineni.com": "domain does not resolve (lapsed)",
+    "vivek-oberoi.com": "domain does not resolve (lapsed)"
+  }
+}

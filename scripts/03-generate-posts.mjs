@@ -56,6 +56,7 @@ const files = fs.readdirSync(FACTS)
   });
 console.log(`Generating posts for ${files.length} people…`);
 
+const BLOCKED_HOSTS = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/blocked-links.json'), 'utf8')).hosts || {};
 const posts = [];
 
 for (const file of files) {
@@ -67,6 +68,18 @@ for (const file of files) {
      1834; he was born in 1938). Either way the page is better with no birth
      date than with a wrong one, and every downstream line — age, zodiac,
      timeline, JSON-LD — already copes with a missing date. */
+  /* An official-website link that has gone bad is worse than none. Wikidata's
+     P856 is open to edits and celebrity domains lapse, so these end up on
+     gambling spam (viratkohli.foundation redirected to a togel site, on a
+     page with 1M+ searches), parked "for sale" pages, or a mattress affiliate
+     listed as someone's official site. Checked against data/blocked-links.json,
+     which is also what keeps the link from coming back on the weekly refresh. */
+  if (f.links?.website) {
+    try {
+      const host = new URL(f.links.website).hostname.replace(/^www\./, '').toLowerCase();
+      if (BLOCKED_HOSTS[host]) f.links = { ...f.links, website: null };
+    } catch { f.links = { ...f.links, website: null }; }
+  }
   if (f.birthDate) {
     const vague = (f.birthDate.precision ?? 11) < 9;
     const impossible = !f.deathDate && new Date().getFullYear() - f.birthDate.year > 110;
