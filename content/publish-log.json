@@ -1414,6 +1414,11 @@
    "date": "2026-10-20",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-21",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1766,6 +1771,7 @@
   "dinesh-karthik": "2026-10-20",
   "aishwarya-lekshmi": "2026-10-20",
   "mohammed-shami": "2026-10-20",
-  "brad-pitt": "2026-10-20"
+  "brad-pitt": "2026-10-20",
+  "yogita-bihani": "2026-10-21"
  }
 }
