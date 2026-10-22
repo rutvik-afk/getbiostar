@@ -1459,6 +1459,11 @@
    "date": "2026-10-22",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-22",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1820,6 +1825,7 @@
   "nimisha-sajayan": "2026-10-22",
   "saurabh-sachdeva": "2026-10-22",
   "kratika-sengar": "2026-10-22",
-  "puneeth-rajkumar": "2026-10-22"
+  "puneeth-rajkumar": "2026-10-22",
+  "jason-momoa": "2026-10-22"
  }
 }
