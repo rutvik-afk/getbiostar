@@ -1494,6 +1494,11 @@
    "date": "2026-10-24",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-24",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1862,6 +1867,7 @@
   "avneet-kaur": "2026-10-23",
   "n-t-rama-rao-jr": "2026-10-23",
   "mrunal-thakur": "2026-10-23",
-  "mukul-choudhary": "2026-10-24"
+  "mukul-choudhary": "2026-10-24",
+  "aditya-thackeray": "2026-10-24"
  }
 }
