@@ -1519,6 +1519,11 @@
    "date": "2026-10-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-25",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1892,6 +1897,7 @@
   "emilia-clarke": "2026-10-24",
   "sapthami-gowda": "2026-10-24",
   "harshvardhan-rane": "2026-10-24",
-  "sheezan-mohd": "2026-10-25"
+  "sheezan-mohd": "2026-10-25",
+  "abdu-rozik": "2026-10-25"
  }
 }
