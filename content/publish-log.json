@@ -1554,6 +1554,11 @@
    "date": "2026-10-26",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-10-26",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -1934,6 +1939,7 @@
   "sudeep": "2026-10-25",
   "samrat-choudhary": "2026-10-26",
   "neelam-kothari": "2026-10-26",
-  "raghava-lawrence": "2026-10-26"
+  "raghava-lawrence": "2026-10-26",
+  "usha-mangeshkar": "2026-10-26"
  }
 }
