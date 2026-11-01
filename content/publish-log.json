@@ -1689,6 +1689,11 @@
    "date": "2026-10-31",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-01",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2096,6 +2101,7 @@
   "akhilesh-yadav": "2026-10-31",
   "suresh-gopi": "2026-10-31",
   "mona-shourie-kapoor": "2026-10-31",
-  "ibrahim-ali-khan": "2026-10-31"
+  "ibrahim-ali-khan": "2026-10-31",
+  "sajal-ali": "2026-11-01"
  }
 }
