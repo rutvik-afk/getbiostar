@@ -1734,6 +1734,11 @@
    "date": "2026-11-02",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2150,6 +2155,7 @@
   "paresh-rawal": "2026-11-02",
   "litton-das": "2026-11-02",
   "saira-banu": "2026-11-02",
-  "tom-cruise": "2026-11-02"
+  "tom-cruise": "2026-11-02",
+  "rajpal-yadav": "2026-11-02"
  }
 }
