@@ -1744,6 +1744,11 @@
    "date": "2026-11-03",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-03",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2162,6 +2167,7 @@
   "saira-banu": "2026-11-02",
   "tom-cruise": "2026-11-02",
   "rajpal-yadav": "2026-11-02",
-  "mohamed-muizzu": "2026-11-03"
+  "mohamed-muizzu": "2026-11-03",
+  "charithra-chandran": "2026-11-03"
  }
 }
