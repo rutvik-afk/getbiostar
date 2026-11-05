@@ -1794,6 +1794,11 @@
    "date": "2026-11-05",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-05",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2222,6 +2227,7 @@
   "dipika-pallikal": "2026-11-04",
   "isha-talwar": "2026-11-04",
   "randy-orton": "2026-11-04",
-  "mithila-palkar": "2026-11-05"
+  "mithila-palkar": "2026-11-05",
+  "anikha-surendran": "2026-11-05"
  }
 }
