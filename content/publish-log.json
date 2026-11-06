@@ -1819,6 +1819,11 @@
    "date": "2026-11-06",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2252,6 +2257,7 @@
   "mahendra-singh-dhoni": "2026-11-05",
   "cristiano-ronaldo": "2026-11-05",
   "sivakarthikeyan": "2026-11-05",
-  "shubman-gill": "2026-11-06"
+  "shubman-gill": "2026-11-06",
+  "n-t-rama-rao": "2026-11-06"
  }
 }
