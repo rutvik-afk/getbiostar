@@ -1834,6 +1834,11 @@
    "date": "2026-11-06",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2270,6 +2275,7 @@
   "shubman-gill": "2026-11-06",
   "n-t-rama-rao": "2026-11-06",
   "devendra-fadnavis": "2026-11-06",
-  "anu-aggarwal": "2026-11-06"
+  "anu-aggarwal": "2026-11-06",
+  "ravi-shastri": "2026-11-06"
  }
 }
