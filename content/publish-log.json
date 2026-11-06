@@ -1824,6 +1824,11 @@
    "date": "2026-11-06",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2258,6 +2263,7 @@
   "cristiano-ronaldo": "2026-11-05",
   "sivakarthikeyan": "2026-11-05",
   "shubman-gill": "2026-11-06",
-  "n-t-rama-rao": "2026-11-06"
+  "n-t-rama-rao": "2026-11-06",
+  "devendra-fadnavis": "2026-11-06"
  }
 }
