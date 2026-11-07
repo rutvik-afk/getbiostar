@@ -1854,6 +1854,11 @@
    "date": "2026-11-07",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-07",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2294,6 +2299,7 @@
   "ravi-shastri": "2026-11-06",
   "anveshi-jain": "2026-11-07",
   "priyanshu-chatterjee": "2026-11-07",
-  "meera-jasmine": "2026-11-07"
+  "meera-jasmine": "2026-11-07",
+  "lavanya-tripathi": "2026-11-07"
  }
 }
