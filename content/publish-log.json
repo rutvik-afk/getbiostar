@@ -1879,6 +1879,11 @@
    "date": "2026-11-08",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-08",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2324,6 +2329,7 @@
   "soubin-shahir": "2026-11-07",
   "ram-charan": "2026-11-08",
   "tottempudi-gopichand": "2026-11-08",
-  "namrata-shirodkar": "2026-11-08"
+  "namrata-shirodkar": "2026-11-08",
+  "arunoday-singh": "2026-11-08"
  }
 }
