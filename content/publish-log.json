@@ -1864,6 +1864,11 @@
    "date": "2026-11-07",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-08",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2306,6 +2311,7 @@
   "priyanshu-chatterjee": "2026-11-07",
   "meera-jasmine": "2026-11-07",
   "lavanya-tripathi": "2026-11-07",
-  "soubin-shahir": "2026-11-07"
+  "soubin-shahir": "2026-11-07",
+  "ram-charan": "2026-11-08"
  }
 }
