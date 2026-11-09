@@ -1899,6 +1899,11 @@
    "date": "2026-11-09",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2348,6 +2353,7 @@
   "arunoday-singh": "2026-11-08",
   "janki-bodiwala": "2026-11-08",
   "ravi-dubey": "2026-11-09",
-  "richa-ghosh": "2026-11-09"
+  "richa-ghosh": "2026-11-09",
+  "sanjay-khan": "2026-11-09"
  }
 }
