@@ -1919,6 +1919,11 @@
    "date": "2026-11-10",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-10",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2372,6 +2377,7 @@
   "sanjay-khan": "2026-11-09",
   "sanjay-gandhi": "2026-11-09",
   "zoya-afroz": "2026-11-09",
-  "ajit-agarkar": "2026-11-10"
+  "ajit-agarkar": "2026-11-10",
+  "juhi-chawla": "2026-11-10"
  }
 }
