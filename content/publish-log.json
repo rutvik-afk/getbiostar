@@ -1929,6 +1929,11 @@
    "date": "2026-11-10",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-10",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2384,6 +2389,7 @@
   "zoya-afroz": "2026-11-09",
   "ajit-agarkar": "2026-11-10",
   "juhi-chawla": "2026-11-10",
-  "yogeeta-bali": "2026-11-10"
+  "yogeeta-bali": "2026-11-10",
+  "mohan-bhagwat": "2026-11-10"
  }
 }
