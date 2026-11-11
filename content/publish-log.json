@@ -1944,6 +1944,11 @@
    "date": "2026-11-11",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-11",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2402,6 +2407,7 @@
   "yogeeta-bali": "2026-11-10",
   "mohan-bhagwat": "2026-11-10",
   "ahaan-panday": "2026-11-10",
-  "vijay-raaz": "2026-11-11"
+  "vijay-raaz": "2026-11-11",
+  "vineeth-sreenivasan": "2026-11-11"
  }
 }
