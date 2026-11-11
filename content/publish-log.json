@@ -1954,6 +1954,11 @@
    "date": "2026-11-11",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-11",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2414,6 +2419,7 @@
   "ahaan-panday": "2026-11-10",
   "vijay-raaz": "2026-11-11",
   "vineeth-sreenivasan": "2026-11-11",
-  "rajesh-khanna": "2026-11-11"
+  "rajesh-khanna": "2026-11-11",
+  "hansika-motwani": "2026-11-11"
  }
 }
