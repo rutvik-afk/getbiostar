@@ -1984,6 +1984,11 @@
    "date": "2026-11-12",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2450,6 +2455,7 @@
   "upendra-rao": "2026-11-12",
   "farhana-bhat": "2026-11-12",
   "dilip-joshi": "2026-11-12",
-  "gautami-kapoor": "2026-11-12"
+  "gautami-kapoor": "2026-11-12",
+  "sonam-kapoor": "2026-11-12"
  }
 }
