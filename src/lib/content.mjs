@@ -35,22 +35,24 @@ export function paginate(items, perPage) {
 /* Related links are computed over PUBLISHED posts only, at build time.
    Computing them at generation time would point live pages at slugs that
    are still sitting in the queue — 3000 broken internal links. */
+function similarity(a, b) {
+  let sc = 0;
+  if (a.category === b.category) sc += 3;
+  if (a.nationality && a.nationality === b.nationality) sc += 3;
+  sc += (a.occupations || []).filter((o) => (b.occupations || []).includes(o)).length * 2;
+  sc += (a.teams || []).filter((t) => (b.teams || []).includes(t)).length * 4;
+  if (a.birthPlace?.[0] && a.birthPlace[0] === b.birthPlace[0]) sc += 2;
+  if (a.birthDate?.year && b.birthDate?.year && Math.abs(a.birthDate.year - b.birthDate.year) <= 4) sc += 1;
+  return sc;
+}
+
 let _related = null;
 function buildRelated() {
   const posts = allPosts();
   const byCat = {};
   for (const p of posts) (byCat[p.category] ||= []).push(p);
 
-  const score = (a, b) => {
-    let sc = 0;
-    if (a.category === b.category) sc += 3;
-    if (a.nationality && a.nationality === b.nationality) sc += 3;
-    sc += (a.occupations || []).filter((o) => (b.occupations || []).includes(o)).length * 2;
-    sc += (a.teams || []).filter((t) => (b.teams || []).includes(t)).length * 4;
-    if (a.birthPlace?.[0] && a.birthPlace[0] === b.birthPlace[0]) sc += 2;
-    if (a.birthDate?.year && b.birthDate?.year && Math.abs(a.birthDate.year - b.birthDate.year) <= 4) sc += 1;
-    return sc;
-  };
+  const score = similarity;
 
   const map = {};
   for (const p of posts) {
@@ -67,6 +69,71 @@ function buildRelated() {
 export function relatedFor(slug) {
   if (!_related) _related = buildRelated();
   return _related[slug] || [];
+}
+
+/* Pages Google has not shown yet, linked from pages it has.
+
+   Google finds a page by following a link from one it already visits, and
+   visits a page more often the more it is worth. A profile with no
+   impression ten days after it went live is one nothing links to strongly
+   enough: the sidebar's "recent" list holds a page for about a day, and the
+   "related" grid ranks by similarity, so a low-scoring page is almost never
+   in anyone's top eight. On 13 Nov that was 86 of 453 live pages; Search
+   Console called 93 "Discovered - currently not indexed", meaning Google
+   knew the URL and had not got round to fetching it.
+
+   data/gsc-pages.json (scripts/11-import-gsc.mjs) says which pages have an
+   impression. Targets are live pages older than ten days with none; hosts are
+   pages with at least HOST_MIN_IMPRESSIONS, i.e. ones Google demonstrably
+   indexes and shows. Each host links to UNSEEN_PER_HOST targets, chosen by
+   similarity (an actor page pointing at actors) and then by how few links
+   the target has so far, so the links spread instead of piling onto the
+   three most similar names. The result is deterministic for a given export.
+
+   Without the file this returns nothing, so a fresh clone still builds. */
+const GSC_FILE = path.join(ROOT, 'data', 'gsc-pages.json');
+const HOST_MIN_IMPRESSIONS = 50;
+const UNSEEN_PER_HOST = 4;
+const UNSEEN_GRACE_DAYS = 10;
+
+let _unseen = null;
+function buildUnseen() {
+  if (!fs.existsSync(GSC_FILE)) return { map: {}, targets: [], hosts: 0 };
+  const g = JSON.parse(fs.readFileSync(GSC_FILE, 'utf8'));
+  const seen = new Map(g.pages.map((p) => [p.slug, p]));
+  const cutoff = new Date(g.windowEnd + 'T00:00:00Z');
+  cutoff.setUTCDate(cutoff.getUTCDate() - UNSEEN_GRACE_DAYS);
+  const cut = cutoff.toISOString().slice(0, 10);
+
+  const posts = allPosts();
+  const targets = posts.filter((p) => (p.publishedAt || '') <= cut && !((seen.get(p.slug)?.impressions || 0) > 0));
+  const hosts = posts
+    .filter((p) => (seen.get(p.slug)?.impressions || 0) >= HOST_MIN_IMPRESSIONS)
+    .sort((a, b) => seen.get(b.slug).impressions - seen.get(a.slug).impressions || a.slug.localeCompare(b.slug));
+  if (!targets.length || !hosts.length) return { map: {}, targets, hosts: hosts.length };
+
+  const cap = Math.ceil((hosts.length * UNSEEN_PER_HOST) / targets.length) + 2;
+  const inbound = {};
+  const map = {};
+  for (const h of hosts) {
+    const already = new Set(relatedFor(h.slug).map((r) => r.slug));
+    const picks = targets
+      .filter((t) => t.slug !== h.slug && !already.has(t.slug) && (inbound[t.slug] || 0) < cap)
+      .map((t) => ({ t, sc: similarity(h, t), n: inbound[t.slug] || 0 }))
+      .sort((a, b) => b.sc - a.sc || a.n - b.n || (b.t.seo?.volume || 0) - (a.t.seo?.volume || 0) || a.t.slug.localeCompare(b.t.slug))
+      .slice(0, UNSEEN_PER_HOST);
+    for (const { t } of picks) inbound[t.slug] = (inbound[t.slug] || 0) + 1;
+    map[h.slug] = picks.map(({ t }) => ({ slug: t.slug, name: t.name, role: t.role, image: t.image?.url || null }));
+  }
+  return { map, targets, hosts: hosts.length, inbound };
+}
+export function unseenFor(slug) {
+  if (!_unseen) _unseen = buildUnseen();
+  return _unseen.map[slug] || [];
+}
+export function unseenStats() {
+  if (!_unseen) _unseen = buildUnseen();
+  return { targets: _unseen.targets.length, hosts: _unseen.hosts, inbound: _unseen.inbound || {} };
 }
 
 export function letterIndex() {

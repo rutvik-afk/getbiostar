@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { SITE } from '../../site.config.mjs';
-import { allPosts, CATEGORIES, relatedFor } from '../lib/content.mjs';
+import { allPosts, CATEGORIES, relatedFor, unseenFor } from '../lib/content.mjs';
 import Sidebar from '../components/Sidebar.astro';
 import { computeAge, cmToFeet, kgToLb, zodiac, datedToYear } from '../lib/bio.mjs';
 
@@ -15,6 +15,7 @@ const url = `${SITE.domain}/${p.slug}/`;
 const ageInfo = computeAge(p.birthDate, p.deathDate);
 const cat = CATEGORIES[p.category] || CATEGORIES.notable;
 const related = relatedFor(p.slug);
+const also = unseenFor(p.slug);
 
 /* ---- Person schema: only fields we actually hold ---- */
 const person = {
@@ -233,6 +234,26 @@ const stats = [
             <h2>More {cat.label.replace(' & Public Life','').replace('s & Media','s')} on BioStar</h2>
             <div class="grid">
               {related.map((r) => (
+                <a class="tile" href={`/${r.slug}/`}>
+                  <div class="thumb">
+                    {r.image
+                      ? <img src={r.image} alt={`${r.name} portrait`} loading="lazy" width="240" height="320" />
+                      : <div style="width:100%;height:100%;display:grid;place-items:center;font-size:1.6rem;font-weight:800;color:var(--fg-soft)">{r.name[0]}</div>}
+                  </div>
+                  <div class="meta"><b>{r.name}</b><span>{r.role}</span></div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Profiles Google has not shown yet, linked from a page it has. See
+            unseenFor in src/lib/content.mjs for why and how they are picked. */}
+        {also.length > 0 && (
+          <section id="also-on-biostar">
+            <h2>Also on BioStar</h2>
+            <div class="grid">
+              {also.map((r) => (
                 <a class="tile" href={`/${r.slug}/`}>
                   <div class="thumb">
                     {r.image
