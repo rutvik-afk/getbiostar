@@ -133,8 +133,22 @@ const demandOf = (p) => {
 
    So rather than trade away volume across the entire queue to surface
    thirty names, they are promoted explicitly. At 5/day they clear in
-   six days and the ordering returns to normal on its own. */
-const QUICK_WIN_KD = 30;
+   six days and the ordering returns to normal on its own.
+
+   13 Nov: the first 30 were the test, and it held. Over 14 Oct-10 Nov the
+   29 of them live earned 4.56 clicks per 100 page-days against 1.05 for
+   pages published before 5 Oct. More convincing than that subset, which is
+   37 clicks and leans on five pages, is the gradient across all 348 pages
+   live 21+ days, clicks per 100 page-days by kd: 25-30 = 3.47, 30-35 =
+   1.33, 35-40 = 1.14, 40+ = 0.74. Monotone, and volume did not help: pages
+   with 300K-1M searches were the worst bucket (0.71) and those under 100K
+   among the best (2.96).
+
+   The kd<30 pool was spent (4 left), so the ceiling moves to kd<33, which
+   is 88 profiles and about 18 days at 5/day. Past that the ordering falls
+   back to demandOf(), which already weights ease. Re-judge once these have
+   had four weeks: if kd 30-33 stops beating 30-35's 1.33, pull it back. */
+const QUICK_WIN_KD = 33;
 const QUICK_WIN_VOLUME = 50_000;
 const isQuickWin = (p) =>
   (p.seo?.kd ?? 100) < QUICK_WIN_KD && (p.seo?.volume || 0) >= QUICK_WIN_VOLUME;
