@@ -1994,6 +1994,11 @@
    "date": "2026-11-13",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-13",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2462,6 +2467,7 @@
   "dilip-joshi": "2026-11-12",
   "gautami-kapoor": "2026-11-12",
   "sonam-kapoor": "2026-11-12",
-  "prithviraj-sukumaran": "2026-11-13"
+  "prithviraj-sukumaran": "2026-11-13",
+  "sanjay-leela-bhansali": "2026-11-13"
  }
 }
