@@ -2029,6 +2029,11 @@
    "date": "2026-11-14",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-14",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2504,6 +2509,7 @@
   "arun-gawli": "2026-11-13",
   "prajakta-mali": "2026-11-14",
   "nikki-galrani": "2026-11-14",
-  "tina-datta": "2026-11-14"
+  "tina-datta": "2026-11-14",
+  "mannara-chopra": "2026-11-14"
  }
 }
