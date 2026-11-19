@@ -2139,6 +2139,11 @@
    "date": "2026-11-18",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-19",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2636,6 +2641,7 @@
   "supriya-pathak": "2026-11-18",
   "karan-aujla": "2026-11-18",
   "pragya-jaiswal": "2026-11-18",
-  "neil-bhatt": "2026-11-18"
+  "neil-bhatt": "2026-11-18",
+  "sumedh-mudgalkar": "2026-11-19"
  }
 }
