@@ -2169,6 +2169,11 @@
    "date": "2026-11-20",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2672,6 +2677,7 @@
   "gautam-gulati": "2026-11-19",
   "srabanti-chatterjee": "2026-11-19",
   "sadie-sink": "2026-11-19",
-  "zeba-bakhtiar": "2026-11-20"
+  "zeba-bakhtiar": "2026-11-20",
+  "priyadarshi-pullikonda": "2026-11-20"
  }
 }
