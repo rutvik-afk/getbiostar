@@ -2189,6 +2189,11 @@
    "date": "2026-11-20",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-21",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2696,6 +2701,7 @@
   "priyadarshi-pullikonda": "2026-11-20",
   "hebah-patel": "2026-11-20",
   "rajneesh-duggal": "2026-11-20",
-  "pranitha-subhash": "2026-11-20"
+  "pranitha-subhash": "2026-11-20",
+  "sayali-satghare": "2026-11-21"
  }
 }
