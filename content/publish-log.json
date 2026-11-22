@@ -2229,6 +2229,11 @@
    "date": "2026-11-22",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-22",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2744,6 +2749,7 @@
   "shikhar-dhawan": "2026-11-21",
   "komal-sharma": "2026-11-22",
   "shirish-kunder": "2026-11-22",
-  "danish-zehen": "2026-11-22"
+  "danish-zehen": "2026-11-22",
+  "mallika-singh": "2026-11-22"
  }
 }
