@@ -2264,6 +2264,11 @@
    "date": "2026-11-24",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-24",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2786,6 +2791,7 @@
   "aparna-das": "2026-11-23",
   "sri-divya": "2026-11-23",
   "cheteshwar-pujara": "2026-11-23",
-  "ashi-singh": "2026-11-24"
+  "ashi-singh": "2026-11-24",
+  "faisal-shaikh": "2026-11-24"
  }
 }
