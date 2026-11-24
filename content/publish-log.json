@@ -2274,6 +2274,11 @@
    "date": "2026-11-24",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-24",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2798,6 +2803,7 @@
   "cheteshwar-pujara": "2026-11-23",
   "ashi-singh": "2026-11-24",
   "faisal-shaikh": "2026-11-24",
-  "mahima-makwana": "2026-11-24"
+  "mahima-makwana": "2026-11-24",
+  "utkarsh-sharma": "2026-11-24"
  }
 }
