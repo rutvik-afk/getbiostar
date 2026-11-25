@@ -2294,6 +2294,11 @@
    "date": "2026-11-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2822,6 +2827,7 @@
   "utkarsh-sharma": "2026-11-24",
   "ahad-raza-mir": "2026-11-24",
   "harshita-gaur": "2026-11-25",
-  "abhay-verma": "2026-11-25"
+  "abhay-verma": "2026-11-25",
+  "tanya-maniktala": "2026-11-25"
  }
 }
