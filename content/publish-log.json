@@ -2309,6 +2309,11 @@
    "date": "2026-11-25",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-26",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2840,6 +2845,7 @@
   "abhay-verma": "2026-11-25",
   "tanya-maniktala": "2026-11-25",
   "rajat-sharma": "2026-11-25",
-  "priyadarshini-indalkar": "2026-11-25"
+  "priyadarshini-indalkar": "2026-11-25",
+  "k-c-venugopal": "2026-11-26"
  }
 }
