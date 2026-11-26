@@ -2314,6 +2314,11 @@
    "date": "2026-11-26",
    "kind": "daily",
    "n": 1
+  },
+  {
+   "date": "2026-11-26",
+   "kind": "daily",
+   "n": 1
   }
  ],
  "published": {
@@ -2846,6 +2851,7 @@
   "tanya-maniktala": "2026-11-25",
   "rajat-sharma": "2026-11-25",
   "priyadarshini-indalkar": "2026-11-25",
-  "k-c-venugopal": "2026-11-26"
+  "k-c-venugopal": "2026-11-26",
+  "major-sandeep-unnikrishnan": "2026-11-26"
  }
 }
